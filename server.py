@@ -14,8 +14,11 @@ app = Flask(__name__)
 @app.route('/', methods=['POST'])
 def receive_event():
     try:
+        if len(request.data) > 64 * 1024:
+            return jsonify({'result': 'ok'}), 200
+
         raw = request.data.decode('utf-8', errors='ignore')
-        print(f"[{datetime.now().strftime('%H:%M:%S')}] 📥 Event keldi: {raw[:200]}")
+        print(f"[{datetime.now().strftime('%H:%M:%S')}] Event keldi: {raw[:200]}")
 
         # XML parse
         root = ET.fromstring(raw)
@@ -43,4 +46,4 @@ def receive_event():
 
 if __name__ == '__main__':
     print("Server ishga tushdi — port 6610")
-    app.run(host='0.0.0.0', port=6610, debug=False)
+    app.run(host='0.0.0.0', port=6610, debug=False)  # Hikvision uchun 0.0.0.0 — lokal tarmoqdan keladi

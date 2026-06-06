@@ -1,6 +1,6 @@
 import { useState } from 'react'
 import { login } from '../auth'
-import { Eye, EyeOff, CheckCircle, Clock, Users, TrendingUp, X } from 'lucide-react'
+import { Eye, EyeOff, CheckCircle, Clock, Users, TrendingUp, X, Mail, Send, Phone, Camera, MapPin } from 'lucide-react'
 
 export default function Login({ onLogin }) {
   const [showModal, setShowModal] = useState(false)
@@ -36,23 +36,41 @@ export default function Login({ onLogin }) {
         <div style={{ position:'absolute', top:'5%', right:'10%', width:'350px', height:'350px', borderRadius:'50%', background:'rgba(255,255,255,0.2)', filter:'blur(60px)' }}/>
         <div style={{ position:'absolute', bottom:'-5%', right:'-5%', width:'500px', height:'400px', borderRadius:'50%', background:'rgba(10,30,150,0.5)', filter:'blur(80px)' }}/>
         <div style={{ position:'absolute', inset:0, backgroundImage:'linear-gradient(rgba(255,255,255,0.04) 1px, transparent 1px), linear-gradient(90deg, rgba(255,255,255,0.04) 1px, transparent 1px)', backgroundSize:'60px 60px' }}/>
+        {/* Suzuvchi zarrachalar */}
+        {Array.from({length:22}).map((_,i) => {
+          const size   = 4 + (i*7)%14
+          const left   = (i*47 + 3)%100
+          const delay  = (i*1.3)%8
+          const dur    = 10 + (i*2.7)%14
+          const op     = 0.12 + (i%5)*0.05
+          return (
+            <div key={i} style={{
+              position:'absolute',
+              left:`${left}%`,
+              bottom:'-5%',
+              width:`${size}px`,
+              height:`${size}px`,
+              borderRadius:'50%',
+              background:'rgba(255,255,255,0.9)',
+              opacity:op,
+              animation:`floatUp ${dur}s ${delay}s linear infinite`,
+            }}/>
+          )
+        })}
       </div>
 
       {/* Header */}
-      <header style={{ position:'relative', zIndex:10, display:'flex', justifyContent:'space-between', alignItems:'center', padding:'24px 48px' }}>
+      <header style={{ position:'relative', zIndex:10, display:'flex', justifyContent:'center', alignItems:'center', padding:'16px 48px', background:'rgba(255,255,255,0.07)', backdropFilter:'blur(14px)', borderBottom:'1px solid rgba(255,255,255,0.1)' }}>
+        {/* Logo — markazda */}
         <div style={{ display:'flex', alignItems:'center', gap:'12px' }}>
           <div style={{ width:'40px', height:'40px', borderRadius:'12px', background:'rgba(255,255,255,0.15)', backdropFilter:'blur(10px)', border:'1px solid rgba(255,255,255,0.2)', display:'flex', alignItems:'center', justifyContent:'center' }}>
             <CheckCircle size={22} color="white"/>
           </div>
-          <span style={{ fontSize:'20px', fontWeight:700, color:'white', letterSpacing:'-0.5px' }}>Davomat</span>
+          <span style={{ fontSize:'20px', fontWeight:700, color:'white', letterSpacing:'-0.5px' }}>Davomatlar</span>
         </div>
 
-        <div style={{ background:'rgba(255,255,255,0.1)', backdropFilter:'blur(10px)', border:'1px solid rgba(255,255,255,0.15)', borderRadius:'50px', padding:'8px 20px', fontSize:'14px', color:'white', fontWeight:500 }}>
-          Boshqaruv tizimi v2.0
-        </div>
-
-        {/* Login tugmasi */}
-        <button onClick={openModal} style={{
+        {/* Kirish tugmasi — o'ng tomonda absolute */}
+        <button onClick={openModal} style={{ position:'absolute', right:'48px',
           display:'flex', alignItems:'center', gap:'8px',
           background:'rgba(255,255,255,0.12)', backdropFilter:'blur(12px)',
           border:'1px solid rgba(255,255,255,0.2)', borderRadius:'50px',
@@ -83,26 +101,42 @@ export default function Login({ onLogin }) {
           Face ID qurilmalar bilan integratsiya, real vaqt hisobotlar va tashkilotlar bo'yicha boshqaruv tizimi.
         </p>
 
-        {/* Statistika kartochkalari */}
-        <div style={{ display:'flex', gap:'14px', flexWrap:'wrap', justifyContent:'center' }}>
+        {/* Feature kartochkalari */}
+        <div style={{ display:'flex', gap:'16px', flexWrap:'wrap', justifyContent:'center', maxWidth:'900px' }}>
           {[
-            { icon: Users,       val:'54',    label:'Xodimlar',     color:'#818cf8' },
-            { icon: CheckCircle, val:'89%',   label:'Davomat',      color:'#4ade80' },
-            { icon: Clock,       val:'08:52', label:"O'rt. kelish", color:'#fbbf24' },
-            { icon: TrendingUp,  val:'+12%',  label:'Bu oy',        color:'#34d399' },
-          ].map(({ icon: Icon, val, label, color }) => (
-            <div key={label} style={{
-              background:'rgba(255,255,255,0.08)', backdropFilter:'blur(12px)',
-              border:'1px solid rgba(255,255,255,0.12)', borderRadius:'16px',
-              padding:'14px 20px', display:'flex', alignItems:'center', gap:'10px',
-            }}>
-              <div style={{ background:`${color}20`, borderRadius:'10px', padding:'8px', display:'flex' }}>
-                <Icon size={16} color={color}/>
+            { icon: Clock,       color:'#f87171', grad:'#f87171,#fb923c', title:'Kelish-ketish vaqti',  desc:"Aniq kirish va chiqish vaqtini avtomatik qayd etish" },
+            { icon: TrendingUp,  color:'#a78bfa', grad:'#a78bfa,#818cf8', title:'Ish soatlari hisobi',  desc:'Kunlik, haftalik, oylik grafiklar va tahlil' },
+            { icon: Users,       color:'#38bdf8', grad:'#38bdf8,#60a5fa', title:'Tanaffus nazorati',    desc:'Daqiqagacha aniq tanaffus vaqtini kuzatish' },
+            { icon: CheckCircle, color:'#4ade80', grad:'#4ade80,#34d399', title:'Face ID integratsiya', desc:"Parolsiz, qurilmalar bilan to'liq sinxronizatsiya" },
+          ].map(({ icon: Icon, color, grad, title, desc }, i) => (
+            <div key={title} style={{
+              position:'relative', overflow:'hidden',
+              background:'rgba(255,255,255,0.06)',
+              backdropFilter:'blur(20px)',
+              border:'1px solid rgba(255,255,255,0.1)',
+              borderRadius:'22px',
+              padding:'22px 20px 20px',
+              width:'188px', textAlign:'left',
+              boxShadow:`0 0 0 0 ${color}`,
+              transition:'transform 0.2s, box-shadow 0.2s',
+              animation:`cardIn 0.5s ${i*0.1}s both`,
+              cursor:'default',
+            }}
+              onMouseEnter={e => { e.currentTarget.style.transform='translateY(-4px)'; e.currentTarget.style.boxShadow=`0 8px 32px ${color}44` }}
+              onMouseLeave={e => { e.currentTarget.style.transform='translateY(0)';    e.currentTarget.style.boxShadow='none' }}
+            >
+              {/* Yuqori gradient chiziq */}
+              <div style={{ position:'absolute', top:0, left:0, right:0, height:'2px', background:`linear-gradient(90deg,${grad})`, borderRadius:'22px 22px 0 0' }}/>
+              {/* Fon icon */}
+              <div style={{ position:'absolute', right:'-8px', bottom:'-8px', opacity:0.07 }}>
+                <Icon size={80} color={color}/>
               </div>
-              <div style={{ textAlign:'left' }}>
-                <div style={{ fontSize:'17px', fontWeight:700, color:'white' }}>{val}</div>
-                <div style={{ fontSize:'11px', color:'rgba(255,255,255,0.5)', marginTop:'1px' }}>{label}</div>
+              {/* Icon */}
+              <div style={{ width:'40px', height:'40px', borderRadius:'14px', background:`linear-gradient(135deg,${grad})`, display:'flex', alignItems:'center', justifyContent:'center', marginBottom:'14px', boxShadow:`0 4px 14px ${color}55` }}>
+                <Icon size={20} color="white"/>
               </div>
+              <div style={{ fontSize:'17px', fontWeight:700, color:'white', marginBottom:'8px', lineHeight:1.3 }}>{title}</div>
+              <div style={{ fontSize:'13.5px', color:'rgba(255,255,255,0.5)', lineHeight:1.65 }}>{desc}</div>
             </div>
           ))}
         </div>
@@ -182,9 +216,30 @@ export default function Login({ onLogin }) {
         </div>
       )}
 
-      {/* Footer */}
-      <footer style={{ position:'relative', zIndex:10, textAlign:'center', padding:'16px', fontSize:'13px', color:'rgba(255,255,255,0.4)' }}>
-        Inno Texnopark MCHJ &nbsp;|&nbsp; Nematov
+      {/* Footer contact bar */}
+      <footer style={{ position:'relative', zIndex:10 }}>
+        <div style={{ display:'flex', flexWrap:'wrap', justifyContent:'center', gap:'6px', padding:'12px 24px 28px' }}>
+          {[
+            { icon: Mail,      text:'info@davomatlar.uz',           href:'mailto:info@davomatlar.uz' },
+            { icon: Send,      text:'@davomatlar.uz',               href:'https://t.me/davomatlar' },
+            { icon: Phone,     text:'+998 90-873-89-63',            href:'tel:+998908738963' },
+            { icon: Camera,    text:'@davomatlar.uz',               href:'https://instagram.com/davomatlar.uz' },
+            { icon: MapPin,    text:"Toshkent sh, Olmazor Qamarniso 13", href:null },
+          ].map(({ icon: Icon, text, href }) => {
+            const inner = (
+              <div style={{ display:'flex', alignItems:'center', gap:'7px', padding:'7px 14px', borderRadius:'50px', background:'rgba(255,255,255,0.07)', border:'1px solid rgba(255,255,255,0.1)', fontSize:'13px', color:'rgba(255,255,255,0.8)', whiteSpace:'nowrap', transition:'background 0.2s' }}
+                onMouseEnter={e => e.currentTarget.style.background='rgba(255,255,255,0.14)'}
+                onMouseLeave={e => e.currentTarget.style.background='rgba(255,255,255,0.07)'}
+              >
+                <Icon size={13} color="rgba(255,255,255,0.6)"/>
+                {text}
+              </div>
+            )
+            return href
+              ? <a key={text} href={href} target="_blank" rel="noreferrer" style={{ textDecoration:'none' }}>{inner}</a>
+              : <div key={text}>{inner}</div>
+          })}
+        </div>
       </footer>
 
       <style>{`
@@ -192,6 +247,8 @@ export default function Login({ onLogin }) {
         @keyframes floatCard{ 0%,100%{ transform:translateY(0) } 50%{ transform:translateY(-12px) } }
         @keyframes fadeIn   { from{ opacity:0 } to{ opacity:1 } }
         @keyframes slideUp  { from{ opacity:0; transform:translateY(20px) } to{ opacity:1; transform:translateY(0) } }
+        @keyframes cardIn   { from{ opacity:0; transform:translateY(16px) } to{ opacity:1; transform:translateY(0) } }
+        @keyframes floatUp  { 0%{ transform:translateY(0) translateX(0); opacity:0 } 10%{ opacity:1 } 90%{ opacity:0.6 } 100%{ transform:translateY(-110vh) translateX(30px); opacity:0 } }
         input::placeholder  { color: rgba(255,255,255,0.2) }
       `}</style>
     </div>

@@ -2,8 +2,8 @@
 import { useState } from 'react'
 
 export const initialGroups = [
-  { id: 'inno',   name: 'Inno Texnopark', login: 'inno',   password: 'inno123'   },
-  { id: 'milliy', name: 'Milliy Offis',   login: 'milliy', password: 'milliy123' },
+  { id: 'inno',   name: 'Inno Texnopark', login: 'inno',   password: 'Inno@2026#kdr'   },
+  { id: 'milliy', name: 'Milliy Offis',   login: 'milliy', password: 'Milliy@2026#kdr' },
 ]
 
 export const initialEmployees = [

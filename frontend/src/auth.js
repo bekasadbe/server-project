@@ -1,8 +1,8 @@
 // Foydalanuvchilar (server ulangandan keyin DB ga ko'chiriladi)
 export const USERS = [
-  { username: 'admin',   password: 'admin123',   role: 'admin',   name: 'Administrator'    },
-  { username: 'inno',    password: 'inno123',    role: 'kadrlar', name: 'Inno Texnopark',  groupId: 'inno'   },
-  { username: 'milliy',  password: 'milliy123',  role: 'kadrlar', name: 'Milliy Offis',    groupId: 'milliy' },
+  { username: 'admin',   password: 'Inno@Adm!n2026',  role: 'admin',   name: 'Administrator'    },
+  { username: 'inno',    password: 'Inno@2026#kdr',    role: 'kadrlar', name: 'Inno Texnopark',  groupId: 'inno'   },
+  { username: 'milliy',  password: 'Milliy@2026#kdr',  role: 'kadrlar', name: 'Milliy Offis',    groupId: 'milliy' },
 ]
 
 export function login(username, password) {
