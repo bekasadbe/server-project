@@ -79,6 +79,9 @@ export default function Employees({ employees = [], groups = [] }) {
               </div>
               <div style={{ flex:1, minWidth:0 }}>
                 <div style={{ fontSize:'14px', fontWeight:600, color:'#f1f5f9', whiteSpace:'nowrap', overflow:'hidden', textOverflow:'ellipsis' }}>{emp.name}</div>
+                {emp.lavozim && (
+                  <div style={{ fontSize:'12px', color:'#a5b4fc', marginTop:'2px', whiteSpace:'nowrap', overflow:'hidden', textOverflow:'ellipsis' }}>{emp.lavozim}</div>
+                )}
                 <div style={{ fontSize:'12px', color:'#475569', marginTop:'2px', fontFamily:'monospace' }}>ID: {emp.id}</div>
                 {multiOrg && (
                   <span style={{ display:'inline-flex', alignItems:'center', gap:'4px', marginTop:'6px', padding:'3px 8px', borderRadius:'20px', fontSize:'11px', fontWeight:600, background:oc.bg, color:oc.color }}>

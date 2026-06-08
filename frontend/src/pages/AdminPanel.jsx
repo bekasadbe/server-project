@@ -23,9 +23,10 @@ export default function AdminPanel({ employees, groups, onAddEmployee, onDeleteE
 
   // Xodimni tahrirlash modal
   const [showEditEmp, setShowEditEmp] = useState(false)
-  const [editEmpId, setEditEmpId]     = useState('')
+  const [editEmpId, setEditEmpId]       = useState('')
   const [editEmpNewId, setEditEmpNewId] = useState('')
   const [editEmpName, setEditEmpName]   = useState('')
+  const [editEmpLavozim, setEditEmpLavozim] = useState('')
   const [editEmpError, setEditEmpError] = useState('')
 
   // Xodim qo'shish modal
@@ -58,6 +59,7 @@ export default function AdminPanel({ employees, groups, onAddEmployee, onDeleteE
     setEditEmpId(emp.id)
     setEditEmpNewId(emp.id)
     setEditEmpName(emp.name)
+    setEditEmpLavozim(emp.lavozim || '')
     setEditEmpError('')
     setShowEditEmp(true)
   }
@@ -66,10 +68,9 @@ export default function AdminPanel({ employees, groups, onAddEmployee, onDeleteE
     if (!editEmpNewId.trim()) return setEditEmpError('ID kiriting')
     if (!editEmpName.trim())  return setEditEmpError('Ism kiriting')
     const fid = editEmpNewId.trim().padStart(8, '0')
-    // Boshqa xodimda bu ID bor-yo'qligini tekshirish
     if (fid !== editEmpId && employees.find(e => e.id === fid))
       return setEditEmpError('Bu ID allaqachon mavjud')
-    onUpdateEmployee(editEmpId, { id: fid, name: editEmpName.trim() })
+    onUpdateEmployee(editEmpId, { id: fid, name: editEmpName.trim(), lavozim: editEmpLavozim.trim() })
     setShowEditEmp(false)
   }
 
@@ -192,7 +193,7 @@ export default function AdminPanel({ employees, groups, onAddEmployee, onDeleteE
               <table style={{ width:'100%', borderCollapse:'collapse' }}>
                 <thead>
                   <tr style={{ background:'#0f1117' }}>
-                    {['№','Face ID','Ism Familiya','Boshqa guruhga',''].map((h, i) => (
+                    {['№','Face ID','Ism Familiya','Lavozim','Boshqa guruhga',''].map((h, i) => (
                       <th key={i} style={{ padding:'9px 14px', textAlign:'left', fontSize:'11px', color:'#475569', fontWeight:600, textTransform:'uppercase' }}>{h}</th>
                     ))}
                   </tr>
@@ -209,6 +210,9 @@ export default function AdminPanel({ employees, groups, onAddEmployee, onDeleteE
                           </div>
                           {emp.name}
                         </div>
+                      </td>
+                      <td style={{ padding:'10px 14px', fontSize:'13px', color: emp.lavozim ? '#94a3b8' : '#334155', fontStyle: emp.lavozim ? 'normal' : 'italic' }}>
+                        {emp.lavozim || '—'}
                       </td>
                       <td style={{ padding:'10px 14px' }}>
                         <select value={emp.group} onChange={e => onMoveEmployee(emp.id, e.target.value)}
@@ -256,6 +260,12 @@ export default function AdminPanel({ employees, groups, onAddEmployee, onDeleteE
               <div>
                 <label style={{ fontSize:'12px', color:'#64748b', display:'block', marginBottom:'5px' }}>Ism Familiya</label>
                 <input value={editEmpName} onChange={e => { setEditEmpName(e.target.value); setEditEmpError('') }}
+                  style={{ width:'100%', padding:'10px 12px', background:'#0f1117', border:'1px solid #1e2535', borderRadius:'8px', color:'#f1f5f9', fontSize:'14px', outline:'none', boxSizing:'border-box' }}/>
+              </div>
+              <div>
+                <label style={{ fontSize:'12px', color:'#64748b', display:'block', marginBottom:'5px' }}>Lavozim</label>
+                <input value={editEmpLavozim} onChange={e => setEditEmpLavozim(e.target.value)}
+                  placeholder="Masalan: Dasturchi, Hisobchi..."
                   style={{ width:'100%', padding:'10px 12px', background:'#0f1117', border:'1px solid #1e2535', borderRadius:'8px', color:'#f1f5f9', fontSize:'14px', outline:'none', boxSizing:'border-box' }}/>
               </div>
               {editEmpError && <div style={{ padding:'8px 12px', background:'#ef444415', border:'1px solid #ef444430', borderRadius:'7px', color:'#f87171', fontSize:'13px' }}>⚠️ {editEmpError}</div>}
