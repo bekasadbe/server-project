@@ -25,62 +25,57 @@ export default function History() {
     return matchName && matchFrom && matchTo
   })
 
+  const inputStyle = { padding:'9px 12px', background:'#ffffff', border:'1px solid #e2e8f0', borderRadius:'8px', color:'#0f172a', fontSize:'14px', outline:'none' }
+
   return (
     <div>
       <div style={{ marginBottom:'24px' }}>
-        <h1 style={{ margin:0, fontSize:'22px', fontWeight:700, color:'#f1f5f9', display:'flex', alignItems:'center', gap:'10px' }}>
-          <Clock size={22} color="#6366f1" /> Keldi-ketdi tarixi
+        <h1 style={{ margin:0, fontSize:'22px', fontWeight:700, color:'#0f172a', display:'flex', alignItems:'center', gap:'10px' }}>
+          <Clock size={22} color="#2563eb" /> Keldi-ketdi tarixi
         </h1>
-        <p style={{ margin:'4px 0 0', fontSize:'13px', color:'#64748b' }}>Barcha xodimlarning kirish va chiqish vaqtlari</p>
+        <p style={{ margin:'4px 0 0', fontSize:'13px', color:'#94a3b8' }}>Barcha xodimlarning kirish va chiqish vaqtlari</p>
       </div>
 
       {/* Filters */}
-      <div style={{ display:'flex', gap:'12px', marginBottom:'20px', flexWrap:'wrap' }}>
+      <div style={{ display:'flex', gap:'10px', marginBottom:'20px', flexWrap:'wrap' }}>
         <div style={{ position:'relative', flex:1, minWidth:'200px' }}>
-          <Search size={15} color="#475569" style={{ position:'absolute', left:'12px', top:'50%', transform:'translateY(-50%)' }} />
+          <Search size={15} color="#94a3b8" style={{ position:'absolute', left:'12px', top:'50%', transform:'translateY(-50%)' }} />
           <input
             placeholder="Xodim nomi bo'yicha qidirish..."
             value={search} onChange={e => setSearch(e.target.value)}
-            style={{
-              width:'100%', padding:'9px 12px 9px 36px',
-              background:'#161b27', border:'1px solid #1e2535',
-              borderRadius:'8px', color:'#f1f5f9', fontSize:'14px',
-              outline:'none', boxSizing:'border-box'
-            }}
+            style={{ ...inputStyle, width:'100%', paddingLeft:'36px', boxSizing:'border-box' }}
           />
         </div>
-        <input type="date" value={dateFrom} onChange={e => setDateFrom(e.target.value)}
-          style={{ padding:'9px 12px', background:'#161b27', border:'1px solid #1e2535', borderRadius:'8px', color:'#f1f5f9', fontSize:'14px', outline:'none' }} />
-        <input type="date" value={dateTo} onChange={e => setDateTo(e.target.value)}
-          style={{ padding:'9px 12px', background:'#161b27', border:'1px solid #1e2535', borderRadius:'8px', color:'#f1f5f9', fontSize:'14px', outline:'none' }} />
+        <input type="date" value={dateFrom} onChange={e => setDateFrom(e.target.value)} style={inputStyle} />
+        <input type="date" value={dateTo}   onChange={e => setDateTo(e.target.value)}   style={inputStyle} />
       </div>
 
       {/* Table */}
-      <div style={{ background:'#161b27', borderRadius:'14px', border:'1px solid #1e2535', overflow:'hidden' }}>
+      <div style={{ background:'#ffffff', borderRadius:'14px', border:'1px solid #e2e8f0', overflow:'hidden', boxShadow:'0 1px 3px #0f172a08' }}>
         <table style={{ width:'100%', borderCollapse:'collapse' }}>
           <thead>
-            <tr style={{ background:'#0f1117' }}>
+            <tr style={{ background:'#f8fafc' }}>
               {['Sana','Ism Familiya','Tashkilot','Keldi','Ketdi','Kechikish'].map(h => (
-                <th key={h} style={{ padding:'11px 16px', textAlign:'left', fontSize:'12px', color:'#475569', fontWeight:600, textTransform:'uppercase', letterSpacing:'0.05em' }}>{h}</th>
+                <th key={h} style={{ padding:'11px 16px', textAlign:'left', fontSize:'11px', color:'#94a3b8', fontWeight:700, textTransform:'uppercase', letterSpacing:'0.5px' }}>{h}</th>
               ))}
             </tr>
           </thead>
           <tbody>
             {filtered.map((r, i) => (
-              <tr key={i} style={{ borderTop:'1px solid #1e2535' }}>
+              <tr key={i} style={{ borderTop:'1px solid #f1f5f9' }}>
                 <td style={{ padding:'12px 16px', fontSize:'13px', color:'#64748b' }}>{r.date}</td>
-                <td style={{ padding:'12px 16px', fontSize:'14px', color:'#e2e8f0', fontWeight:500 }}>{r.name}</td>
+                <td style={{ padding:'12px 16px', fontSize:'14px', color:'#0f172a', fontWeight:500 }}>{r.name}</td>
                 <td style={{ padding:'12px 16px', fontSize:'13px', color:'#64748b' }}>
                   <span style={{ display:'inline-flex', alignItems:'center', gap:'4px' }}>
                     <Building2 size={12} /> {r.org}
                   </span>
                 </td>
-                <td style={{ padding:'12px 16px', fontSize:'14px', color:'#22c55e', fontWeight:600 }}>{r.arrived}</td>
-                <td style={{ padding:'12px 16px', fontSize:'14px', color: r.left ? '#94a3b8' : '#475569' }}>{r.left || '—'}</td>
+                <td style={{ padding:'12px 16px', fontSize:'14px', color:'#16a34a', fontWeight:600 }}>{r.arrived}</td>
+                <td style={{ padding:'12px 16px', fontSize:'14px', color: r.left ? '#475569' : '#cbd5e1' }}>{r.left || '—'}</td>
                 <td style={{ padding:'12px 16px' }}>
                   {r.late > 0
-                    ? <span style={{ padding:'3px 10px', borderRadius:'20px', fontSize:'12px', fontWeight:600, background:'#f59e0b18', color:'#f59e0b' }}>{r.late} daq.</span>
-                    : <span style={{ padding:'3px 10px', borderRadius:'20px', fontSize:'12px', fontWeight:600, background:'#22c55e18', color:'#22c55e' }}>O'z vaqtida</span>
+                    ? <span style={{ padding:'3px 10px', borderRadius:'20px', fontSize:'12px', fontWeight:600, background:'#fef3c7', color:'#d97706' }}>{r.late} daq.</span>
+                    : <span style={{ padding:'3px 10px', borderRadius:'20px', fontSize:'12px', fontWeight:600, background:'#dcfce7', color:'#16a34a' }}>O'z vaqtida</span>
                   }
                 </td>
               </tr>
@@ -88,7 +83,7 @@ export default function History() {
           </tbody>
         </table>
         {filtered.length === 0 && (
-          <div style={{ padding:'40px', textAlign:'center', color:'#475569' }}>Ma'lumot topilmadi</div>
+          <div style={{ padding:'40px', textAlign:'center', color:'#94a3b8' }}>Ma'lumot topilmadi</div>
         )}
       </div>
     </div>

@@ -20,16 +20,17 @@ export default function Reports() {
     <div>
       <div style={{ display:'flex', justifyContent:'space-between', alignItems:'center', marginBottom:'24px' }}>
         <div>
-          <h1 style={{ margin:0, fontSize:'22px', fontWeight:700, color:'#f1f5f9', display:'flex', alignItems:'center', gap:'10px' }}>
-            <FileBarChart2 size={22} color="#6366f1" /> Hisobotlar
+          <h1 style={{ margin:0, fontSize:'22px', fontWeight:700, color:'#0f172a', display:'flex', alignItems:'center', gap:'10px' }}>
+            <FileBarChart2 size={22} color="#2563eb" /> Hisobotlar
           </h1>
-          <p style={{ margin:'4px 0 0', fontSize:'13px', color:'#64748b' }}>Oylik va haftalik tahlil</p>
+          <p style={{ margin:'4px 0 0', fontSize:'13px', color:'#94a3b8' }}>Oylik va haftalik tahlil</p>
         </div>
         <button style={{
           display:'flex', alignItems:'center', gap:'8px',
           padding:'9px 18px', borderRadius:'9px',
-          background:'#161b27', border:'1px solid #1e2535',
-          color:'#a5b4fc', fontSize:'14px', fontWeight:600, cursor:'pointer'
+          background:'#ffffff', border:'1px solid #e2e8f0',
+          color:'#2563eb', fontSize:'14px', fontWeight:600, cursor:'pointer',
+          boxShadow:'0 1px 3px #0f172a08',
         }}>
           <Download size={16} /> PDF yuklab olish
         </button>
@@ -37,47 +38,47 @@ export default function Reports() {
 
       <div style={{ display:'grid', gridTemplateColumns:'1fr 1fr', gap:'16px' }}>
         {/* Chiziqli grafik */}
-        <div style={{ background:'#161b27', borderRadius:'14px', border:'1px solid #1e2535', padding:'20px' }}>
+        <div style={{ background:'#ffffff', borderRadius:'14px', border:'1px solid #e2e8f0', padding:'20px', boxShadow:'0 1px 3px #0f172a08' }}>
           <div style={{ display:'flex', alignItems:'center', gap:'8px', marginBottom:'20px' }}>
-            <Calendar size={16} color="#6366f1" />
-            <span style={{ fontWeight:600, fontSize:'14px', color:'#f1f5f9' }}>Iyun oyi — kunlik kelganlar</span>
+            <Calendar size={16} color="#2563eb" />
+            <span style={{ fontWeight:600, fontSize:'14px', color:'#0f172a' }}>Iyun oyi — kunlik kelganlar</span>
           </div>
           <ResponsiveContainer width="100%" height={220}>
             <LineChart data={monthData}>
-              <CartesianGrid strokeDasharray="3 3" stroke="#1e2535" />
-              <XAxis dataKey="day" stroke="#334155" tick={{ fill:'#64748b', fontSize:12 }} />
-              <YAxis stroke="#334155" tick={{ fill:'#64748b', fontSize:12 }} />
-              <Tooltip contentStyle={{ background:'#1e2535', border:'1px solid #334155', borderRadius:'8px', color:'#f1f5f9' }} />
-              <Line type="monotone" dataKey="keldi" stroke="#6366f1" strokeWidth={2} dot={{ fill:'#6366f1', r:4 }} name="Keldi" />
+              <CartesianGrid strokeDasharray="3 3" stroke="#f1f5f9" />
+              <XAxis dataKey="day" stroke="#e2e8f0" tick={{ fill:'#94a3b8', fontSize:12 }} />
+              <YAxis stroke="#e2e8f0" tick={{ fill:'#94a3b8', fontSize:12 }} />
+              <Tooltip contentStyle={{ background:'#ffffff', border:'1px solid #e2e8f0', borderRadius:'8px', color:'#0f172a', boxShadow:'0 4px 12px #0f172a10' }} />
+              <Line type="monotone" dataKey="keldi" stroke="#2563eb" strokeWidth={2} dot={{ fill:'#2563eb', r:4 }} name="Keldi" />
             </LineChart>
           </ResponsiveContainer>
         </div>
 
         {/* Ko'p kechikkanlar */}
-        <div style={{ background:'#161b27', borderRadius:'14px', border:'1px solid #1e2535', padding:'20px' }}>
+        <div style={{ background:'#ffffff', borderRadius:'14px', border:'1px solid #e2e8f0', padding:'20px', boxShadow:'0 1px 3px #0f172a08' }}>
           <div style={{ display:'flex', alignItems:'center', gap:'8px', marginBottom:'20px' }}>
-            <span style={{ fontWeight:600, fontSize:'14px', color:'#f1f5f9' }}>⚠️ Ko'p kechikkanlar (iyun)</span>
+            <span style={{ fontWeight:600, fontSize:'14px', color:'#0f172a' }}>Ko'p kechikkanlar (iyun)</span>
           </div>
           <div style={{ display:'flex', flexDirection:'column', gap:'10px' }}>
             {topLate.map((emp, i) => (
               <div key={i} style={{
                 display:'flex', alignItems:'center', justifyContent:'space-between',
-                padding:'12px 16px', background:'#0f1117', borderRadius:'10px',
-                border:'1px solid #1e2535'
+                padding:'12px 16px', background:'#f8fafc', borderRadius:'10px',
+                border:'1px solid #f1f5f9'
               }}>
                 <div style={{ display:'flex', alignItems:'center', gap:'12px' }}>
                   <div style={{
                     width:'32px', height:'32px', borderRadius:'8px',
-                    background: i===0 ? '#ef444420' : '#f59e0b18',
+                    background: i===0 ? '#fee2e2' : '#fef3c7',
                     display:'flex', alignItems:'center', justifyContent:'center',
                     fontSize:'14px', fontWeight:700,
-                    color: i===0 ? '#ef4444' : '#f59e0b'
+                    color: i===0 ? '#dc2626' : '#d97706'
                   }}>{i+1}</div>
-                  <span style={{ fontSize:'14px', color:'#e2e8f0' }}>{emp.name}</span>
+                  <span style={{ fontSize:'14px', color:'#0f172a' }}>{emp.name}</span>
                 </div>
                 <div style={{ textAlign:'right' }}>
-                  <div style={{ fontSize:'13px', fontWeight:600, color:'#f59e0b' }}>{emp.count} marta</div>
-                  <div style={{ fontSize:'12px', color:'#475569' }}>o'rtacha {emp.avg}</div>
+                  <div style={{ fontSize:'13px', fontWeight:600, color:'#d97706' }}>{emp.count} marta</div>
+                  <div style={{ fontSize:'12px', color:'#94a3b8' }}>o'rtacha {emp.avg}</div>
                 </div>
               </div>
             ))}
@@ -85,26 +86,26 @@ export default function Reports() {
         </div>
 
         {/* Tashkilot solishtiruv */}
-        <div style={{ background:'#161b27', borderRadius:'14px', border:'1px solid #1e2535', padding:'20px', gridColumn:'1/-1' }}>
-          <div style={{ fontWeight:600, fontSize:'14px', color:'#f1f5f9', marginBottom:'16px' }}>📊 Tashkilotlar bo'yicha taqqoslash</div>
+        <div style={{ background:'#ffffff', borderRadius:'14px', border:'1px solid #e2e8f0', padding:'20px', gridColumn:'1/-1', boxShadow:'0 1px 3px #0f172a08' }}>
+          <div style={{ fontWeight:600, fontSize:'14px', color:'#0f172a', marginBottom:'16px' }}>Tashkilotlar bo'yicha taqqoslash</div>
           <div style={{ display:'grid', gridTemplateColumns:'1fr 1fr', gap:'12px' }}>
             {[
-              { org:'Inno Texnopark', color:'#6366f1', keldi:26, kelmadi:4, kech:5 },
-              { org:'Milliy Offis',   color:'#06b6d4', keldi:20, kelmadi:4, kech:3 },
+              { org:'Inno Texnopark', color:'#2563eb', bg:'#eff6ff', keldi:26, kelmadi:4, kech:5 },
+              { org:'Milliy Offis',   color:'#0891b2', bg:'#ecfeff', keldi:20, kelmadi:4, kech:3 },
             ].map(o => (
-              <div key={o.org} style={{ padding:'16px', background:'#0f1117', borderRadius:'10px', border:`1px solid ${o.color}30` }}>
+              <div key={o.org} style={{ padding:'16px', background:o.bg, borderRadius:'10px', border:`1px solid ${o.color}20` }}>
                 <div style={{ fontSize:'14px', fontWeight:700, color:o.color, marginBottom:'12px' }}>{o.org}</div>
                 <div style={{ display:'flex', gap:'16px' }}>
                   <div style={{ textAlign:'center' }}>
-                    <div style={{ fontSize:'24px', fontWeight:700, color:'#22c55e' }}>{o.keldi}</div>
+                    <div style={{ fontSize:'24px', fontWeight:700, color:'#16a34a' }}>{o.keldi}</div>
                     <div style={{ fontSize:'12px', color:'#64748b' }}>Keldi</div>
                   </div>
                   <div style={{ textAlign:'center' }}>
-                    <div style={{ fontSize:'24px', fontWeight:700, color:'#f59e0b' }}>{o.kech}</div>
+                    <div style={{ fontSize:'24px', fontWeight:700, color:'#d97706' }}>{o.kech}</div>
                     <div style={{ fontSize:'12px', color:'#64748b' }}>Kech</div>
                   </div>
                   <div style={{ textAlign:'center' }}>
-                    <div style={{ fontSize:'24px', fontWeight:700, color:'#ef4444' }}>{o.kelmadi}</div>
+                    <div style={{ fontSize:'24px', fontWeight:700, color:'#dc2626' }}>{o.kelmadi}</div>
                     <div style={{ fontSize:'12px', color:'#64748b' }}>Kelmadi</div>
                   </div>
                 </div>

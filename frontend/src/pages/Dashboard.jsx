@@ -11,27 +11,25 @@ const weekData = [
 ]
 
 const statusInfo = {
-  ontime: { label:"O'z vaqtida", color:'#22c55e', bg:'#22c55e18' },
-  late:   { label:'Kech keldi',  color:'#f59e0b', bg:'#f59e0b18' },
-  absent: { label:'Kelmadi',     color:'#ef4444', bg:'#ef444418' },
+  ontime: { label:"O'z vaqtida", color:'#16a34a', bg:'#dcfce7' },
+  late:   { label:'Kech keldi',  color:'#d97706', bg:'#fef3c7' },
+  absent: { label:'Kelmadi',     color:'#dc2626', bg:'#fee2e2' },
 }
 
 function StatCard({ icon: Icon, label, value, color, bg }) {
   return (
-    <div style={{ background:'#161b27', borderRadius:'14px', padding:'20px 24px', border:'1px solid #1e2535', display:'flex', alignItems:'center', gap:'16px' }}>
+    <div style={{ background:'#ffffff', borderRadius:'14px', padding:'20px 24px', border:'1px solid #e2e8f0', display:'flex', alignItems:'center', gap:'16px', boxShadow:'0 1px 3px #0f172a08' }}>
       <div style={{ background:bg, borderRadius:'12px', padding:'12px', display:'flex' }}>
         <Icon size={22} color={color} />
       </div>
       <div>
-        <div style={{ fontSize:'28px', fontWeight:700, color:'#f1f5f9' }}>{value}</div>
+        <div style={{ fontSize:'28px', fontWeight:700, color:'#0f172a' }}>{value}</div>
         <div style={{ fontSize:'13px', color:'#64748b', marginTop:'2px' }}>{label}</div>
       </div>
     </div>
   )
 }
 
-// ⚠️ Server ulangandan keyin bu arrived/left ma'lumotlari API dan keladi
-// Hozircha xodimlar ro'yxati ko'rsatiladi, arrived/left yo'q
 export default function Dashboard({ employees = [], groups = [] }) {
   const [orgFilter, setOrgFilter] = useState('all')
   const today    = new Date().toLocaleDateString('uz-UZ', { year:'numeric', month:'long', day:'numeric' })
@@ -39,7 +37,6 @@ export default function Dashboard({ employees = [], groups = [] }) {
 
   const filtered = orgFilter === 'all' ? employees : employees.filter(e => e.group === orgFilter)
 
-  // Hozircha arrived yo'q (server ulanmagan) — demo uchun random holat
   const withStatus = filtered.map(e => ({
     ...e,
     arrived: e.arrived || null,
@@ -66,23 +63,23 @@ export default function Dashboard({ employees = [], groups = [] }) {
       {/* Header */}
       <div style={{ display:'flex', justifyContent:'space-between', alignItems:'center', marginBottom:'24px' }}>
         <div>
-          <h1 style={{ margin:0, fontSize:'22px', fontWeight:700, color:'#f1f5f9' }}>Bugungi davomat</h1>
-          <p style={{ margin:'4px 0 0', fontSize:'13px', color:'#64748b' }}>{today}</p>
+          <h1 style={{ margin:0, fontSize:'22px', fontWeight:700, color:'#0f172a' }}>Bugungi davomat</h1>
+          <p style={{ margin:'4px 0 0', fontSize:'13px', color:'#94a3b8' }}>{today}</p>
         </div>
         {multiOrg && (
-          <div style={{ display:'flex', gap:'8px' }}>
+          <div style={{ display:'flex', gap:'6px' }}>
             <button onClick={() => setOrgFilter('all')} style={{
               padding:'7px 14px', borderRadius:'8px', border:'1px solid',
-              borderColor: orgFilter==='all'?'#6366f1':'#1e2535',
-              background: orgFilter==='all'?'#6366f120':'transparent',
-              color: orgFilter==='all'?'#a5b4fc':'#64748b', fontSize:'13px', cursor:'pointer', fontWeight: orgFilter==='all'?600:400
+              borderColor: orgFilter==='all'?'#2563eb':'#e2e8f0',
+              background: orgFilter==='all'?'#eff6ff':'#ffffff',
+              color: orgFilter==='all'?'#2563eb':'#64748b', fontSize:'13px', cursor:'pointer', fontWeight: orgFilter==='all'?600:400
             }}>Hammasi</button>
             {groups.map(g => (
               <button key={g.id} onClick={() => setOrgFilter(g.id)} style={{
                 padding:'7px 14px', borderRadius:'8px', border:'1px solid',
-                borderColor: orgFilter===g.id?'#6366f1':'#1e2535',
-                background: orgFilter===g.id?'#6366f120':'transparent',
-                color: orgFilter===g.id?'#a5b4fc':'#64748b', fontSize:'13px', cursor:'pointer', fontWeight: orgFilter===g.id?600:400
+                borderColor: orgFilter===g.id?'#2563eb':'#e2e8f0',
+                background: orgFilter===g.id?'#eff6ff':'#ffffff',
+                color: orgFilter===g.id?'#2563eb':'#64748b', fontSize:'13px', cursor:'pointer', fontWeight: orgFilter===g.id?600:400
               }}>{g.name}</button>
             ))}
           </div>
@@ -91,36 +88,36 @@ export default function Dashboard({ employees = [], groups = [] }) {
 
       {/* Stat cards */}
       <div style={{ display:'grid', gridTemplateColumns:'repeat(4,1fr)', gap:'14px', marginBottom:'24px' }}>
-        <StatCard icon={Users}       label="Jami xodim"  value={filtered.length} color="#6366f1" bg="#6366f118" />
-        <StatCard icon={CheckCircle} label="O'z vaqtida" value={ontime}          color="#22c55e" bg="#22c55e18" />
-        <StatCard icon={Clock}       label="Kech keldi"  value={late}            color="#f59e0b" bg="#f59e0b18" />
-        <StatCard icon={XCircle}     label="Kelmadi"     value={absent}          color="#ef4444" bg="#ef444418" />
+        <StatCard icon={Users}       label="Jami xodim"  value={filtered.length} color="#2563eb" bg="#eff6ff" />
+        <StatCard icon={CheckCircle} label="O'z vaqtida" value={ontime}          color="#16a34a" bg="#dcfce7" />
+        <StatCard icon={Clock}       label="Kech keldi"  value={late}            color="#d97706" bg="#fef3c7" />
+        <StatCard icon={XCircle}     label="Kelmadi"     value={absent}          color="#dc2626" bg="#fee2e2" />
       </div>
 
       {/* Table + Chart */}
       <div style={{ display:'grid', gridTemplateColumns:'1fr 340px', gap:'16px' }}>
-        <div style={{ background:'#161b27', borderRadius:'14px', border:'1px solid #1e2535', overflow:'hidden' }}>
-          <div style={{ padding:'14px 20px', borderBottom:'1px solid #1e2535', display:'flex', alignItems:'center', gap:'8px' }}>
-            <Users size={16} color="#6366f1"/>
-            <span style={{ fontWeight:600, fontSize:'14px', color:'#f1f5f9' }}>Xodimlar holati</span>
-            <span style={{ marginLeft:'auto', fontSize:'12px', color:'#475569', background:'#0f1117', padding:'3px 10px', borderRadius:'20px' }}>
+        <div style={{ background:'#ffffff', borderRadius:'14px', border:'1px solid #e2e8f0', overflow:'hidden', boxShadow:'0 1px 3px #0f172a08' }}>
+          <div style={{ padding:'14px 20px', borderBottom:'1px solid #f1f5f9', display:'flex', alignItems:'center', gap:'8px' }}>
+            <Users size={16} color="#2563eb"/>
+            <span style={{ fontWeight:600, fontSize:'14px', color:'#0f172a' }}>Xodimlar holati</span>
+            <span style={{ marginLeft:'auto', fontSize:'12px', color:'#94a3b8', background:'#f8fafc', padding:'3px 10px', borderRadius:'20px', border:'1px solid #e2e8f0' }}>
               ⚠️ Kelish vaqti: server ulanganidan keyin
             </span>
           </div>
           <table style={{ width:'100%', borderCollapse:'collapse' }}>
             <thead>
-              <tr style={{ background:'#0f1117' }}>
+              <tr style={{ background:'#f8fafc' }}>
                 {['Ism Familiya', ...(multiOrg?['Tashkilot']:[]), 'Keldi','Ketdi','Holat'].map(h => (
-                  <th key={h} style={{ padding:'10px 16px', textAlign:'left', fontSize:'12px', color:'#475569', fontWeight:600, textTransform:'uppercase' }}>{h}</th>
+                  <th key={h} style={{ padding:'10px 16px', textAlign:'left', fontSize:'11px', color:'#94a3b8', fontWeight:700, textTransform:'uppercase', letterSpacing:'0.5px' }}>{h}</th>
                 ))}
               </tr>
             </thead>
             <tbody>
-              {sorted.map((emp, i) => {
+              {sorted.map((emp) => {
                 const s = statusInfo[emp.status]
                 return (
-                  <tr key={emp.id} style={{ borderTop:'1px solid #1e2535' }}>
-                    <td style={{ padding:'11px 16px', fontSize:'14px', color:'#e2e8f0', fontWeight:500 }}>{emp.name}</td>
+                  <tr key={emp.id} style={{ borderTop:'1px solid #f1f5f9' }}>
+                    <td style={{ padding:'11px 16px', fontSize:'14px', color:'#0f172a', fontWeight:500 }}>{emp.name}</td>
                     {multiOrg && (
                       <td style={{ padding:'11px 16px', fontSize:'13px', color:'#64748b' }}>
                         <span style={{ display:'inline-flex', alignItems:'center', gap:'4px' }}>
@@ -128,8 +125,8 @@ export default function Dashboard({ employees = [], groups = [] }) {
                         </span>
                       </td>
                     )}
-                    <td style={{ padding:'11px 16px', fontSize:'14px', color: emp.arrived?'#22c55e':'#475569', fontWeight:600 }}>{emp.arrived||'—'}</td>
-                    <td style={{ padding:'11px 16px', fontSize:'14px', color: emp.left?'#94a3b8':'#475569' }}>{emp.left||'—'}</td>
+                    <td style={{ padding:'11px 16px', fontSize:'14px', color: emp.arrived?'#16a34a':'#cbd5e1', fontWeight:600 }}>{emp.arrived||'—'}</td>
+                    <td style={{ padding:'11px 16px', fontSize:'14px', color: emp.left?'#475569':'#cbd5e1' }}>{emp.left||'—'}</td>
                     <td style={{ padding:'11px 16px' }}>
                       <span style={{ padding:'4px 10px', borderRadius:'20px', fontSize:'12px', fontWeight:600, background:s.bg, color:s.color }}>{s.label}</span>
                     </td>
@@ -140,23 +137,23 @@ export default function Dashboard({ employees = [], groups = [] }) {
           </table>
         </div>
 
-        <div style={{ background:'#161b27', borderRadius:'14px', border:'1px solid #1e2535', padding:'20px' }}>
+        <div style={{ background:'#ffffff', borderRadius:'14px', border:'1px solid #e2e8f0', padding:'20px', boxShadow:'0 1px 3px #0f172a08' }}>
           <div style={{ display:'flex', alignItems:'center', gap:'8px', marginBottom:'20px' }}>
-            <TrendingUp size={16} color="#6366f1"/>
-            <span style={{ fontWeight:600, fontSize:'14px', color:'#f1f5f9' }}>Haftalik ko'rsatkich</span>
+            <TrendingUp size={16} color="#2563eb"/>
+            <span style={{ fontWeight:600, fontSize:'14px', color:'#0f172a' }}>Haftalik ko'rsatkich</span>
           </div>
           <ResponsiveContainer width="100%" height={260}>
             <BarChart data={weekData} barGap={4}>
-              <XAxis dataKey="day" stroke="#334155" tick={{ fill:'#64748b', fontSize:12 }}/>
-              <YAxis stroke="#334155" tick={{ fill:'#64748b', fontSize:12 }}/>
-              <Tooltip contentStyle={{ background:'#1e2535', border:'1px solid #334155', borderRadius:'8px', color:'#f1f5f9' }} cursor={{ fill:'#ffffff08' }}/>
-              <Bar dataKey="keldi"   name="Keldi"   fill="#6366f1" radius={[4,4,0,0]}/>
+              <XAxis dataKey="day" stroke="#e2e8f0" tick={{ fill:'#94a3b8', fontSize:12 }}/>
+              <YAxis stroke="#e2e8f0" tick={{ fill:'#94a3b8', fontSize:12 }}/>
+              <Tooltip contentStyle={{ background:'#ffffff', border:'1px solid #e2e8f0', borderRadius:'8px', color:'#0f172a', boxShadow:'0 4px 12px #0f172a10' }} cursor={{ fill:'#f1f5f9' }}/>
+              <Bar dataKey="keldi"   name="Keldi"   fill="#2563eb" radius={[4,4,0,0]}/>
               <Bar dataKey="kelmadi" name="Kelmadi" fill="#ef4444" radius={[4,4,0,0]}/>
             </BarChart>
           </ResponsiveContainer>
           <div style={{ display:'flex', gap:'16px', justifyContent:'center', marginTop:'8px' }}>
             <span style={{ fontSize:'12px', color:'#64748b', display:'flex', alignItems:'center', gap:'6px' }}>
-              <span style={{ width:'10px', height:'10px', borderRadius:'2px', background:'#6366f1', display:'inline-block' }}></span>Keldi
+              <span style={{ width:'10px', height:'10px', borderRadius:'2px', background:'#2563eb', display:'inline-block' }}></span>Keldi
             </span>
             <span style={{ fontSize:'12px', color:'#64748b', display:'flex', alignItems:'center', gap:'6px' }}>
               <span style={{ width:'10px', height:'10px', borderRadius:'2px', background:'#ef4444', display:'inline-block' }}></span>Kelmadi

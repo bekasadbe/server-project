@@ -69,9 +69,9 @@ export default function App() {
   }
 
   return (
-    <div style={{display:'flex', height:'100vh', background:'#0f1117', color:'white', overflow:'hidden', margin:0, padding:0, maxWidth:'100%', border:'none', textAlign:'left'}}>
+    <div style={{display:'flex', height:'100vh', background:'#f8fafc', color:'#0f172a', overflow:'hidden', margin:0, padding:0, maxWidth:'100%', border:'none', textAlign:'left'}}>
       <Sidebar current={page} onChange={setPage} user={user} onLogout={handleLogout} />
-      <main style={{flex:1, overflowY:'auto', padding:'24px', background:'#0f1117'}}>
+      <main style={{flex:1, overflowY:'auto', padding:'28px 32px', background:'#f8fafc'}}>
         {pages[page]}
       </main>
     </div>
