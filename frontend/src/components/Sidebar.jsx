@@ -1,11 +1,12 @@
-import { LayoutDashboard, Users, Clock, FileBarChart2, Building2, Settings, LogOut, Shield, ChevronRight } from 'lucide-react'
+import { LayoutDashboard, Users, Clock, FileBarChart2, Building2, Settings, LogOut, Shield, ChevronRight, Radio } from 'lucide-react'
 
 const menu = [
-  { key: 'dashboard', label: 'Dashboard',  icon: LayoutDashboard, roles: ['admin','kadrlar'] },
-  { key: 'history',   label: 'Tarix',       icon: Clock,           roles: ['kadrlar'] },
-  { key: 'employees', label: 'Xodimlar',    icon: Users,           roles: ['kadrlar'] },
-  { key: 'reports',   label: 'Hisobotlar',  icon: FileBarChart2,   roles: ['kadrlar'] },
-  { key: 'admin',     label: 'Admin panel', icon: Settings,        roles: ['admin'] },
+  { key: 'dashboard',  label: 'Dashboard',    icon: LayoutDashboard, roles: ['admin','kadrlar'] },
+  { key: 'live',       label: 'Jonli lenta',  icon: Radio,           roles: ['admin','kadrlar'] },
+  { key: 'history',    label: 'Tarix',        icon: Clock,           roles: ['kadrlar'] },
+  { key: 'employees',  label: 'Xodimlar',     icon: Users,           roles: ['kadrlar'] },
+  { key: 'reports',    label: 'Hisobotlar',   icon: FileBarChart2,   roles: ['kadrlar'] },
+  { key: 'admin',      label: 'Admin panel',  icon: Settings,        roles: ['admin'] },
 ]
 
 export default function Sidebar({ current, onChange, user, onLogout }) {

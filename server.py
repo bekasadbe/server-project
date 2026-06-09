@@ -4,7 +4,7 @@ Port: 6610
 """
 
 from flask import Flask, request, jsonify
-from database import save_event
+from database import save_event, get_direction
 import xml.etree.ElementTree as ET
 from datetime import datetime
 
@@ -19,9 +19,8 @@ def receive_event():
             return jsonify({'result': 'ok'}), 200
 
         raw = request.data.decode('utf-8', errors='ignore')
-        print(f"[{datetime.now().strftime('%H:%M:%S')}] Event keldi: {raw[:200]}")
+        print(f"[{datetime.now().strftime('%H:%M:%S')}] Event keldi: {raw[:300]}")
 
-        # XML parse
         root = ET.fromstring(raw)
         ns   = {'h': 'http://www.hikvision.com/ver20/XMLSchema'}
 
@@ -33,11 +32,17 @@ def receive_event():
 
         employee_id = find('employeeNoString') or find('cardNo')
         event_time  = find('dateTime') or find('time')
-        device_ip   = request.remote_addr
+
+        # Kamera IP — XML dan olamiz, bo'lmasa request IP
+        camera_ip   = find('ipAddress') or request.remote_addr
+        direction   = get_direction(camera_ip)
 
         if employee_id and event_time:
-            save_event(employee_id, event_time, device_ip)
-            print(f"[{datetime.now().strftime('%H:%M:%S')}] ✅ Saqlandi: {employee_id} | {event_time} | {device_ip}")
+            save_event(employee_id, event_time, camera_ip, direction)
+            arrow = '→ KIRDI' if direction == 'in' else '← CHIQDI'
+            print(f"[{datetime.now().strftime('%H:%M:%S')}] ✅ {arrow} | {employee_id} | {event_time} | {camera_ip}")
+        else:
+            print(f"[{datetime.now().strftime('%H:%M:%S')}] ⚠️ ID yoki vaqt yo'q")
 
     except Exception as e:
         print(f"[{datetime.now().strftime('%H:%M:%S')}] ❌ Xatolik: {e}")
@@ -46,5 +51,5 @@ def receive_event():
 
 
 if __name__ == '__main__':
-    print("Server ishga tushdi — port 6610")
-    app.run(host='0.0.0.0', port=6610, debug=False)  # Hikvision uchun 0.0.0.0 — lokal tarmoqdan keladi
+    print("Hikvision server ishga tushdi — port 6610")
+    app.run(host='0.0.0.0', port=6610, debug=False)

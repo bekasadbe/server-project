@@ -1,6 +1,7 @@
 import { useState } from 'react'
 import Sidebar from './components/Sidebar'
 import Dashboard from './pages/Dashboard'
+import LiveEvents from './pages/LiveEvents'
 import Employees from './pages/Employees'
 import History from './pages/History'
 import Reports from './pages/Reports'
@@ -53,10 +54,11 @@ export default function App() {
   }
 
   const pages = {
-    dashboard: <Dashboard employees={visibleEmps} groups={visibleGrps} />,
-    history:   <History   employees={visibleEmps} groups={visibleGrps} />,
-    employees: <Employees employees={visibleEmps} groups={visibleGrps} />,
-    reports:   <Reports   employees={visibleEmps} groups={visibleGrps} />,
+    dashboard: <Dashboard  employees={visibleEmps} groups={visibleGrps} />,
+    live:      <LiveEvents groups={visibleGrps} />,
+    history:   <History    employees={visibleEmps} groups={visibleGrps} />,
+    employees: <Employees  employees={visibleEmps} groups={visibleGrps} />,
+    reports:   <Reports    employees={visibleEmps} groups={visibleGrps} />,
     ...(user.role === 'admin' ? {
       admin: <AdminPanel
         employees={employees} groups={groups}
