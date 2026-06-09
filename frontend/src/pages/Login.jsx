@@ -60,7 +60,7 @@ export default function Login({ onLogin }) {
       </div>
 
       {/* Header */}
-      <header style={{ position:'relative', zIndex:10, display:'flex', justifyContent:'space-between', alignItems:'center', padding:'14px 20px', background:'rgba(255,255,255,0.07)', backdropFilter:'blur(14px)', borderBottom:'1px solid rgba(255,255,255,0.1)', flexShrink:0 }}>
+      <header style={{ position:'relative', zIndex:10, display:'flex', justifyContent:'space-between', alignItems:'center', padding:'14px 20px', background:'rgba(255,255,255,0.07)', backdropFilter:'blur(14px)', borderBottom:'1px solid rgba(255,255,255,0.1)', flexShrink:0, width:'100%', boxSizing:'border-box' }}>
         {/* Logo */}
         <div style={{ display:'flex', alignItems:'center', gap:'10px' }}>
           <div style={{ width:'36px', height:'36px', borderRadius:'10px', background:'rgba(255,255,255,0.15)', backdropFilter:'blur(10px)', border:'1px solid rgba(255,255,255,0.2)', display:'flex', alignItems:'center', justifyContent:'center', flexShrink:0 }}>
@@ -85,7 +85,7 @@ export default function Login({ onLogin }) {
       </header>
 
       {/* Hero */}
-      <main style={{ flex:1, position:'relative', zIndex:10, display:'flex', flexDirection:'column', alignItems:'center', justifyContent:'center', textAlign:'center', padding:'40px 20px 32px' }}>
+      <main className="landing-main" style={{ flex:1, position:'relative', zIndex:10, display:'flex', flexDirection:'column', alignItems:'center', justifyContent:'center', textAlign:'center', padding:'40px 20px 32px' }}>
 
         <div style={{ display:'inline-flex', alignItems:'center', gap:'8px', background:'rgba(255,255,255,0.1)', backdropFilter:'blur(10px)', border:'1px solid rgba(255,255,255,0.15)', borderRadius:'50px', padding:'6px 18px', marginBottom:'24px' }}>
           <div style={{ width:'8px', height:'8px', borderRadius:'50%', background:'#4ade80', boxShadow:'0 0 8px #4ade80', flexShrink:0 }}/>
@@ -265,6 +265,13 @@ export default function Login({ onLogin }) {
         /* Login modal mobilga moslash */
         @media (max-width: 480px) {
           .login-modal { width: calc(100vw - 32px) !important; padding: 28px 20px !important; border-radius: 20px !important; }
+        }
+
+        /* === MOBIL SCROLL VA LOGO FIX === */
+        @media (max-width: 768px) {
+          html, body { overflow-y: auto !important; height: auto !important; }
+          .landing-main { justify-content: flex-start !important; padding-top: 24px !important; }
+          .landing-header-logo { justify-content: flex-start !important; }
         }
       `}</style>
     </div>
