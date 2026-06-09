@@ -12,6 +12,7 @@ app = Flask(__name__)
 
 
 @app.route('/', methods=['POST'])
+@app.route('/event', methods=['POST'])
 def receive_event():
     try:
         if len(request.data) > 64 * 1024:
