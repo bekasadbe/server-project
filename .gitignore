@@ -1,6 +1,36 @@
+# Database
 davomat.db
+*.db
+
+# Python
 __pycache__/
 *.pyc
+*.pyo
+venv/
+.venv/
+
+# Environment & secrets
 .env
-frontend/node_modules/
+.env.*
+CLAUDE.md
+
+# Frontend build output
 frontend/dist/
+frontend/dist-ssr/
+
+# Frontend dependencies
+frontend/node_modules/
+
+# Editor & IDE
+.vscode/
+.idea/
+frontend/.claude/
+.claude/
+
+# OS
+.DS_Store
+Thumbs.db
+
+# Misc
+*.zip
+*.log
