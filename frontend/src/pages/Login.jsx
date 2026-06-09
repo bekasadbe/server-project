@@ -26,7 +26,7 @@ export default function Login({ onLogin }) {
 
   return (
     <div style={{
-      width:'100vw', height:'100vh', overflow:'hidden', position:'relative',
+      width:'100vw', minHeight:'100vh', overflowY:'auto', overflowX:'hidden', position:'relative',
       background:'linear-gradient(145deg, #bdd9ff 0%, #5a9ef5 20%, #2d6fe0 45%, #1a52cc 65%, #0f3aaa 100%)',
       display:'flex', flexDirection:'column',
     }}>
@@ -60,22 +60,22 @@ export default function Login({ onLogin }) {
       </div>
 
       {/* Header */}
-      <header style={{ position:'relative', zIndex:10, display:'flex', justifyContent:'center', alignItems:'center', padding:'16px 48px', background:'rgba(255,255,255,0.07)', backdropFilter:'blur(14px)', borderBottom:'1px solid rgba(255,255,255,0.1)' }}>
-        {/* Logo — markazda */}
-        <div style={{ display:'flex', alignItems:'center', gap:'12px' }}>
-          <div style={{ width:'40px', height:'40px', borderRadius:'12px', background:'rgba(255,255,255,0.15)', backdropFilter:'blur(10px)', border:'1px solid rgba(255,255,255,0.2)', display:'flex', alignItems:'center', justifyContent:'center' }}>
-            <CheckCircle size={22} color="white"/>
+      <header style={{ position:'relative', zIndex:10, display:'flex', justifyContent:'space-between', alignItems:'center', padding:'14px 20px', background:'rgba(255,255,255,0.07)', backdropFilter:'blur(14px)', borderBottom:'1px solid rgba(255,255,255,0.1)', flexShrink:0 }}>
+        {/* Logo */}
+        <div style={{ display:'flex', alignItems:'center', gap:'10px' }}>
+          <div style={{ width:'36px', height:'36px', borderRadius:'10px', background:'rgba(255,255,255,0.15)', backdropFilter:'blur(10px)', border:'1px solid rgba(255,255,255,0.2)', display:'flex', alignItems:'center', justifyContent:'center', flexShrink:0 }}>
+            <CheckCircle size={20} color="white"/>
           </div>
-          <span style={{ fontSize:'20px', fontWeight:700, color:'white', letterSpacing:'-0.5px' }}>Davomatlar</span>
+          <span style={{ fontSize:'18px', fontWeight:700, color:'white', letterSpacing:'-0.5px' }}>Davomatlar</span>
         </div>
 
-        {/* Kirish tugmasi — o'ng tomonda absolute */}
-        <button onClick={openModal} style={{ position:'absolute', right:'48px',
-          display:'flex', alignItems:'center', gap:'8px',
+        {/* Kirish tugmasi */}
+        <button onClick={openModal} style={{
+          display:'flex', alignItems:'center', gap:'6px',
           background:'rgba(255,255,255,0.12)', backdropFilter:'blur(12px)',
           border:'1px solid rgba(255,255,255,0.2)', borderRadius:'50px',
-          padding:'10px 24px', color:'white', fontSize:'15px', fontWeight:600,
-          cursor:'pointer', transition:'all 0.2s',
+          padding:'9px 20px', color:'white', fontSize:'14px', fontWeight:600,
+          cursor:'pointer', transition:'all 0.2s', flexShrink:0,
         }}
           onMouseEnter={e => e.currentTarget.style.background='rgba(255,255,255,0.2)'}
           onMouseLeave={e => e.currentTarget.style.background='rgba(255,255,255,0.12)'}
@@ -84,25 +84,25 @@ export default function Login({ onLogin }) {
         </button>
       </header>
 
-      {/* Hero — markazda */}
-      <main style={{ flex:1, position:'relative', zIndex:10, display:'flex', flexDirection:'column', alignItems:'center', justifyContent:'center', textAlign:'center', padding:'0 24px' }}>
+      {/* Hero */}
+      <main style={{ flex:1, position:'relative', zIndex:10, display:'flex', flexDirection:'column', alignItems:'center', justifyContent:'center', textAlign:'center', padding:'40px 20px 32px' }}>
 
-        <div style={{ display:'inline-flex', alignItems:'center', gap:'8px', background:'rgba(255,255,255,0.1)', backdropFilter:'blur(10px)', border:'1px solid rgba(255,255,255,0.15)', borderRadius:'50px', padding:'6px 18px', marginBottom:'28px' }}>
-          <div style={{ width:'8px', height:'8px', borderRadius:'50%', background:'#4ade80', boxShadow:'0 0 8px #4ade80' }}/>
+        <div style={{ display:'inline-flex', alignItems:'center', gap:'8px', background:'rgba(255,255,255,0.1)', backdropFilter:'blur(10px)', border:'1px solid rgba(255,255,255,0.15)', borderRadius:'50px', padding:'6px 18px', marginBottom:'24px' }}>
+          <div style={{ width:'8px', height:'8px', borderRadius:'50%', background:'#4ade80', boxShadow:'0 0 8px #4ade80', flexShrink:0 }}/>
           <span style={{ fontSize:'13px', color:'rgba(255,255,255,0.9)', fontWeight:500 }}>Real vaqt davomat tizimi</span>
         </div>
 
-        <h1 style={{ margin:'0 0 20px', fontSize:'62px', fontWeight:800, color:'white', lineHeight:1.1, letterSpacing:'-2.5px', maxWidth:'700px' }}>
+        <h1 className="hero-title" style={{ margin:'0 0 16px', fontWeight:800, color:'white', lineHeight:1.1, letterSpacing:'-1.5px', maxWidth:'700px' }}>
           Xodimlar davomatini<br/>
           <span style={{ color:'#93c5fd' }}>kuzating</span>
         </h1>
 
-        <p style={{ margin:'0 0 44px', fontSize:'18px', color:'rgba(255,255,255,0.6)', lineHeight:1.7, maxWidth:'480px' }}>
+        <p style={{ margin:'0 0 36px', fontSize:'16px', color:'rgba(255,255,255,0.6)', lineHeight:1.7, maxWidth:'420px' }}>
           Face ID qurilmalar bilan integratsiya, real vaqt hisobotlar va tashkilotlar bo'yicha boshqaruv tizimi.
         </p>
 
         {/* Feature kartochkalari */}
-        <div style={{ display:'flex', gap:'16px', flexWrap:'wrap', justifyContent:'center', maxWidth:'900px' }}>
+        <div className="cards-grid" style={{ display:'grid', gap:'12px', width:'100%', maxWidth:'860px' }}>
           {[
             { icon: Clock,       color:'#f87171', grad:'#f87171,#fb923c', title:'Kelish-ketish vaqti',  desc:"Aniq kirish va chiqish vaqtini avtomatik qayd etish" },
             { icon: TrendingUp,  color:'#a78bfa', grad:'#a78bfa,#818cf8', title:'Ish soatlari hisobi',  desc:'Kunlik, haftalik, oylik grafiklar va tahlil' },
@@ -114,10 +114,9 @@ export default function Login({ onLogin }) {
               background:'rgba(255,255,255,0.06)',
               backdropFilter:'blur(20px)',
               border:'1px solid rgba(255,255,255,0.1)',
-              borderRadius:'22px',
-              padding:'22px 20px 20px',
-              width:'188px', textAlign:'left',
-              boxShadow:`0 0 0 0 ${color}`,
+              borderRadius:'18px',
+              padding:'18px 16px 16px',
+              textAlign:'left',
               transition:'transform 0.2s, box-shadow 0.2s',
               animation:`cardIn 0.5s ${i*0.1}s both`,
               cursor:'default',
@@ -125,18 +124,15 @@ export default function Login({ onLogin }) {
               onMouseEnter={e => { e.currentTarget.style.transform='translateY(-4px)'; e.currentTarget.style.boxShadow=`0 8px 32px ${color}44` }}
               onMouseLeave={e => { e.currentTarget.style.transform='translateY(0)';    e.currentTarget.style.boxShadow='none' }}
             >
-              {/* Yuqori gradient chiziq */}
-              <div style={{ position:'absolute', top:0, left:0, right:0, height:'2px', background:`linear-gradient(90deg,${grad})`, borderRadius:'22px 22px 0 0' }}/>
-              {/* Fon icon */}
+              <div style={{ position:'absolute', top:0, left:0, right:0, height:'2px', background:`linear-gradient(90deg,${grad})`, borderRadius:'18px 18px 0 0' }}/>
               <div style={{ position:'absolute', right:'-8px', bottom:'-8px', opacity:0.07 }}>
-                <Icon size={80} color={color}/>
+                <Icon size={70} color={color}/>
               </div>
-              {/* Icon */}
-              <div style={{ width:'40px', height:'40px', borderRadius:'14px', background:`linear-gradient(135deg,${grad})`, display:'flex', alignItems:'center', justifyContent:'center', marginBottom:'14px', boxShadow:`0 4px 14px ${color}55` }}>
-                <Icon size={20} color="white"/>
+              <div style={{ width:'36px', height:'36px', borderRadius:'12px', background:`linear-gradient(135deg,${grad})`, display:'flex', alignItems:'center', justifyContent:'center', marginBottom:'12px', boxShadow:`0 4px 14px ${color}55` }}>
+                <Icon size={18} color="white"/>
               </div>
-              <div style={{ fontSize:'17px', fontWeight:700, color:'white', marginBottom:'8px', lineHeight:1.3 }}>{title}</div>
-              <div style={{ fontSize:'13.5px', color:'rgba(255,255,255,0.5)', lineHeight:1.65 }}>{desc}</div>
+              <div style={{ fontSize:'15px', fontWeight:700, color:'white', marginBottom:'6px', lineHeight:1.3 }}>{title}</div>
+              <div style={{ fontSize:'13px', color:'rgba(255,255,255,0.5)', lineHeight:1.6 }}>{desc}</div>
             </div>
           ))}
         </div>
@@ -151,7 +147,7 @@ export default function Login({ onLogin }) {
           display:'flex', alignItems:'center', justifyContent:'center',
           animation:'fadeIn 0.2s ease',
         }} onClick={e => e.target === e.currentTarget && setShowModal(false)}>
-          <div style={{
+          <div className="login-modal" style={{
             width:'420px', background:'rgba(15,31,92,0.85)', backdropFilter:'blur(32px)',
             border:'1px solid rgba(255,255,255,0.15)', borderRadius:'28px',
             padding:'40px', boxShadow:'0 40px 80px rgba(0,0,0,0.5)',
@@ -244,12 +240,32 @@ export default function Login({ onLogin }) {
 
       <style>{`
         @keyframes spin     { to { transform: rotate(360deg) } }
-        @keyframes floatCard{ 0%,100%{ transform:translateY(0) } 50%{ transform:translateY(-12px) } }
         @keyframes fadeIn   { from{ opacity:0 } to{ opacity:1 } }
         @keyframes slideUp  { from{ opacity:0; transform:translateY(20px) } to{ opacity:1; transform:translateY(0) } }
         @keyframes cardIn   { from{ opacity:0; transform:translateY(16px) } to{ opacity:1; transform:translateY(0) } }
         @keyframes floatUp  { 0%{ transform:translateY(0) translateX(0); opacity:0 } 10%{ opacity:1 } 90%{ opacity:0.6 } 100%{ transform:translateY(-110vh) translateX(30px); opacity:0 } }
         input::placeholder  { color: rgba(255,255,255,0.2) }
+
+        /* Desktop: 4 ustun */
+        .cards-grid { grid-template-columns: repeat(4, 1fr); }
+        .hero-title  { font-size: 58px; }
+
+        /* Tablet: 2 ustun */
+        @media (max-width: 768px) {
+          .cards-grid { grid-template-columns: repeat(2, 1fr) !important; }
+          .hero-title  { font-size: 38px !important; letter-spacing: -1px !important; }
+        }
+
+        /* Mobil: 2 ustun (kichik) */
+        @media (max-width: 480px) {
+          .cards-grid { grid-template-columns: repeat(2, 1fr) !important; }
+          .hero-title  { font-size: 32px !important; }
+        }
+
+        /* Login modal mobilga moslash */
+        @media (max-width: 480px) {
+          .login-modal { width: calc(100vw - 32px) !important; padding: 28px 20px !important; border-radius: 20px !important; }
+        }
       `}</style>
     </div>
   )
