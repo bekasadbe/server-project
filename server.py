@@ -36,12 +36,14 @@ def is_duplicate(employee_id):
 @app.route('/hikvision', methods=['POST'])
 def receive_event():
     try:
+        camera_ip = request.remote_addr
+        print(f"[{now_uzb().strftime('%H:%M:%S')}] 📥 REQUEST from {camera_ip} | size={len(request.data)} | ct={request.content_type}")
+
         if len(request.data) > 64 * 1024:
             return jsonify({'result': 'ok'}), 200
 
         employee_id = None
         event_time  = None
-        camera_ip   = request.remote_addr
 
         # 1. Multipart form-data: event_log (JSON)
         if request.form and 'event_log' in request.form:
@@ -80,6 +82,7 @@ def receive_event():
             return jsonify({'result': 'ok'}), 200
 
         if not employee_id:
+            print(f"[{now_uzb().strftime('%H:%M:%S')}] ⚠️  employee_id topilmadi | {camera_ip} | data={request.data[:200]}")
             return jsonify({'result': 'ok'}), 200
 
         # Kamera event sanasini tekshiramiz — faqat bugun bo'lsa saqlaymiz
