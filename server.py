@@ -1,7 +1,6 @@
 """
 Hikvision qurilmalaridan HTTP Push eventlarni qabul qiluvchi server.
 Port: 6610
-Kamera multipart/form-data + JSON yuboradi (event_log field)
 """
 
 from flask import Flask, request, jsonify
@@ -11,6 +10,19 @@ from datetime import datetime
 import json
 
 app = Flask(__name__)
+
+# Deduplicate: {employee_id: last_saved_timestamp}
+_last_seen = {}
+DEDUP_SECONDS = 30  # Bir xodim 30 soniyada bir marta saqlanadi
+
+
+def is_duplicate(employee_id):
+    now = datetime.now().timestamp()
+    last = _last_seen.get(employee_id, 0)
+    if now - last < DEDUP_SECONDS:
+        return True
+    _last_seen[employee_id] = now
+    return False
 
 
 @app.route('/', methods=['POST'])
@@ -22,62 +34,56 @@ def receive_event():
             return jsonify({'result': 'ok'}), 200
 
         employee_id = None
-        event_time  = None
         camera_ip   = request.remote_addr
 
         # 1. Multipart form-data: event_log (JSON)
         if request.form and 'event_log' in request.form:
             event_log = request.form.get('event_log', '')
-            print(f"[{datetime.now().strftime('%H:%M:%S')}] event_log: {event_log[:500]}")
             try:
                 data = json.loads(event_log)
                 ac = data.get('AccessControllerEvent', data)
                 employee_id = str(ac.get('employeeNoString', '') or ac.get('cardNo', ''))
-                event_time  = data.get('dateTime') or data.get('time') or datetime.now().strftime('%Y-%m-%dT%H:%M:%S')
                 camera_ip   = data.get('ipAddress') or camera_ip
-            except Exception as je:
-                print(f"[{datetime.now().strftime('%H:%M:%S')}] JSON parse xato: {je}")
+            except Exception:
+                pass
 
         # 2. XML body
         elif request.data:
             raw = request.data.decode('utf-8', errors='ignore').strip()
             if raw:
-                print(f"[{datetime.now().strftime('%H:%M:%S')}] XML: {raw[:500]}")
                 root = ET.fromstring(raw)
                 ns   = {'h': 'http://www.hikvision.com/ver20/XMLSchema'}
-
                 def find(tag):
                     el = root.find(f'h:{tag}', ns)
                     if el is None:
                         el = root.find(tag)
                     return el.text.strip() if el is not None and el.text else ''
-
                 employee_id = find('employeeNoString') or find('cardNo')
-                event_time  = find('dateTime') or find('time')
                 camera_ip   = find('ipAddress') or camera_ip
 
         # 3. JSON body
         elif request.is_json:
             data = request.get_json(silent=True) or {}
-            print(f"[{datetime.now().strftime('%H:%M:%S')}] JSON body: {str(data)[:500]}")
             ac = data.get('AccessControllerEvent', data)
             employee_id = str(ac.get('employeeNoString', '') or ac.get('cardNo', ''))
-            event_time  = data.get('dateTime') or datetime.now().strftime('%Y-%m-%dT%H:%M:%S')
             camera_ip   = data.get('ipAddress') or camera_ip
 
         else:
-            # Heartbeat ping — qaytaramiz
             return jsonify({'result': 'ok'}), 200
 
-        # Saqlash — server vaqtini ishlatamiz (kamera vaqti emas)
-        if employee_id:
-            server_time = datetime.now().strftime('%Y-%m-%dT%H:%M:%S')
-            direction = get_direction(camera_ip)
-            save_event(employee_id, server_time, camera_ip, direction)
-            arrow = '→ KIRDI' if direction == 'in' else '← CHIQDI'
-            print(f"[{datetime.now().strftime('%H:%M:%S')}] ✅ {arrow} | {employee_id} | {server_time} | {camera_ip}")
-        else:
-            print(f"[{datetime.now().strftime('%H:%M:%S')}] ⚠️ ID topilmadi")
+        if not employee_id:
+            return jsonify({'result': 'ok'}), 200
+
+        # Deduplicate — 30 soniyada bir marta
+        if is_duplicate(employee_id):
+            return jsonify({'result': 'ok'}), 200
+
+        # Server vaqtini saqlash
+        server_time = datetime.now().strftime('%Y-%m-%dT%H:%M:%S')
+        direction   = get_direction(camera_ip)
+        save_event(employee_id, server_time, camera_ip, direction)
+        arrow = '→ KIRDI' if direction == 'in' else '← CHIQDI'
+        print(f"[{datetime.now().strftime('%H:%M:%S')}] ✅ {arrow} | {employee_id} | {server_time} | {camera_ip}")
 
     except Exception as e:
         print(f"[{datetime.now().strftime('%H:%M:%S')}] ❌ Xatolik: {e}")
