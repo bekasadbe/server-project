@@ -1,5 +1,5 @@
-import { useState, useEffect } from 'react'
-import { Clock, Search, Building2, Download } from 'lucide-react'
+import { useState, useEffect, useRef } from 'react'
+import { Clock, Search, Building2, Download, Calendar } from 'lucide-react'
 
 const API_URL = import.meta.env.VITE_API_URL || 'http://localhost:8000'
 const TOKEN   = 'Dav0mat@API#2026!'
@@ -10,6 +10,7 @@ export default function History({ groups = [] }) {
   const [search, setSearch]   = useState('')
   const [date, setDate]       = useState(new Date().toISOString().slice(0, 10))
 
+  const dateRef  = useRef(null)
   const multiOrg = groups.length > 1
   const visibleGroupIds = groups.map(g => g.id)
 
@@ -132,8 +133,11 @@ export default function History({ groups = [] }) {
       </div>
 
       <div style={{ display:'flex', gap:'10px', marginBottom:'20px', flexWrap:'wrap' }}>
-        <input type="date" value={date} onChange={e => setDate(e.target.value)}
-          style={{ padding:'9px 12px', background:'#fff', border:'1px solid #e2e8f0', borderRadius:'8px', color:'#0f172a', fontSize:'14px', outline:'none', cursor:'pointer' }}/>
+        <div style={{ position:'relative', display:'flex', alignItems:'center' }}>
+          <input ref={dateRef} type="date" value={date} onChange={e => setDate(e.target.value)}
+            style={{ padding:'9px 14px 9px 38px', background:'#fff', border:'1px solid #e2e8f0', borderRadius:'9px', color:'#0f172a', fontSize:'14px', outline:'none', cursor:'pointer', colorScheme:'light' }}/>
+          <Calendar size={16} color="#2563eb" style={{ position:'absolute', left:'12px', pointerEvents:'none' }}/>
+        </div>
         <div style={{ position:'relative', flex:1, minWidth:'200px' }}>
           <Search size={15} color="#94a3b8" style={{ position:'absolute', left:'12px', top:'50%', transform:'translateY(-50%)' }}/>
           <input placeholder="Ism yoki ID bo'yicha qidirish..." value={search} onChange={e => setSearch(e.target.value)}
