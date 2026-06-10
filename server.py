@@ -38,7 +38,7 @@ def receive_event():
     try:
         camera_ip = request.remote_addr
         with open('/tmp/dbg.log', 'a') as f:
-            f.write(f"[{now_uzb().strftime('%H:%M:%S')}] REQ from {camera_ip} size={len(request.data)} ct={request.content_type}\n")
+            f.write(f"[{now_uzb().strftime('%H:%M:%S')}] REQ from {camera_ip} size={len(request.data)} ct={request.content_type} form_keys={list(request.form.keys())} form={dict(request.form)[:200] if request.form else ''}\n")
 
         if len(request.data) > 64 * 1024:
             return jsonify({'result': 'ok'}), 200
