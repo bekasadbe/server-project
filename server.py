@@ -11,9 +11,13 @@ import json
 
 app = Flask(__name__)
 
+# Server ishga tushgan vaqt
+SERVER_START    = datetime.now()
+WARMUP_SECONDS  = 90   # Birinchi 90 soniya — kamera buferini to'kadi, saqlamaymiz
+
 # Deduplicate: {employee_id: last_saved_timestamp}
-_last_seen = {}
-DEDUP_SECONDS = 30  # Bir xodim 30 soniyada bir marta saqlanadi
+_last_seen     = {}
+DEDUP_SECONDS  = 60    # Bir xodim 60 soniyada bir marta saqlanadi
 
 
 def is_duplicate(employee_id):
@@ -34,6 +38,7 @@ def receive_event():
             return jsonify({'result': 'ok'}), 200
 
         employee_id = None
+        event_time  = None
         camera_ip   = request.remote_addr
 
         # 1. Multipart form-data: event_log (JSON)
@@ -44,6 +49,7 @@ def receive_event():
                 ac = data.get('AccessControllerEvent', data)
                 employee_id = str(ac.get('employeeNoString', '') or ac.get('cardNo', ''))
                 camera_ip   = data.get('ipAddress') or camera_ip
+                event_time  = data.get('dateTime') or data.get('time') or ''
             except Exception:
                 pass
 
@@ -74,7 +80,17 @@ def receive_event():
         if not employee_id:
             return jsonify({'result': 'ok'}), 200
 
-        # Deduplicate — 30 soniyada bir marta
+        # Kamera event sanasini tekshiramiz — faqat bugun bo'lsa saqlaymiz
+        if event_time:
+            try:
+                event_date = event_time[:10]  # "2026-06-10"
+                today = datetime.now().strftime('%Y-%m-%d')
+                if event_date != today:
+                    return jsonify({'result': 'ok'}), 200
+            except Exception:
+                pass
+
+        # Deduplicate — 60 soniyada bir marta
         if is_duplicate(employee_id):
             return jsonify({'result': 'ok'}), 200
 
