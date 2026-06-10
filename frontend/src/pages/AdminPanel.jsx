@@ -202,22 +202,6 @@ export default function AdminPanel({ employees, groups, onAddEmployee, onDeleteE
                 </button>
               </div>
 
-              {/* Bulk delete */}
-              {selected.size > 0 && (
-                <button onClick={() => {
-                  if (window.confirm(`${selected.size} ta xodimni o'chirasizmi?`)) {
-                    onDeleteEmployees([...selected])
-                    setSelected(new Set())
-                  }
-                }} style={{
-                  background: '#fff1f2', border: '1px solid #fecdd3', borderRadius: '9px',
-                  color: '#e11d48', padding: '9px 14px', cursor: 'pointer',
-                  display: 'flex', alignItems: 'center', gap: '6px', fontSize: '13px', fontWeight: 600, whiteSpace: 'nowrap',
-                }}>
-                  <Trash2 size={14} /> {selected.size} ta o'chirish
-                </button>
-              )}
-
               {/* Add button */}
               <button onClick={() => { setNewId(''); setNewName(''); setAddError(''); setShowAddEmp(true) }} style={{
                 background: '#2563eb', border: 'none', borderRadius: '9px',
