@@ -70,9 +70,9 @@ export default function LiveEvents({ groups = [] }) {
                 borderBottom:'1px solid #f1f5f9',
                 background: i === 0 ? '#f0fdf4' : i % 2 === 0 ? '#fafafa' : '#fff',
               }}>
-                <td style={{ padding:'5px 10px', fontSize:'12px', fontWeight:600, color:'#0f172a', fontFamily:'monospace', whiteSpace:'nowrap' }}>
-                  <div>{e.event_time?.slice(0,10) || '—'}</div>
-                  <div style={{ color:'#475569' }}>{e.time_short || e.event_time?.slice(11,16) || ''}</div>
+                <td style={{ padding:'5px 10px', fontFamily:'monospace', whiteSpace:'nowrap' }}>
+                  <span style={{ fontSize:'13px', fontWeight:700, color:'#0f172a' }}>{e.time_short || e.event_time?.slice(11,16) || '—'}</span>
+                  <span style={{ fontSize:'11px', color:'#94a3b8', marginLeft:'6px' }}>{e.event_time?.slice(0,10) || ''}</span>
                 </td>
                 <td style={{ padding:'5px 10px', fontSize:'11px', color:'#94a3b8', fontFamily:'monospace' }}>
                   {e.employee_id}
