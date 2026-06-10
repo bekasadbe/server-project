@@ -71,7 +71,8 @@ export default function LiveEvents({ groups = [] }) {
                 background: i === 0 ? '#f0fdf4' : i % 2 === 0 ? '#fafafa' : '#fff',
               }}>
                 <td style={{ padding:'5px 10px', fontSize:'12px', fontWeight:600, color:'#0f172a', fontFamily:'monospace', whiteSpace:'nowrap' }}>
-                  {e.time_short || e.event_time?.slice(11,16) || '—'}
+                  <div>{e.event_time?.slice(0,10) || '—'}</div>
+                  <div style={{ color:'#475569' }}>{e.time_short || e.event_time?.slice(11,16) || ''}</div>
                 </td>
                 <td style={{ padding:'5px 10px', fontSize:'11px', color:'#94a3b8', fontFamily:'monospace' }}>
                   {e.employee_id}
