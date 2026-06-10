@@ -17,10 +17,6 @@ def now_uzb():
 
 app = Flask(__name__)
 
-# Server ishga tushgan vaqt
-SERVER_START    = datetime.now()
-WARMUP_SECONDS  = 90   # Birinchi 90 soniya — kamera buferini to'kadi, saqlamaymiz
-
 # Deduplicate: {employee_id: last_saved_timestamp}
 _last_seen     = {}
 DEDUP_SECONDS  = 60    # Bir xodim 60 soniyada bir marta saqlanadi

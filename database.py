@@ -217,19 +217,4 @@ def delete_employee(emp_id):
         conn.commit()
 
 
-# Eski funksiya — backward compatibility
-def get_first_entries(date_str, end_time):
-    query = '''
-        SELECT employee_id, MIN(event_time) as first_time
-        FROM events
-        WHERE event_time >= ? AND event_time <= ?
-        GROUP BY employee_id
-    '''
-    start = f"{date_str}T00:00:00"
-    end   = f"{date_str}T{end_time}:00"
-    with get_conn() as conn:
-        rows = conn.execute(query, (start, end)).fetchall()
-    return {row[0]: row[1] for row in rows}
-
-
 init_db()

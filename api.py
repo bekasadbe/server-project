@@ -9,7 +9,7 @@ from database import (
     get_employees, get_groups,
     add_employee, update_employee, delete_employee,
     add_group, delete_group,
-    get_first_entries, save_event, get_direction
+    save_event, get_direction
 )
 from datetime import date, datetime, timezone, timedelta
 import os

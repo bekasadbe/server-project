@@ -125,44 +125,37 @@ export default function AdminPanel({ employees, groups, onAddEmployee, onDeleteE
         </div>
       </div>
 
-      <div style={{ display: 'grid', gridTemplateColumns: '240px 1fr', gap: '16px', alignItems: 'start' }}>
+      {/* TOP — Organization tabs */}
+      <div style={{ display: 'flex', alignItems: 'center', gap: '8px', marginBottom: '16px', flexWrap: 'wrap' }}>
+        {groups.map(g => {
+          const count  = employees.filter(e => e.group === g.id).length
+          const active = selectedGroup === g.id
+          return (
+            <button key={g.id} onClick={() => { setSelectedGroup(g.id); setSearch(''); setSelected(new Set()) }}
+              style={{
+                display: 'flex', alignItems: 'center', gap: '7px',
+                padding: '8px 16px', borderRadius: '9px', cursor: 'pointer',
+                border: active ? '1px solid #bfdbfe' : '1px solid #e2e8f0',
+                background: active ? '#eff6ff' : '#ffffff',
+                color: active ? '#2563eb' : '#475569',
+                fontWeight: active ? 700 : 400, fontSize: '13px',
+              }}>
+              {active ? <FolderOpen size={14} /> : <Folder size={14} color="#94a3b8" />}
+              {g.name}
+              <span style={{ fontSize: '11px', background: active ? '#dbeafe' : '#f1f5f9', color: active ? '#2563eb' : '#94a3b8', padding: '1px 7px', borderRadius: '20px', fontWeight: 600 }}>{count}</span>
+            </button>
+          )
+        })}
+        <button onClick={() => setShowNewOrg(true)} style={{
+          display: 'flex', alignItems: 'center', gap: '5px',
+          padding: '8px 14px', borderRadius: '9px', cursor: 'pointer',
+          border: '1px dashed #cbd5e1', background: 'transparent',
+          color: '#94a3b8', fontSize: '13px',
+        }}><Plus size={13} /> Yangi tashkilot</button>
+      </div>
 
-        {/* LEFT — Organizations */}
-        <div style={{ background: '#ffffff', borderRadius: '14px', border: '1px solid #e2e8f0', overflow: 'hidden', boxShadow: '0 1px 3px #0f172a08' }}>
-          <div style={{ padding: '12px 14px', borderBottom: '1px solid #f1f5f9', display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
-            <span style={{ fontSize: '11px', fontWeight: 700, color: '#94a3b8', textTransform: 'uppercase', letterSpacing: '0.5px' }}>Tashkilotlar</span>
-            <button onClick={() => setShowNewOrg(true)} style={{
-              background: '#eff6ff', border: '1px solid #bfdbfe', borderRadius: '6px',
-              color: '#2563eb', padding: '4px 10px', cursor: 'pointer',
-              display: 'flex', alignItems: 'center', gap: '4px', fontSize: '12px', fontWeight: 600,
-            }}><Plus size={12} /> Yangi</button>
-          </div>
-          <div style={{ padding: '8px' }}>
-            {groups.map(g => {
-              const count  = employees.filter(e => e.group === g.id).length
-              const active = selectedGroup === g.id
-              return (
-                <button key={g.id} onClick={() => { setSelectedGroup(g.id); setSearch(''); setSelected(new Set()) }}
-                  style={{
-                    width: '100%', display: 'flex', alignItems: 'center', gap: '8px',
-                    padding: '9px 10px', borderRadius: '9px', border: 'none', cursor: 'pointer',
-                    textAlign: 'left', marginBottom: '2px',
-                    background: active ? '#eff6ff' : 'transparent',
-                  }}>
-                  {active
-                    ? <FolderOpen size={15} color="#2563eb" />
-                    : <Folder size={15} color="#94a3b8" />}
-                  <span style={{ flex: 1, fontSize: '13px', color: active ? '#2563eb' : '#475569', fontWeight: active ? 600 : 400, overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>
-                    {g.name}
-                  </span>
-                  <span style={{ fontSize: '11px', color: active ? '#93c5fd' : '#cbd5e1', background: active ? '#dbeafe' : '#f1f5f9', padding: '1px 7px', borderRadius: '20px', fontWeight: 600 }}>{count}</span>
-                </button>
-              )
-            })}
-          </div>
-        </div>
-
-        {/* RIGHT — Employee table */}
+      <div>
+        {/* Employee table */}
         {currentGroup ? (
           <div style={{ background: '#ffffff', borderRadius: '14px', border: '1px solid #e2e8f0', overflow: 'hidden', boxShadow: '0 1px 3px #0f172a08' }}>
             {/* Toolbar */}
@@ -296,7 +289,7 @@ export default function AdminPanel({ employees, groups, onAddEmployee, onDeleteE
           </div>
         ) : (
           <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', height: '200px', color: '#94a3b8', fontSize: '14px', background: '#fff', borderRadius: '14px', border: '1px solid #e2e8f0' }}>
-            Chap tarafdan tashkilot tanlang
+            Yuqoridan tashkilot tanlang
           </div>
         )}
       </div>
