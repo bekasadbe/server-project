@@ -1,5 +1,7 @@
 import { useState, useEffect, useRef } from 'react'
-import { Clock, Search, Building2, Download, Calendar } from 'lucide-react'
+import { Clock, Search, Building2, Download, Calendar, Printer } from 'lucide-react'
+import jsPDF from 'jspdf'
+import autoTable from 'jspdf-autotable'
 
 const API_URL = import.meta.env.VITE_API_URL || 'http://localhost:8000'
 const TOKEN   = 'Dav0mat@API#2026!'
@@ -54,62 +56,69 @@ export default function History({ groups = [] }) {
       : { label: "O'z vaqtida",  color: '#16a34a', bg: '#dcfce7' }
   }
 
-  const handleDownloadPDF = () => {
+  const buildTableData = () => {
     const dateFormatted = date.split('-').reverse().join('.')
     const orgName = multiOrg ? 'Barcha tashkilotlar' : (groups[0]?.name || '')
     const ontime  = filtered.filter(r => r.first_in && getLate(r.first_in, r.group_id) === 0).length
     const late    = filtered.filter(r => r.first_in && getLate(r.first_in, r.group_id) > 0).length
     const absent  = filtered.filter(r => !r.first_in).length
-
-    const rows_html = filtered.map((r, i) => {
-      const late_min = getLate(r.first_in, r.group_id)
+    const head    = multiOrg
+      ? [['#', 'Ism Familiya', 'Tashkilot', 'Keldi', 'Ketdi', 'Kechikish', 'Holat']]
+      : [['#', 'Ism Familiya', 'Keldi', 'Ketdi', 'Kechikish', 'Holat']]
+    const body = filtered.map((r, i) => {
+      const lm = getLate(r.first_in, r.group_id)
       const st = getStatus(r)
-      return `<tr style="background:${i%2===0?'#f9fafb':'#fff'}">
-        <td>${i+1}</td>
-        <td>${r.name || '—'}</td>
-        ${multiOrg ? `<td>${groupName(r.group_id)}</td>` : ''}
-        <td>${r.first_in || '—'}</td>
-        <td>${r.last_out || '—'}</td>
-        <td>${late_min > 0 ? late_min + ' daq.' : '—'}</td>
-        <td><span style="color:${st.color};font-weight:600">${st.label}</span></td>
-      </tr>`
+      const row = [i+1, r.name || '—', ...(multiOrg ? [groupName(r.group_id)] : []),
+        r.first_in || '—', r.last_out || '—', lm > 0 ? `${lm} daq.` : '—', st.label]
+      return row
+    })
+    return { dateFormatted, orgName, ontime, late, absent, head, body }
+  }
+
+  const handleDownloadPDF = () => {
+    const { dateFormatted, orgName, ontime, late, absent, head, body } = buildTableData()
+    const doc = new jsPDF({ orientation: 'landscape', unit: 'mm', format: 'a4' })
+    doc.setFont('helvetica', 'bold')
+    doc.setFontSize(16)
+    doc.text(`Davomat hisoboti — ${dateFormatted}`, 14, 16)
+    doc.setFont('helvetica', 'normal')
+    doc.setFontSize(10)
+    doc.setTextColor(100)
+    doc.text(orgName, 14, 23)
+    doc.text(`Jami: ${filtered.length}   O'z vaqtida: ${ontime}   Kech keldi: ${late}   Kelmadi: ${absent}`, 14, 29)
+    doc.setTextColor(0)
+    autoTable(doc, {
+      head, body,
+      startY: 34,
+      styles: { fontSize: 9, cellPadding: 3 },
+      headStyles: { fillColor: [37, 99, 235], textColor: 255, fontStyle: 'bold' },
+      alternateRowStyles: { fillColor: [248, 250, 252] },
+      didParseCell: (data) => {
+        if (data.section === 'body' && data.column.index === (multiOrg ? 6 : 5)) {
+          const v = data.cell.raw
+          if (v === 'Kelmadi')      data.cell.styles.textColor = [220, 38, 38]
+          else if (v === 'Kech keldi') data.cell.styles.textColor = [217, 119, 6]
+          else                      data.cell.styles.textColor = [22, 163, 74]
+        }
+      }
+    })
+    doc.save(`davomat_${date}.pdf`)
+  }
+
+  const handlePrint = () => {
+    const { dateFormatted, orgName, ontime, late, absent } = buildTableData()
+    const rows_html = filtered.map((r, i) => {
+      const lm = getLate(r.first_in, r.group_id)
+      const st = getStatus(r)
+      return `<tr><td>${i+1}</td><td>${r.name||'—'}</td>${multiOrg?`<td>${groupName(r.group_id)}</td>`:''}<td>${r.first_in||'—'}</td><td>${r.last_out||'—'}</td><td>${lm>0?lm+' daq.':'—'}</td><td style="color:${st.color};font-weight:600">${st.label}</td></tr>`
     }).join('')
-
-    const html = `<!DOCTYPE html><html><head><meta charset="UTF-8">
-    <title>Davomat ${dateFormatted}</title>
-    <style>
-      body { font-family: Arial, sans-serif; padding: 24px; color: #0f172a; }
-      h2 { margin: 0 0 4px; font-size: 20px; }
-      p  { margin: 0 0 16px; color: #64748b; font-size: 13px; }
-      .stats { display: flex; gap: 16px; margin-bottom: 20px; }
-      .stat  { background: #f8fafc; border-radius: 8px; padding: 10px 18px; font-size: 13px; }
-      .stat b { font-size: 20px; display: block; }
-      table { width: 100%; border-collapse: collapse; font-size: 13px; }
-      th { background: #f1f5f9; padding: 8px 12px; text-align: left; font-size: 11px; text-transform: uppercase; color: #64748b; }
-      td { padding: 8px 12px; border-bottom: 1px solid #f1f5f9; }
-      @media print { body { padding: 0; } }
-    </style></head><body>
-    <h2>Davomat hisoboti — ${dateFormatted}</h2>
-    <p>${orgName}</p>
-    <div class="stats">
-      <div class="stat"><b>${filtered.length}</b>Jami xodim</div>
-      <div class="stat" style="color:#16a34a"><b>${ontime}</b>O'z vaqtida</div>
-      <div class="stat" style="color:#d97706"><b>${late}</b>Kech keldi</div>
-      <div class="stat" style="color:#dc2626"><b>${absent}</b>Kelmadi</div>
-    </div>
-    <table>
-      <thead><tr>
-        <th>#</th><th>Ism Familiya</th>
-        ${multiOrg ? '<th>Tashkilot</th>' : ''}
-        <th>Keldi</th><th>Ketdi</th><th>Kechikish</th><th>Holat</th>
-      </tr></thead>
-      <tbody>${rows_html}</tbody>
-    </table>
-    <script>window.onload=()=>{window.print()}</script>
-    </body></html>`
-
     const win = window.open('', '_blank')
-    win.document.write(html)
+    win.document.write(`<!DOCTYPE html><html><head><meta charset="UTF-8"><title>Davomat ${dateFormatted}</title>
+    <style>body{font-family:Arial,sans-serif;padding:20px;color:#0f172a}h2{margin:0 0 4px}p{margin:0 0 12px;color:#64748b;font-size:13px}.s{display:flex;gap:12px;margin-bottom:16px}.si{background:#f8fafc;border-radius:6px;padding:8px 14px;font-size:12px}.si b{font-size:18px;display:block}table{width:100%;border-collapse:collapse;font-size:12px}th{background:#f1f5f9;padding:7px 10px;text-align:left;font-size:10px;text-transform:uppercase;color:#64748b}td{padding:7px 10px;border-bottom:1px solid #f1f5f9}tr:nth-child(even){background:#f9fafb}</style></head><body>
+    <h2>Davomat hisoboti — ${dateFormatted}</h2><p>${orgName}</p>
+    <div class="s"><div class="si"><b>${filtered.length}</b>Jami</div><div class="si" style="color:#16a34a"><b>${ontime}</b>O'z vaqtida</div><div class="si" style="color:#d97706"><b>${late}</b>Kech keldi</div><div class="si" style="color:#dc2626"><b>${absent}</b>Kelmadi</div></div>
+    <table><thead><tr><th>#</th><th>Ism Familiya</th>${multiOrg?'<th>Tashkilot</th>':''}<th>Keldi</th><th>Ketdi</th><th>Kechikish</th><th>Holat</th></tr></thead><tbody>${rows_html}</tbody></table>
+    <script>window.onload=()=>{window.print()}<\/script></body></html>`)
     win.document.close()
   }
 
@@ -122,14 +131,24 @@ export default function History({ groups = [] }) {
           </h1>
           <p style={{ margin:'4px 0 0', fontSize:'13px', color:'#94a3b8' }}>Sana bo'yicha davomat</p>
         </div>
-        <button onClick={handleDownloadPDF} style={{
-          display:'flex', alignItems:'center', gap:'7px',
-          padding:'9px 18px', background:'#2563eb', border:'none',
-          borderRadius:'9px', color:'white', fontSize:'13px',
-          fontWeight:600, cursor:'pointer', boxShadow:'0 2px 8px #2563eb30'
-        }}>
-          <Download size={15}/> PDF yuklash
-        </button>
+        <div style={{ display:'flex', gap:'8px' }}>
+          <button onClick={handlePrint} style={{
+            display:'flex', alignItems:'center', gap:'7px',
+            padding:'9px 16px', background:'#fff', border:'1px solid #e2e8f0',
+            borderRadius:'9px', color:'#475569', fontSize:'13px',
+            fontWeight:600, cursor:'pointer',
+          }}>
+            <Printer size={15}/> Chop etish
+          </button>
+          <button onClick={handleDownloadPDF} style={{
+            display:'flex', alignItems:'center', gap:'7px',
+            padding:'9px 18px', background:'#2563eb', border:'none',
+            borderRadius:'9px', color:'white', fontSize:'13px',
+            fontWeight:600, cursor:'pointer', boxShadow:'0 2px 8px #2563eb30'
+          }}>
+            <Download size={15}/> PDF yuklash
+          </button>
+        </div>
       </div>
 
       <div style={{ display:'flex', gap:'10px', marginBottom:'20px', flexWrap:'wrap' }}>
