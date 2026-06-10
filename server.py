@@ -71,6 +71,18 @@ def receive_event():
 
         # Saqlash
         if employee_id and event_time:
+            # Vaqt filtri — faqat oxirgi 10 daqiqa ichidagi eventlar
+            try:
+                from datetime import timezone, timedelta
+                et = datetime.fromisoformat(event_time.replace('Z', '+00:00'))
+                now = datetime.now(timezone.utc)
+                diff = abs((now - et.astimezone(timezone.utc)).total_seconds())
+                if diff > 600:  # 10 daqiqadan eski yoki kelajakdagi event
+                    print(f"[{datetime.now().strftime('%H:%M:%S')}] ⏭ Eski event, tashlab yuborildi: {event_time}")
+                    return jsonify({'result': 'ok'}), 200
+            except Exception:
+                pass  # Vaqt parse xato bo'lsa — saqlaymiz
+
             direction = get_direction(camera_ip)
             save_event(employee_id, event_time, camera_ip, direction)
             arrow = '→ KIRDI' if direction == 'in' else '← CHIQDI'
