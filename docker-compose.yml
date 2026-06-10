@@ -26,6 +26,7 @@ services:
       - db_data:/app/data
     environment:
       - DB_FILE=/app/data/davomat.db
+      - PYTHONUNBUFFERED=1
 
   frontend:
     image: nginx:alpine
