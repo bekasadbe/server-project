@@ -69,26 +69,15 @@ def receive_event():
             # Heartbeat ping — qaytaramiz
             return jsonify({'result': 'ok'}), 200
 
-        # Saqlash
-        if employee_id and event_time:
-            # Vaqt filtri — faqat oxirgi 10 daqiqa ichidagi eventlar
-            try:
-                from datetime import timezone, timedelta
-                et = datetime.fromisoformat(event_time.replace('Z', '+00:00'))
-                now = datetime.now(timezone.utc)
-                diff = abs((now - et.astimezone(timezone.utc)).total_seconds())
-                if diff > 600:  # 10 daqiqadan eski yoki kelajakdagi event
-                    print(f"[{datetime.now().strftime('%H:%M:%S')}] ⏭ Eski event, tashlab yuborildi: {event_time}")
-                    return jsonify({'result': 'ok'}), 200
-            except Exception:
-                pass  # Vaqt parse xato bo'lsa — saqlaymiz
-
+        # Saqlash — server vaqtini ishlatamiz (kamera vaqti emas)
+        if employee_id:
+            server_time = datetime.now().strftime('%Y-%m-%dT%H:%M:%S')
             direction = get_direction(camera_ip)
-            save_event(employee_id, event_time, camera_ip, direction)
+            save_event(employee_id, server_time, camera_ip, direction)
             arrow = '→ KIRDI' if direction == 'in' else '← CHIQDI'
-            print(f"[{datetime.now().strftime('%H:%M:%S')}] ✅ {arrow} | {employee_id} | {event_time} | {camera_ip}")
+            print(f"[{datetime.now().strftime('%H:%M:%S')}] ✅ {arrow} | {employee_id} | {server_time} | {camera_ip}")
         else:
-            print(f"[{datetime.now().strftime('%H:%M:%S')}] ⚠️ ID yoki vaqt topilmadi")
+            print(f"[{datetime.now().strftime('%H:%M:%S')}] ⚠️ ID topilmadi")
 
     except Exception as e:
         print(f"[{datetime.now().strftime('%H:%M:%S')}] ❌ Xatolik: {e}")
