@@ -31,6 +31,7 @@ export default function AdminPanel({ employees, groups, onAddEmployee, onDeleteE
   const [showEditCred, setShowEditCred] = useState(false)
   const [editLogin, setEditLogin]       = useState('')
   const [editPass, setEditPass]         = useState('')
+  const [editWorkStart, setEditWorkStart] = useState('09:00')
   const [editPassShow, setEditPassShow] = useState(false)
   const [credError, setCredError]       = useState('')
 
@@ -81,7 +82,7 @@ export default function AdminPanel({ employees, groups, onAddEmployee, onDeleteE
   const handleSaveCred = () => {
     if (!editLogin.trim()) return setCredError('Login kiriting')
     if (!editPass.trim())  return setCredError('Parol kiriting')
-    onUpdateGroup(selectedGroup, { login: editLogin.trim(), password: editPass.trim() })
+    onUpdateGroup(selectedGroup, { login: editLogin.trim(), password: editPass.trim(), work_start: editWorkStart })
     setShowEditCred(false); setCredError('')
   }
 
@@ -173,8 +174,8 @@ export default function AdminPanel({ employees, groups, onAddEmployee, onDeleteE
               {/* Action icons */}
               <div style={{ display: 'flex', gap: '6px' }}>
                 <button
-                  title="Login/parol o'zgartirish"
-                  onClick={() => { setEditLogin(currentGroup.login); setEditPass(currentGroup.password); setShowEditCred(true) }}
+                  title="Sozlamalar"
+                  onClick={() => { setEditLogin(currentGroup.login); setEditPass(currentGroup.password); setEditWorkStart(currentGroup.work_start || '09:00'); setShowEditCred(true) }}
                   style={{ padding: '8px', background: '#f8fafc', border: '1px solid #e2e8f0', borderRadius: '8px', cursor: 'pointer', display: 'flex', color: '#64748b' }}>
                   <Settings2 size={16} />
                 </button>
@@ -384,7 +385,7 @@ export default function AdminPanel({ employees, groups, onAddEmployee, onDeleteE
       {showEditCred && (
         <div style={overlayStyle}>
           <div style={{ ...modalStyle, maxWidth: '400px' }}>
-            <h2 style={{ margin: '0 0 6px', fontSize: '18px', fontWeight: 700, color: '#0f172a' }}>Login / Parol</h2>
+            <h2 style={{ margin: '0 0 6px', fontSize: '18px', fontWeight: 700, color: '#0f172a' }}>Sozlamalar</h2>
             <p style={{ margin: '0 0 24px', fontSize: '13px', color: '#94a3b8' }}>{currentGroup?.name}</p>
             <div style={{ display: 'flex', flexDirection: 'column', gap: '14px' }}>
               <div>
@@ -402,6 +403,15 @@ export default function AdminPanel({ employees, groups, onAddEmployee, onDeleteE
                     {editPassShow ? <EyeOff size={15} /> : <Eye size={15} />}
                   </button>
                 </div>
+              </div>
+              <div style={{ borderTop: '1px solid #f1f5f9', paddingTop: '14px' }}>
+                <label style={{ fontSize: '12px', color: '#64748b', display: 'block', marginBottom: '5px', fontWeight: 600 }}>
+                  Ish boshlanish vaqti
+                  <span style={{ fontWeight: 400, color: '#94a3b8', marginLeft: '6px' }}>— shu vaqtdan keyin kelsa "Kech keldi"</span>
+                </label>
+                <input type="time" value={editWorkStart}
+                  onChange={e => setEditWorkStart(e.target.value)}
+                  style={{ ...inputStyle, width: '160px' }} />
               </div>
               {credError && (
                 <div style={{ padding: '8px 12px', background: '#fff1f2', border: '1px solid #fecdd3', borderRadius: '7px', color: '#e11d48', fontSize: '13px' }}>

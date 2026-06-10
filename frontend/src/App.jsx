@@ -1,6 +1,7 @@
 import { useState, useEffect } from 'react'
 import Sidebar from './components/Sidebar'
 import Dashboard from './pages/Dashboard'
+import LiveEvents from './pages/LiveEvents'
 import Employees from './pages/Employees'
 import History from './pages/History'
 import Reports from './pages/Reports'
@@ -20,11 +21,12 @@ async function apiFetch(path, opts = {}) {
 }
 
 // localStorage da login/parol saqlash
-function saveGroupCred(id, login, password) {
+function saveGroupCred(id, login, password, work_start) {
   const saved = JSON.parse(localStorage.getItem('groups') || '[]')
   const idx = saved.findIndex(g => g.id === id)
-  if (idx >= 0) saved[idx] = { ...saved[idx], login, password }
-  else saved.push({ id, login, password })
+  const entry = { id, login, password, work_start: work_start || '09:00' }
+  if (idx >= 0) saved[idx] = { ...saved[idx], ...entry }
+  else saved.push(entry)
   localStorage.setItem('groups', JSON.stringify(saved))
 }
 
@@ -51,8 +53,9 @@ export default function App() {
         const fromStatic  = USERS.find(u => u.groupId === g.id)
         return {
           ...g,
-          login:    fromStorage?.login    || fromStatic?.username || g.id,
-          password: fromStorage?.password || fromStatic?.password || '',
+          login:      fromStorage?.login      || fromStatic?.username || g.id,
+          password:   fromStorage?.password   || fromStatic?.password || '',
+          work_start: fromStorage?.work_start || '09:00',
         }
       })
       setGroups(merged)
@@ -114,12 +117,13 @@ export default function App() {
   }
 
   const updateGroup = (id, changes) => {
-    saveGroupCred(id, changes.login, changes.password)
+    saveGroupCred(id, changes.login, changes.password, changes.work_start)
     loadData()
   }
 
   const pages = {
     dashboard: <Dashboard  employees={visibleEmps} groups={visibleGrps} />,
+    ...(user.role === 'admin' ? { live: <LiveEvents groups={groups} /> } : {}),
     history:   <History    groups={visibleGrps} />,
     employees: <Employees  employees={visibleEmps} groups={visibleGrps} />,
     reports:   <Reports    groups={visibleGrps} />,

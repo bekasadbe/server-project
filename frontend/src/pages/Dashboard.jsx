@@ -49,9 +49,14 @@ export default function Dashboard({ employees = [], groups = [] }) {
     return () => clearInterval(t)
   }, [])
 
+  const getWorkStart = (group_id) => {
+    const g = groups.find(g => g.id === group_id)
+    return g?.work_start || '09:00'
+  }
+
   const getStatus = (row) => {
     if (!row.first_in) return 'absent'
-    return row.first_in < '09:00' ? 'ontime' : 'late'
+    return row.first_in <= getWorkStart(row.group_id) ? 'ontime' : 'late'
   }
 
   const filtered = attendance.filter(r =>
