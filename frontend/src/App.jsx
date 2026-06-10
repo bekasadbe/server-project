@@ -82,10 +82,33 @@ export default function App() {
         onAddEmployee={addEmployee}
         onDeleteEmployee={deleteEmployee}
         onUpdateEmployee={updateEmployee}
-        onAddGroup={() => loadData()}
-        onDeleteGroup={() => loadData()}
+        onAddGroup={(grp) => {
+          // Yangi guruh login/parolini localStorage ga saqlash
+          const saved = JSON.parse(localStorage.getItem('groups') || '[]')
+          if (grp && grp.login) {
+            saved.push(grp)
+            localStorage.setItem('groups', JSON.stringify(saved))
+          }
+          loadData()
+        }}
+        onDeleteGroup={(id) => {
+          const saved = JSON.parse(localStorage.getItem('groups') || '[]')
+          localStorage.setItem('groups', JSON.stringify(saved.filter(g => g.id !== id)))
+          loadData()
+        }}
         onMoveEmployee={moveEmployee}
-        onUpdateGroup={() => loadData()}
+        onUpdateGroup={(id, changes) => {
+          // Guruh login/parolini localStorage da yangilash
+          const saved = JSON.parse(localStorage.getItem('groups') || '[]')
+          const idx = saved.findIndex(g => g.id === id)
+          if (idx >= 0) {
+            saved[idx] = { ...saved[idx], ...changes }
+          } else {
+            saved.push({ id, ...changes })
+          }
+          localStorage.setItem('groups', JSON.stringify(saved))
+          loadData()
+        }}
       />
     } : {})
   }
