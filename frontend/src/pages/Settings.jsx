@@ -1,4 +1,4 @@
-import { useState } from 'react'
+import { useState, useRef } from 'react'
 import { Settings2, Eye, EyeOff, Clock, Key, Save } from 'lucide-react'
 
 export default function Settings({ group, onUpdateGroup }) {
@@ -6,6 +6,7 @@ export default function Settings({ group, onUpdateGroup }) {
   const [pass, setPass]           = useState(group?.password || '')
   const [showPass, setShowPass]   = useState(false)
   const [workStart, setWorkStart] = useState(group?.work_start || '09:00')
+  const timeRef = useRef(null)
   const [saved, setSaved]         = useState(false)
   const [error, setError]         = useState('')
 
@@ -45,8 +46,18 @@ export default function Settings({ group, onUpdateGroup }) {
           <p style={{ margin: '0 0 12px', fontSize: '13px', color: '#64748b' }}>
             Xodim shu vaqtdan keyin kelsa — <strong style={{ color: '#d97706' }}>Kech keldi</strong> deb hisoblanadi
           </p>
-          <input type="time" value={workStart} onChange={e => setWorkStart(e.target.value)}
-            style={{ ...inputStyle, width: '160px', fontSize: '18px', fontWeight: 600, textAlign: 'center' }} />
+          <div style={{ position: 'relative', display: 'inline-flex', alignItems: 'center' }}>
+            <button onClick={() => timeRef.current?.showPicker()} style={{
+              display: 'flex', alignItems: 'center', gap: '8px',
+              padding: '9px 18px', background: '#eff6ff', border: '1px solid #bfdbfe',
+              borderRadius: '9px', color: '#2563eb', fontSize: '16px', fontWeight: 700,
+              cursor: 'pointer', letterSpacing: '1px',
+            }}>
+              <Clock size={16} /> {workStart}
+            </button>
+            <input ref={timeRef} type="time" value={workStart} onChange={e => setWorkStart(e.target.value)}
+              style={{ position: 'absolute', opacity: 0, pointerEvents: 'none', width: '1px', height: '1px' }} />
+          </div>
         </div>
 
         {/* Login / Parol */}
