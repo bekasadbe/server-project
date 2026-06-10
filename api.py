@@ -8,6 +8,7 @@ from database import (
     get_attendance, get_recent_events,
     get_employees, get_groups,
     add_employee, update_employee, delete_employee,
+    add_group, delete_group,
     get_first_entries, save_event, get_direction
 )
 from datetime import date, datetime
@@ -123,6 +124,29 @@ def employee_delete(emp_id):
     if not check_token():
         return jsonify({'error': 'Unauthorized'}), 401
     delete_employee(emp_id)
+    return jsonify({'ok': True})
+
+
+# ── GURUHLAR ─────────────────────────────────────────────
+
+@app.route('/groups', methods=['POST'])
+def group_add():
+    if not check_token():
+        return jsonify({'error': 'Unauthorized'}), 401
+    data = request.json or {}
+    gid  = data.get('id', '').strip()
+    name = data.get('name', '').strip()
+    if not gid or not name:
+        return jsonify({'error': 'id va name majburiy'}), 400
+    add_group(gid, name)
+    return jsonify({'ok': True})
+
+
+@app.route('/groups/<gid>', methods=['DELETE'])
+def group_delete(gid):
+    if not check_token():
+        return jsonify({'error': 'Unauthorized'}), 401
+    delete_group(gid)
     return jsonify({'ok': True})
 
 

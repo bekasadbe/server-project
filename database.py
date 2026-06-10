@@ -181,6 +181,18 @@ def get_groups():
     return [dict(r) for r in rows]
 
 
+def add_group(gid, name):
+    with get_conn() as conn:
+        conn.execute('INSERT OR REPLACE INTO groups (id, name) VALUES (?, ?)', (gid, name))
+        conn.commit()
+
+
+def delete_group(gid):
+    with get_conn() as conn:
+        conn.execute('DELETE FROM groups WHERE id = ?', (gid,))
+        conn.commit()
+
+
 def add_employee(emp_id, name, group_id, lavozim=''):
     with get_conn() as conn:
         conn.execute(

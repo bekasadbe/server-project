@@ -20,6 +20,20 @@ async function apiFetch(path, opts = {}) {
   return res.json()
 }
 
+// localStorage da login/parol saqlash
+function saveGroupCred(id, login, password) {
+  const saved = JSON.parse(localStorage.getItem('groups') || '[]')
+  const idx = saved.findIndex(g => g.id === id)
+  if (idx >= 0) saved[idx] = { ...saved[idx], login, password }
+  else saved.push({ id, login, password })
+  localStorage.setItem('groups', JSON.stringify(saved))
+}
+
+function removeGroupCred(id) {
+  const saved = JSON.parse(localStorage.getItem('groups') || '[]')
+  localStorage.setItem('groups', JSON.stringify(saved.filter(g => g.id !== id)))
+}
+
 export default function App() {
   const [user, setUser]           = useState(getUser)
   const [page, setPage]           = useState('dashboard')
@@ -32,11 +46,7 @@ export default function App() {
     try {
       const data = await apiFetch('/employees')
       setEmployees((data.employees || []).map(e => ({ ...e, group: e.group_id })))
-
-      // localStorage dan login/parollarni olamiz
       const savedGroups = JSON.parse(localStorage.getItem('groups') || '[]')
-
-      // Statik userlardan (inno, milliy) ham olamiz
       const merged = (data.groups || []).map(g => {
         const fromStorage = savedGroups.find(s => s.id === g.id)
         const fromStatic  = USERS.find(u => u.groupId === g.id)
@@ -71,6 +81,11 @@ export default function App() {
     loadData()
   }
 
+  const deleteEmployees = async (ids) => {
+    await Promise.all(ids.map(id => apiFetch(`/employees/${id}`, { method: 'DELETE' })))
+    loadData()
+  }
+
   const updateEmployee = async (id, changes) => {
     await apiFetch(`/employees/${id}`, {
       method: 'PUT',
@@ -84,6 +99,26 @@ export default function App() {
     if (emp) await updateEmployee(id, { ...emp, group_id: group })
   }
 
+  const addGroup = async (grp) => {
+    await apiFetch('/groups', {
+      method: 'POST',
+      body: JSON.stringify({ id: grp.id, name: grp.name }),
+    })
+    saveGroupCred(grp.id, grp.login, grp.password)
+    loadData()
+  }
+
+  const deleteGroup = async (id) => {
+    await apiFetch(`/groups/${id}`, { method: 'DELETE' })
+    removeGroupCred(id)
+    loadData()
+  }
+
+  const updateGroup = (id, changes) => {
+    saveGroupCred(id, changes.login, changes.password)
+    loadData()
+  }
+
   const pages = {
     dashboard: <Dashboard  employees={visibleEmps} groups={visibleGrps} />,
     live:      <LiveEvents groups={visibleGrps} />,
@@ -95,34 +130,12 @@ export default function App() {
         employees={employees} groups={groups}
         onAddEmployee={addEmployee}
         onDeleteEmployee={deleteEmployee}
+        onDeleteEmployees={deleteEmployees}
         onUpdateEmployee={updateEmployee}
-        onAddGroup={(grp) => {
-          // Yangi guruh login/parolini localStorage ga saqlash
-          const saved = JSON.parse(localStorage.getItem('groups') || '[]')
-          if (grp && grp.login) {
-            saved.push(grp)
-            localStorage.setItem('groups', JSON.stringify(saved))
-          }
-          loadData()
-        }}
-        onDeleteGroup={(id) => {
-          const saved = JSON.parse(localStorage.getItem('groups') || '[]')
-          localStorage.setItem('groups', JSON.stringify(saved.filter(g => g.id !== id)))
-          loadData()
-        }}
+        onAddGroup={addGroup}
+        onDeleteGroup={deleteGroup}
         onMoveEmployee={moveEmployee}
-        onUpdateGroup={(id, changes) => {
-          // Guruh login/parolini localStorage da yangilash
-          const saved = JSON.parse(localStorage.getItem('groups') || '[]')
-          const idx = saved.findIndex(g => g.id === id)
-          if (idx >= 0) {
-            saved[idx] = { ...saved[idx], ...changes }
-          } else {
-            saved.push({ id, ...changes })
-          }
-          localStorage.setItem('groups', JSON.stringify(saved))
-          loadData()
-        }}
+        onUpdateGroup={updateGroup}
       />
     } : {})
   }
