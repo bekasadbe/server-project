@@ -11,8 +11,12 @@ from database import (
     add_group, delete_group,
     get_first_entries, save_event, get_direction
 )
-from datetime import date, datetime
+from datetime import date, datetime, timezone, timedelta
 import os
+
+TZ_UZB = timezone(timedelta(hours=5))
+def now_uzb():
+    return datetime.now(TZ_UZB)
 
 app = Flask(__name__)
 
@@ -57,7 +61,7 @@ def attendance():
     if not check_token():
         return jsonify({'error': 'Unauthorized'}), 401
 
-    date_str = request.args.get('date', date.today().strftime('%Y-%m-%d'))
+    date_str = request.args.get('date', now_uzb().strftime('%Y-%m-%d'))
     rows     = get_attendance(date_str)
 
     for r in rows:
@@ -175,7 +179,7 @@ def events_push():
 
 @app.route('/ping', methods=['GET'])
 def ping():
-    return jsonify({'status': 'ok', 'time': datetime.now().strftime('%Y-%m-%d %H:%M:%S')})
+    return jsonify({'status': 'ok', 'time': now_uzb().strftime('%Y-%m-%d %H:%M:%S')})
 
 
 if __name__ == '__main__':

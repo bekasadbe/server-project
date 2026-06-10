@@ -6,8 +6,14 @@ Port: 6610
 from flask import Flask, request, jsonify
 from database import save_event, get_direction
 import xml.etree.ElementTree as ET
-from datetime import datetime
+from datetime import datetime, timezone, timedelta
 import json
+
+# Toshkent vaqti (UTC+5)
+TZ_UZB = timezone(timedelta(hours=5))
+
+def now_uzb():
+    return datetime.now(TZ_UZB)
 
 app = Flask(__name__)
 
@@ -21,7 +27,7 @@ DEDUP_SECONDS  = 60    # Bir xodim 60 soniyada bir marta saqlanadi
 
 
 def is_duplicate(employee_id):
-    now = datetime.now().timestamp()
+    now = now_uzb().timestamp()
     last = _last_seen.get(employee_id, 0)
     if now - last < DEDUP_SECONDS:
         return True
@@ -84,7 +90,7 @@ def receive_event():
         if event_time:
             try:
                 event_date = event_time[:10]  # "2026-06-10"
-                today = datetime.now().strftime('%Y-%m-%d')
+                today = now_uzb().strftime('%Y-%m-%d')
                 if event_date != today:
                     return jsonify({'result': 'ok'}), 200
             except Exception:
@@ -94,12 +100,12 @@ def receive_event():
         if is_duplicate(employee_id):
             return jsonify({'result': 'ok'}), 200
 
-        # Server vaqtini saqlash
-        server_time = datetime.now().strftime('%Y-%m-%dT%H:%M:%S')
+        # Server vaqtini saqlash (Toshkent UTC+5)
+        server_time = now_uzb().strftime('%Y-%m-%dT%H:%M:%S')
         direction   = get_direction(camera_ip)
         save_event(employee_id, server_time, camera_ip, direction)
         arrow = '→ KIRDI' if direction == 'in' else '← CHIQDI'
-        print(f"[{datetime.now().strftime('%H:%M:%S')}] ✅ {arrow} | {employee_id} | {server_time} | {camera_ip}")
+        print(f"[{now_uzb().strftime('%H:%M:%S')}] ✅ {arrow} | {employee_id} | {server_time} | {camera_ip}")
 
     except Exception as e:
         print(f"[{datetime.now().strftime('%H:%M:%S')}] ❌ Xatolik: {e}")
