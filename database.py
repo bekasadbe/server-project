@@ -4,7 +4,7 @@ SQLite database — xodimlar va eventlar saqlanadi.
 import sqlite3
 import os
 
-DB_FILE = os.path.join(os.path.dirname(__file__), 'davomat.db')
+DB_FILE = os.environ.get('DB_FILE', os.path.join(os.path.dirname(__file__), 'davomat.db'))
 
 # Kirish/chiqish kameralari
 ENTRY_CAMERAS = {'10.0.3.1', '10.0.3.2'}

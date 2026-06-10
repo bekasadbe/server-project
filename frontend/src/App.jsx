@@ -1,4 +1,4 @@
-import { useState } from 'react'
+import { useState, useEffect } from 'react'
 import Sidebar from './components/Sidebar'
 import Dashboard from './pages/Dashboard'
 import LiveEvents from './pages/LiveEvents'
@@ -8,72 +8,92 @@ import Reports from './pages/Reports'
 import AdminPanel from './pages/AdminPanel'
 import Login from './pages/Login'
 import { getUser, logout } from './auth'
-import { initialEmployees, initialGroups } from './store'
 
-// localStorage dan o'qish, bo'lmasa initial dan
-function loadLS(key, fallback) {
-  try {
-    const s = localStorage.getItem(key)
-    return s ? JSON.parse(s) : fallback
-  } catch { return fallback }
-}
-function saveLS(key, val) {
-  try { localStorage.setItem(key, JSON.stringify(val)) } catch {}
+const API_URL = import.meta.env.VITE_API_URL || 'http://localhost:8000'
+const TOKEN   = 'Dav0mat@API#2026!'
+
+async function apiFetch(path, opts = {}) {
+  const res = await fetch(`${API_URL}${path}`, {
+    ...opts,
+    headers: { 'X-API-Token': TOKEN, 'Content-Type': 'application/json', ...opts.headers },
+  })
+  return res.json()
 }
 
 export default function App() {
   const [user, setUser]           = useState(getUser)
   const [page, setPage]           = useState('dashboard')
-  const [employees, setEmployees] = useState(() => loadLS('employees', initialEmployees))
-  const [groups, setGroups]       = useState(() => loadLS('groups', initialGroups))
+  const [employees, setEmployees] = useState([])
+  const [groups, setGroups]       = useState([])
+
+  useEffect(() => { if (user) loadData() }, [user])
+
+  const loadData = async () => {
+    try {
+      const data = await apiFetch('/employees')
+      setEmployees((data.employees || []).map(e => ({ ...e, group: e.group_id })))
+      setGroups(data.groups || [])
+    } catch {}
+  }
 
   if (!user) return <Login onLogin={u => setUser(u)} />
 
   const handleLogout = () => { logout(); setUser(null) }
 
-  // Kadrlar uchun faqat o'z guruhini ko'rsatish
   const userGroup   = user.role === 'kadrlar' ? user.groupId : null
-  const visibleEmps = userGroup ? employees.filter(e => e.group === userGroup) : employees
+  const visibleEmps = userGroup ? employees.filter(e => e.group_id === userGroup) : employees
   const visibleGrps = userGroup ? groups.filter(g => g.id === userGroup) : groups
 
-  const updateEmployees = (fn) => {
-    setEmployees(prev => { const next = fn(prev); saveLS('employees', next); return next })
-  }
-  const updateGroups = (fn) => {
-    setGroups(prev => { const next = fn(prev); saveLS('groups', next); return next })
+  const addEmployee = async (emp) => {
+    await apiFetch('/employees', {
+      method: 'POST',
+      body: JSON.stringify({ id: emp.id, name: emp.name, group_id: emp.group || emp.group_id, lavozim: emp.lavozim || '' }),
+    })
+    loadData()
   }
 
-  const addEmployee    = (emp)          => updateEmployees(prev => [...prev, emp])
-  const deleteEmployee = (id)           => updateEmployees(prev => prev.filter(e => e.id !== id))
-  const moveEmployee   = (id, group)    => updateEmployees(prev => prev.map(e => e.id===id ? {...e, group} : e))
-  const updateEmployee = (id, changes)  => updateEmployees(prev => prev.map(e => e.id===id ? {...e, ...changes} : e))
-  const addGroup       = (g)         => updateGroups(prev => [...prev, g])
-  const deleteGroup    = (id)        => {
-    updateGroups(prev => prev.filter(g => g.id !== id))
-    updateEmployees(prev => prev.filter(e => e.group !== id))
+  const deleteEmployee = async (id) => {
+    await apiFetch(`/employees/${id}`, { method: 'DELETE' })
+    loadData()
+  }
+
+  const updateEmployee = async (id, changes) => {
+    await apiFetch(`/employees/${id}`, {
+      method: 'PUT',
+      body: JSON.stringify({ name: changes.name, group_id: changes.group || changes.group_id, lavozim: changes.lavozim || '' }),
+    })
+    loadData()
+  }
+
+  const moveEmployee = async (id, group) => {
+    const emp = employees.find(e => e.id === id)
+    if (emp) await updateEmployee(id, { ...emp, group_id: group })
   }
 
   const pages = {
     dashboard: <Dashboard  employees={visibleEmps} groups={visibleGrps} />,
     live:      <LiveEvents groups={visibleGrps} />,
-    history:   <History    employees={visibleEmps} groups={visibleGrps} />,
+    history:   <History    groups={visibleGrps} />,
     employees: <Employees  employees={visibleEmps} groups={visibleGrps} />,
-    reports:   <Reports    employees={visibleEmps} groups={visibleGrps} />,
+    reports:   <Reports    groups={visibleGrps} />,
     ...(user.role === 'admin' ? {
       admin: <AdminPanel
         employees={employees} groups={groups}
-        onAddEmployee={addEmployee} onDeleteEmployee={deleteEmployee} onUpdateEmployee={updateEmployee}
-        onAddGroup={addGroup} onDeleteGroup={deleteGroup}
+        onAddEmployee={addEmployee}
+        onDeleteEmployee={deleteEmployee}
+        onUpdateEmployee={updateEmployee}
+        onAddGroup={() => loadData()}
+        onDeleteGroup={() => loadData()}
         onMoveEmployee={moveEmployee}
-        onUpdateGroup={(id, data) => updateGroups(prev => prev.map(g => g.id===id ? {...g,...data} : g))}
+        onUpdateGroup={() => loadData()}
       />
     } : {})
   }
 
   return (
-    <div style={{display:'flex', height:'100vh', background:'#f8fafc', color:'#0f172a', overflow:'hidden', margin:0, padding:0, maxWidth:'100%', border:'none', textAlign:'left'}}>
+    <div style={{ display:'flex', height:'100vh', background:'#f8fafc', color:'#0f172a', overflow:'hidden' }}>
       <Sidebar current={page} onChange={setPage} user={user} onLogout={handleLogout} />
-      <main style={{flex:1, overflowY:'auto', padding:'28px 32px', background:'#f8fafc'}}>
+      <main style={{ flex:1, overflowY:'auto', padding:'28px 32px', background:'#f8fafc' }}>
         {pages[page]}
       </main>
     </div>

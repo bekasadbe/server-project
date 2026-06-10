@@ -1,21 +1,61 @@
-import { FileBarChart2, Download, Calendar } from 'lucide-react'
-import { LineChart, Line, XAxis, YAxis, Tooltip, ResponsiveContainer, CartesianGrid } from 'recharts'
+import { useState, useEffect } from 'react'
+import { FileBarChart2, Building2 } from 'lucide-react'
 
-const monthData = [
-  { day:'1', keldi:40 }, { day:'2', keldi:38 }, { day:'3', keldi:42 },
-  { day:'4', keldi:35 }, { day:'5', keldi:44 }, { day:'6', keldi:41 },
-  { day:'7', keldi:39 }, { day:'8', keldi:43 }, { day:'9', keldi:37 },
-  { day:'10', keldi:45 },
-]
+const API_URL = import.meta.env.VITE_API_URL || 'http://localhost:8000'
+const TOKEN   = 'Dav0mat@API#2026!'
 
-const topLate = [
-  { name:'Maxamatov Xamidulla', count:8, avg:'42 daq.' },
-  { name:"Ne'matov Asadbek",    count:5, avg:'12 daq.' },
-  { name:'Baxtiyor Islomov',    count:4, avg:'18 daq.' },
-  { name:'Toshmatov Shoxruh',   count:3, avg:'9 daq.'  },
-]
+function getLast7Days() {
+  const days = []
+  for (let i = 6; i >= 0; i--) {
+    const d = new Date()
+    d.setDate(d.getDate() - i)
+    days.push(d.toISOString().slice(0, 10))
+  }
+  return days
+}
 
-export default function Reports() {
+export default function Reports({ groups = [] }) {
+  const [stats, setStats]       = useState([])
+  const [loading, setLoading]   = useState(true)
+  const [orgFilter, setOrgFilter] = useState('all')
+  const multiOrg = groups.length > 1
+
+  useEffect(() => {
+    const load = async () => {
+      setLoading(true)
+      const days = getLast7Days()
+      const results = await Promise.all(
+        days.map(async (d) => {
+          try {
+            const res  = await fetch(`${API_URL}/attendance?date=${d}`, { headers: { 'X-API-Token': TOKEN } })
+            const data = await res.json()
+            const rows = (data.attendance || []).filter(r => orgFilter === 'all' || r.group_id === orgFilter)
+            const total  = rows.length
+            const ontime = rows.filter(r => r.first_in && r.first_in < '09:00').length
+            const late   = rows.filter(r => r.first_in && r.first_in >= '09:00').length
+            const absent = rows.filter(r => !r.first_in).length
+            return { date: d, total, ontime, late, absent }
+          } catch {
+            return { date: d, total: 0, ontime: 0, late: 0, absent: 0 }
+          }
+        })
+      )
+      setStats(results)
+      setLoading(false)
+    }
+    load()
+  }, [orgFilter])
+
+  const totalDays    = stats.length
+  const avgOntime    = totalDays ? Math.round(stats.reduce((s, r) => s + r.ontime, 0) / totalDays) : 0
+  const avgLate      = totalDays ? Math.round(stats.reduce((s, r) => s + r.late, 0) / totalDays) : 0
+  const avgAbsent    = totalDays ? Math.round(stats.reduce((s, r) => s + r.absent, 0) / totalDays) : 0
+
+  const dayLabel = (d) => {
+    const date = new Date(d)
+    return date.toLocaleDateString('uz-UZ', { month:'short', day:'numeric' })
+  }
+
   return (
     <div>
       <div style={{ display:'flex', justifyContent:'space-between', alignItems:'center', marginBottom:'24px' }}>
@@ -23,96 +63,73 @@ export default function Reports() {
           <h1 style={{ margin:0, fontSize:'22px', fontWeight:700, color:'#0f172a', display:'flex', alignItems:'center', gap:'10px' }}>
             <FileBarChart2 size={22} color="#2563eb" /> Hisobotlar
           </h1>
-          <p style={{ margin:'4px 0 0', fontSize:'13px', color:'#94a3b8' }}>Oylik va haftalik tahlil</p>
+          <p style={{ margin:'4px 0 0', fontSize:'13px', color:'#94a3b8' }}>So'nggi 7 kunlik tahlil</p>
         </div>
-        <button style={{
-          display:'flex', alignItems:'center', gap:'8px',
-          padding:'9px 18px', borderRadius:'9px',
-          background:'#ffffff', border:'1px solid #e2e8f0',
-          color:'#2563eb', fontSize:'14px', fontWeight:600, cursor:'pointer',
-          boxShadow:'0 1px 3px #0f172a08',
-        }}>
-          <Download size={16} /> PDF yuklab olish
-        </button>
+        {multiOrg && (
+          <div style={{ display:'flex', gap:'6px' }}>
+            <button onClick={() => setOrgFilter('all')} style={{ padding:'7px 14px', borderRadius:'8px', border:'1px solid', borderColor:orgFilter==='all'?'#2563eb':'#e2e8f0', background:orgFilter==='all'?'#eff6ff':'#fff', color:orgFilter==='all'?'#2563eb':'#64748b', fontSize:'13px', cursor:'pointer' }}>Hammasi</button>
+            {groups.map(g => (
+              <button key={g.id} onClick={() => setOrgFilter(g.id)} style={{ padding:'7px 14px', borderRadius:'8px', border:'1px solid', borderColor:orgFilter===g.id?'#2563eb':'#e2e8f0', background:orgFilter===g.id?'#eff6ff':'#fff', color:orgFilter===g.id?'#2563eb':'#64748b', fontSize:'13px', cursor:'pointer' }}>{g.name}</button>
+            ))}
+          </div>
+        )}
       </div>
 
-      <div style={{ display:'grid', gridTemplateColumns:'1fr 1fr', gap:'16px' }}>
-        {/* Chiziqli grafik */}
-        <div style={{ background:'#ffffff', borderRadius:'14px', border:'1px solid #e2e8f0', padding:'20px', boxShadow:'0 1px 3px #0f172a08' }}>
-          <div style={{ display:'flex', alignItems:'center', gap:'8px', marginBottom:'20px' }}>
-            <Calendar size={16} color="#2563eb" />
-            <span style={{ fontWeight:600, fontSize:'14px', color:'#0f172a' }}>Iyun oyi — kunlik kelganlar</span>
+      {/* O'rtacha kunlik */}
+      <div style={{ display:'grid', gridTemplateColumns:'repeat(3,1fr)', gap:'14px', marginBottom:'24px' }}>
+        {[
+          { label:"O'rtacha o'z vaqtida", value: avgOntime, color:'#16a34a', bg:'#dcfce7' },
+          { label:"O'rtacha kech keldi",  value: avgLate,   color:'#d97706', bg:'#fef3c7' },
+          { label:"O'rtacha kelmadi",     value: avgAbsent, color:'#dc2626', bg:'#fee2e2' },
+        ].map(card => (
+          <div key={card.label} style={{ background:'#fff', borderRadius:'14px', padding:'20px 24px', border:'1px solid #e2e8f0', boxShadow:'0 1px 3px #0f172a08' }}>
+            <div style={{ fontSize:'13px', color:'#64748b', marginBottom:'8px' }}>{card.label}</div>
+            <div style={{ fontSize:'32px', fontWeight:700, color:card.color }}>{loading ? '...' : card.value}</div>
+            <div style={{ fontSize:'12px', color:'#94a3b8', marginTop:'4px' }}>kishi/kun</div>
           </div>
-          <ResponsiveContainer width="100%" height={220}>
-            <LineChart data={monthData}>
-              <CartesianGrid strokeDasharray="3 3" stroke="#f1f5f9" />
-              <XAxis dataKey="day" stroke="#e2e8f0" tick={{ fill:'#94a3b8', fontSize:12 }} />
-              <YAxis stroke="#e2e8f0" tick={{ fill:'#94a3b8', fontSize:12 }} />
-              <Tooltip contentStyle={{ background:'#ffffff', border:'1px solid #e2e8f0', borderRadius:'8px', color:'#0f172a', boxShadow:'0 4px 12px #0f172a10' }} />
-              <Line type="monotone" dataKey="keldi" stroke="#2563eb" strokeWidth={2} dot={{ fill:'#2563eb', r:4 }} name="Keldi" />
-            </LineChart>
-          </ResponsiveContainer>
-        </div>
+        ))}
+      </div>
 
-        {/* Ko'p kechikkanlar */}
-        <div style={{ background:'#ffffff', borderRadius:'14px', border:'1px solid #e2e8f0', padding:'20px', boxShadow:'0 1px 3px #0f172a08' }}>
-          <div style={{ display:'flex', alignItems:'center', gap:'8px', marginBottom:'20px' }}>
-            <span style={{ fontWeight:600, fontSize:'14px', color:'#0f172a' }}>Ko'p kechikkanlar (iyun)</span>
-          </div>
-          <div style={{ display:'flex', flexDirection:'column', gap:'10px' }}>
-            {topLate.map((emp, i) => (
-              <div key={i} style={{
-                display:'flex', alignItems:'center', justifyContent:'space-between',
-                padding:'12px 16px', background:'#f8fafc', borderRadius:'10px',
-                border:'1px solid #f1f5f9'
-              }}>
-                <div style={{ display:'flex', alignItems:'center', gap:'12px' }}>
-                  <div style={{
-                    width:'32px', height:'32px', borderRadius:'8px',
-                    background: i===0 ? '#fee2e2' : '#fef3c7',
-                    display:'flex', alignItems:'center', justifyContent:'center',
-                    fontSize:'14px', fontWeight:700,
-                    color: i===0 ? '#dc2626' : '#d97706'
-                  }}>{i+1}</div>
-                  <span style={{ fontSize:'14px', color:'#0f172a' }}>{emp.name}</span>
-                </div>
-                <div style={{ textAlign:'right' }}>
-                  <div style={{ fontSize:'13px', fontWeight:600, color:'#d97706' }}>{emp.count} marta</div>
-                  <div style={{ fontSize:'12px', color:'#94a3b8' }}>o'rtacha {emp.avg}</div>
-                </div>
-              </div>
-            ))}
-          </div>
+      {/* Kunlik jadval */}
+      <div style={{ background:'#fff', borderRadius:'14px', border:'1px solid #e2e8f0', overflow:'hidden' }}>
+        <div style={{ padding:'14px 20px', borderBottom:'1px solid #f1f5f9', fontWeight:600, fontSize:'14px', color:'#0f172a' }}>
+          Kunlik statistika
         </div>
-
-        {/* Tashkilot solishtiruv */}
-        <div style={{ background:'#ffffff', borderRadius:'14px', border:'1px solid #e2e8f0', padding:'20px', gridColumn:'1/-1', boxShadow:'0 1px 3px #0f172a08' }}>
-          <div style={{ fontWeight:600, fontSize:'14px', color:'#0f172a', marginBottom:'16px' }}>Tashkilotlar bo'yicha taqqoslash</div>
-          <div style={{ display:'grid', gridTemplateColumns:'1fr 1fr', gap:'12px' }}>
-            {[
-              { org:'Inno Texnopark', color:'#2563eb', bg:'#eff6ff', keldi:26, kelmadi:4, kech:5 },
-              { org:'Milliy Offis',   color:'#0891b2', bg:'#ecfeff', keldi:20, kelmadi:4, kech:3 },
-            ].map(o => (
-              <div key={o.org} style={{ padding:'16px', background:o.bg, borderRadius:'10px', border:`1px solid ${o.color}20` }}>
-                <div style={{ fontSize:'14px', fontWeight:700, color:o.color, marginBottom:'12px' }}>{o.org}</div>
-                <div style={{ display:'flex', gap:'16px' }}>
-                  <div style={{ textAlign:'center' }}>
-                    <div style={{ fontSize:'24px', fontWeight:700, color:'#16a34a' }}>{o.keldi}</div>
-                    <div style={{ fontSize:'12px', color:'#64748b' }}>Keldi</div>
-                  </div>
-                  <div style={{ textAlign:'center' }}>
-                    <div style={{ fontSize:'24px', fontWeight:700, color:'#d97706' }}>{o.kech}</div>
-                    <div style={{ fontSize:'12px', color:'#64748b' }}>Kech</div>
-                  </div>
-                  <div style={{ textAlign:'center' }}>
-                    <div style={{ fontSize:'24px', fontWeight:700, color:'#dc2626' }}>{o.kelmadi}</div>
-                    <div style={{ fontSize:'12px', color:'#64748b' }}>Kelmadi</div>
-                  </div>
-                </div>
-              </div>
-            ))}
-          </div>
-        </div>
+        {loading ? (
+          <div style={{ padding:'48px', textAlign:'center', color:'#94a3b8' }}>Yuklanmoqda...</div>
+        ) : (
+          <table style={{ width:'100%', borderCollapse:'collapse' }}>
+            <thead>
+              <tr style={{ background:'#f8fafc' }}>
+                {['Sana', 'Jami', "O'z vaqtida", 'Kech keldi', 'Kelmadi', 'Davomat %'].map(h => (
+                  <th key={h} style={{ padding:'11px 16px', textAlign:'left', fontSize:'11px', color:'#94a3b8', fontWeight:700, textTransform:'uppercase', letterSpacing:'0.5px' }}>{h}</th>
+                ))}
+              </tr>
+            </thead>
+            <tbody>
+              {stats.map(row => {
+                const pct = row.total ? Math.round((row.ontime + row.late) / row.total * 100) : 0
+                return (
+                  <tr key={row.date} style={{ borderTop:'1px solid #f1f5f9' }}>
+                    <td style={{ padding:'11px 16px', fontSize:'14px', fontWeight:600, color:'#0f172a' }}>{dayLabel(row.date)}</td>
+                    <td style={{ padding:'11px 16px', fontSize:'14px', color:'#475569' }}>{row.total}</td>
+                    <td style={{ padding:'11px 16px', fontSize:'14px', color:'#16a34a', fontWeight:600 }}>{row.ontime}</td>
+                    <td style={{ padding:'11px 16px', fontSize:'14px', color:'#d97706', fontWeight:600 }}>{row.late}</td>
+                    <td style={{ padding:'11px 16px', fontSize:'14px', color:'#dc2626', fontWeight:600 }}>{row.absent}</td>
+                    <td style={{ padding:'11px 16px' }}>
+                      <div style={{ display:'flex', alignItems:'center', gap:'8px' }}>
+                        <div style={{ flex:1, height:'6px', background:'#f1f5f9', borderRadius:'3px', overflow:'hidden' }}>
+                          <div style={{ height:'100%', width:`${pct}%`, background: pct>=80?'#16a34a':pct>=60?'#d97706':'#dc2626', borderRadius:'3px', transition:'width 0.3s' }}/>
+                        </div>
+                        <span style={{ fontSize:'13px', fontWeight:600, color:'#475569', minWidth:'35px' }}>{pct}%</span>
+                      </div>
+                    </td>
+                  </tr>
+                )
+              })}
+            </tbody>
+          </table>
+        )}
       </div>
     </div>
   )
