@@ -8,7 +8,7 @@ from database import (
     get_attendance, get_recent_events,
     get_employees, get_groups,
     add_employee, update_employee, delete_employee,
-    get_first_entries
+    get_first_entries, save_event, get_direction
 )
 from datetime import date, datetime
 import os
@@ -127,6 +127,27 @@ def employee_delete(emp_id):
 
 
 # ── BOSHQA ───────────────────────────────────────────────
+
+@app.route('/events/push', methods=['POST'])
+def events_push():
+    """Lokal forwarder dan camera eventlarni qabul qilish"""
+    if not check_token():
+        return jsonify({'error': 'Unauthorized'}), 401
+
+    data = request.json or {}
+    employee_id = str(data.get('employee_id', '')).strip()
+    event_time  = str(data.get('event_time',  '')).strip()
+    camera_ip   = str(data.get('camera_ip',   '')).strip()
+    direction   = data.get('direction') or get_direction(camera_ip)
+
+    if not employee_id or not event_time:
+        return jsonify({'error': 'employee_id va event_time majburiy'}), 400
+
+    save_event(employee_id, event_time, camera_ip, direction)
+    arrow = '→ KIRDI' if direction == 'in' else '← CHIQDI'
+    print(f"[{datetime.now().strftime('%H:%M:%S')}] PUSH {arrow} | {employee_id} | {event_time} | {camera_ip}")
+    return jsonify({'ok': True})
+
 
 @app.route('/ping', methods=['GET'])
 def ping():
