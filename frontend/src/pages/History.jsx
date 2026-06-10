@@ -135,7 +135,7 @@ export default function History({ groups = [] }) {
       <div style={{ display:'flex', gap:'10px', marginBottom:'20px', flexWrap:'wrap' }}>
         <div style={{ position:'relative', display:'flex', alignItems:'center' }}>
           <input ref={dateRef} type="date" value={date} onChange={e => setDate(e.target.value)}
-            style={{ padding:'9px 14px 9px 38px', background:'#fff', border:'1px solid #e2e8f0', borderRadius:'9px', color:'#0f172a', fontSize:'14px', outline:'none', cursor:'pointer', colorScheme:'light' }}/>
+            style={{ padding:'9px 14px 9px 38px', background:'#fff', border:'1px solid #e2e8f0', borderRadius:'9px', color:'#0f172a', fontSize:'14px', outline:'none', cursor:'pointer', colorScheme:'light', appearance:'none', WebkitAppearance:'none' }}/>
           <Calendar size={16} color="#2563eb" style={{ position:'absolute', left:'12px', pointerEvents:'none' }}/>
         </div>
         <div style={{ position:'relative', flex:1, minWidth:'200px' }}>
