@@ -37,7 +37,8 @@ def is_duplicate(employee_id):
 def receive_event():
     try:
         camera_ip = request.remote_addr
-        print(f"[{now_uzb().strftime('%H:%M:%S')}] 📥 REQUEST from {camera_ip} | size={len(request.data)} | ct={request.content_type}")
+        with open('/tmp/dbg.log', 'a') as f:
+            f.write(f"[{now_uzb().strftime('%H:%M:%S')}] REQ from {camera_ip} size={len(request.data)} ct={request.content_type}\n")
 
         if len(request.data) > 64 * 1024:
             return jsonify({'result': 'ok'}), 200
@@ -82,7 +83,8 @@ def receive_event():
             return jsonify({'result': 'ok'}), 200
 
         if not employee_id:
-            print(f"[{now_uzb().strftime('%H:%M:%S')}] ⚠️  employee_id topilmadi | {camera_ip} | data={request.data[:200]}")
+            with open('/tmp/dbg.log', 'a') as f:
+                f.write(f"  NO_ID from {camera_ip} data={request.data[:300]}\n")
             return jsonify({'result': 'ok'}), 200
 
         # Kamera event sanasini tekshiramiz — faqat bugun bo'lsa saqlaymiz
