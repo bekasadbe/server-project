@@ -3,6 +3,7 @@ import Sidebar from './components/Sidebar'
 import Dashboard from './pages/Dashboard'
 import LiveEvents from './pages/LiveEvents'
 import Employees from './pages/Employees'
+import Settings from './pages/Settings'
 import History from './pages/History'
 import Reports from './pages/Reports'
 import AdminPanel from './pages/AdminPanel'
@@ -127,6 +128,9 @@ export default function App() {
     history:   <History    groups={visibleGrps} />,
     employees: <Employees  employees={visibleEmps} groups={visibleGrps} />,
     reports:   <Reports    groups={visibleGrps} />,
+    ...(user.role === 'kadrlar' ? {
+      settings: <Settings group={visibleGrps[0]} onUpdateGroup={updateGroup} />
+    } : {}),
     ...(user.role === 'admin' ? {
       admin: <AdminPanel
         employees={employees} groups={groups}
