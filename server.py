@@ -18,12 +18,12 @@ def now_uzb():
 app = Flask(__name__)
 
 # Deduplicate: {employee_id: last_saved_timestamp}
-_last_seen     = {}
-DEDUP_SECONDS  = 60    # Bir xodim 60 soniyada bir marta saqlanadi
+_last_seen    = {}
+DEDUP_SECONDS = 60  # Bir xodim 60 soniyada bir marta saqlanadi
 
 
 def is_duplicate(employee_id):
-    now = now_uzb().timestamp()
+    now  = now_uzb().timestamp()
     last = _last_seen.get(employee_id, 0)
     if now - last < DEDUP_SECONDS:
         return True
@@ -36,15 +36,12 @@ def is_duplicate(employee_id):
 @app.route('/hikvision', methods=['POST'])
 def receive_event():
     try:
-        camera_ip = request.remote_addr
-        with open('/tmp/dbg.log', 'a') as f:
-            f.write(f"[{now_uzb().strftime('%H:%M:%S')}] REQ from {camera_ip} size={len(request.data)} ct={request.content_type} form_keys={list(request.form.keys())} form={dict(request.form)[:200] if request.form else ''}\n")
-
         if len(request.data) > 64 * 1024:
             return jsonify({'result': 'ok'}), 200
 
         employee_id = None
         event_time  = None
+        camera_ip   = request.remote_addr
 
         # 1. Multipart form-data: event_log (JSON)
         if request.form and 'event_log' in request.form:
@@ -83,14 +80,12 @@ def receive_event():
             return jsonify({'result': 'ok'}), 200
 
         if not employee_id:
-            with open('/tmp/dbg.log', 'a') as f:
-                f.write(f"  NO_ID from {camera_ip} data={request.data[:300]}\n")
             return jsonify({'result': 'ok'}), 200
 
         # Kamera event sanasini tekshiramiz — faqat bugun bo'lsa saqlaymiz
         if event_time:
             try:
-                event_date = event_time[:10]  # "2026-06-10"
+                event_date = event_time[:10]
                 today = now_uzb().strftime('%Y-%m-%d')
                 if event_date != today:
                     return jsonify({'result': 'ok'}), 200
@@ -104,14 +99,14 @@ def receive_event():
         # Server vaqtini saqlash (Toshkent UTC+5)
         server_time = now_uzb().strftime('%Y-%m-%dT%H:%M:%S')
         save_event(employee_id, server_time, camera_ip)
-        print(f"[{now_uzb().strftime('%H:%M:%S')}] ✅ EVENT | {employee_id} | {server_time} | {camera_ip}")
+        print(f"[{now_uzb().strftime('%H:%M:%S')}] EVENT | {employee_id} | {server_time} | {camera_ip}", flush=True)
 
     except Exception as e:
-        print(f"[{datetime.now().strftime('%H:%M:%S')}] ❌ Xatolik: {e}")
+        print(f"[{datetime.now().strftime('%H:%M:%S')}] XATOLIK: {e}", flush=True)
 
     return jsonify({'result': 'ok'}), 200
 
 
 if __name__ == '__main__':
-    print("Hikvision server ishga tushdi — port 6610")
+    print("Hikvision server ishga tushdi — port 6610", flush=True)
     app.run(host='0.0.0.0', port=6610, debug=False)
