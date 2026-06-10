@@ -152,10 +152,17 @@ export default function History({ groups = [] }) {
       </div>
 
       <div style={{ display:'flex', gap:'10px', marginBottom:'20px', flexWrap:'wrap' }}>
-        <div style={{ position:'relative', display:'flex', alignItems:'center' }}>
+        <div style={{ position:'relative' }}>
+          <button onClick={() => dateRef.current?.showPicker()} style={{
+            display:'flex', alignItems:'center', gap:'8px',
+            padding:'9px 16px', background:'#eff6ff', border:'1px solid #bfdbfe',
+            borderRadius:'9px', color:'#2563eb', fontSize:'14px', fontWeight:600,
+            cursor:'pointer', whiteSpace:'nowrap',
+          }}>
+            <Calendar size={15}/> {date.split('-').reverse().join('.')}
+          </button>
           <input ref={dateRef} type="date" value={date} onChange={e => setDate(e.target.value)}
-            style={{ padding:'9px 14px 9px 38px', background:'#fff', border:'1px solid #e2e8f0', borderRadius:'9px', color:'#0f172a', fontSize:'14px', outline:'none', cursor:'pointer', colorScheme:'light', appearance:'none', WebkitAppearance:'none' }}/>
-          <Calendar size={16} color="#2563eb" style={{ position:'absolute', left:'12px', pointerEvents:'none' }}/>
+            style={{ position:'absolute', opacity:0, pointerEvents:'none', width:'1px', height:'1px', top:0, left:0 }}/>
         </div>
         <div style={{ position:'relative', flex:1, minWidth:'200px' }}>
           <Search size={15} color="#94a3b8" style={{ position:'absolute', left:'12px', top:'50%', transform:'translateY(-50%)' }}/>
