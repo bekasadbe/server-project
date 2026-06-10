@@ -19,8 +19,13 @@ def receive_event():
         if len(request.data) > 64 * 1024:
             return jsonify({'result': 'ok'}), 200
 
-        raw = request.data.decode('utf-8', errors='ignore')
-        print(f"[{datetime.now().strftime('%H:%M:%S')}] Event keldi: {raw[:300]}")
+        raw = request.data.decode('utf-8', errors='ignore').strip()
+
+        # Bo'sh heartbeat ping — saqlamasdan qaytaramiz
+        if not raw:
+            return jsonify({'result': 'ok'}), 200
+
+        print(f"[{datetime.now().strftime('%H:%M:%S')}] XML keldi: {raw[:500]}")
 
         root = ET.fromstring(raw)
         ns   = {'h': 'http://www.hikvision.com/ver20/XMLSchema'}
