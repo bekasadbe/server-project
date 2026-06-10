@@ -4,7 +4,7 @@ Port: 6610
 """
 
 from flask import Flask, request, jsonify
-from database import save_event, get_direction
+from database import save_event
 import xml.etree.ElementTree as ET
 from datetime import datetime, timezone, timedelta
 import json
@@ -98,10 +98,8 @@ def receive_event():
 
         # Server vaqtini saqlash (Toshkent UTC+5)
         server_time = now_uzb().strftime('%Y-%m-%dT%H:%M:%S')
-        direction   = get_direction(camera_ip)
-        save_event(employee_id, server_time, camera_ip, direction)
-        arrow = '→ KIRDI' if direction == 'in' else '← CHIQDI'
-        print(f"[{now_uzb().strftime('%H:%M:%S')}] ✅ {arrow} | {employee_id} | {server_time} | {camera_ip}")
+        save_event(employee_id, server_time, camera_ip)
+        print(f"[{now_uzb().strftime('%H:%M:%S')}] ✅ EVENT | {employee_id} | {server_time} | {camera_ip}")
 
     except Exception as e:
         print(f"[{datetime.now().strftime('%H:%M:%S')}] ❌ Xatolik: {e}")

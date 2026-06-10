@@ -6,15 +6,7 @@ import os
 
 DB_FILE = os.environ.get('DB_FILE', os.path.join(os.path.dirname(__file__), 'davomat.db'))
 
-# Kirish/chiqish kameralari
-ENTRY_CAMERAS = {'10.0.3.1', '10.0.3.2'}
-EXIT_CAMERAS  = {'10.0.3.3', '10.0.3.4'}
-
 def get_direction(camera_ip):
-    if camera_ip in ENTRY_CAMERAS:
-        return 'in'
-    if camera_ip in EXIT_CAMERAS:
-        return 'out'
     return 'in'
 
 def get_conn():
@@ -154,8 +146,8 @@ def get_attendance(date_str):
                 emp.name,
                 emp.group_id,
                 emp.lavozim,
-                MIN(CASE WHEN e.direction='in'  THEN e.event_time END) as first_in,
-                MAX(CASE WHEN e.direction='out' THEN e.event_time END) as last_out
+                MIN(e.event_time) as first_in,
+                MAX(e.event_time) as last_out
             FROM employees emp
             LEFT JOIN events e
                 ON e.employee_id = emp.id
