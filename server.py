@@ -4,21 +4,11 @@ Port: 6610
 """
 
 from flask import Flask, request, jsonify
-from database import save_event, get_direction, get_conn
+from database import save_event, get_direction
 import xml.etree.ElementTree as ET
 from datetime import datetime
 
 app = Flask(__name__)
-
-
-def is_registered(employee_id):
-    """Xodim bizning bazada bormi?"""
-    with get_conn() as conn:
-        row = conn.execute(
-            'SELECT id FROM employees WHERE id = ?',
-            (employee_id.zfill(8),)
-        ).fetchone()
-    return row is not None
 
 
 @app.route('/', methods=['POST'])
@@ -46,22 +36,13 @@ def receive_event():
 
         employee_id = find('employeeNoString') or find('cardNo')
         event_time  = find('dateTime') or find('time')
+        camera_ip   = find('ipAddress') or request.remote_addr
+        direction   = get_direction(camera_ip)
 
-        if not employee_id or not event_time:
-            return jsonify({'result': 'ok'}), 200
-
-        # Faqat ro'yxatdagi xodimlarni saqlaymiz
-        if not is_registered(employee_id):
-            print(f"[{datetime.now().strftime('%H:%M:%S')}] ⏭ Ro'yxatda yo'q: {employee_id}")
-            return jsonify({'result': 'ok'}), 200
-
-        # Kamera IP — XML dan olamiz, bo'lmasa request IP
-        camera_ip = find('ipAddress') or request.remote_addr
-        direction = get_direction(camera_ip)
-
-        save_event(employee_id, event_time, camera_ip, direction)
-        arrow = '→ KIRDI' if direction == 'in' else '← CHIQDI'
-        print(f"[{datetime.now().strftime('%H:%M:%S')}] ✅ {arrow} | {employee_id} | {event_time} | {camera_ip}")
+        if employee_id and event_time:
+            save_event(employee_id, event_time, camera_ip, direction)
+            arrow = '→ KIRDI' if direction == 'in' else '← CHIQDI'
+            print(f"[{datetime.now().strftime('%H:%M:%S')}] ✅ {arrow} | {employee_id} | {event_time} | {camera_ip}")
 
     except Exception as e:
         print(f"[{datetime.now().strftime('%H:%M:%S')}] ❌ Xatolik: {e}")
