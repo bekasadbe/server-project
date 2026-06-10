@@ -1,5 +1,5 @@
 import { useState, useEffect, useRef } from 'react'
-import { LogIn, LogOut, Wifi, WifiOff } from 'lucide-react'
+import { Wifi, WifiOff } from 'lucide-react'
 
 const API_URL = import.meta.env.VITE_API_URL || 'http://192.168.5.127:8000'
 const TOKEN   = 'Dav0mat@API#2026!'
@@ -85,17 +85,9 @@ export default function LiveEvents({ groups = [] }) {
                 </td>
                 <td style={{ padding:'5px 10px' }}>
                   {e.direction === 'in' ? (
-                    <span style={{ display:'inline-flex', alignItems:'center', gap:'3px',
-                      padding:'2px 8px', borderRadius:'20px',
-                      background:'#dcfce7', color:'#16a34a', fontSize:'11px', fontWeight:600 }}>
-                      <LogIn size={10}/> Kirdi
-                    </span>
+                    <span style={{ color:'#16a34a', fontSize:'12px', fontWeight:600 }}>Kirdi</span>
                   ) : (
-                    <span style={{ display:'inline-flex', alignItems:'center', gap:'3px',
-                      padding:'2px 8px', borderRadius:'20px',
-                      background:'#fef3c7', color:'#d97706', fontSize:'11px', fontWeight:600 }}>
-                      <LogOut size={10}/> Chiqdi
-                    </span>
+                    <span style={{ color:'#d97706', fontSize:'12px', fontWeight:600 }}>Chiqdi</span>
                   )}
                 </td>
                 <td style={{ padding:'5px 10px', fontSize:'11px', color:'#94a3b8', fontFamily:'monospace' }}>
