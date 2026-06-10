@@ -59,8 +59,11 @@ export default function Dashboard({ employees = [], groups = [] }) {
     return row.first_in <= getWorkStart(row.group_id) ? 'ontime' : 'late'
   }
 
+  const visibleGroupIds = groups.map(g => g.id)
+
   const filtered = attendance.filter(r =>
-    orgFilter === 'all' || r.group_id === orgFilter
+    visibleGroupIds.includes(r.group_id) &&
+    (orgFilter === 'all' || r.group_id === orgFilter)
   )
 
   const sorted = [...filtered].sort((a, b) => {
