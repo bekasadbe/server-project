@@ -7,7 +7,7 @@ import History from './pages/History'
 import Reports from './pages/Reports'
 import AdminPanel from './pages/AdminPanel'
 import Login from './pages/Login'
-import { getUser, logout } from './auth'
+import { getUser, logout, USERS } from './auth'
 
 const API_URL = import.meta.env.VITE_API_URL || 'http://localhost:8000'
 const TOKEN   = 'Dav0mat@API#2026!'
@@ -32,7 +32,21 @@ export default function App() {
     try {
       const data = await apiFetch('/employees')
       setEmployees((data.employees || []).map(e => ({ ...e, group: e.group_id })))
-      setGroups(data.groups || [])
+
+      // localStorage dan login/parollarni olamiz
+      const savedGroups = JSON.parse(localStorage.getItem('groups') || '[]')
+
+      // Statik userlardan (inno, milliy) ham olamiz
+      const merged = (data.groups || []).map(g => {
+        const fromStorage = savedGroups.find(s => s.id === g.id)
+        const fromStatic  = USERS.find(u => u.groupId === g.id)
+        return {
+          ...g,
+          login:    fromStorage?.login    || fromStatic?.username || g.id,
+          password: fromStorage?.password || fromStatic?.password || '',
+        }
+      })
+      setGroups(merged)
     } catch {}
   }
 
