@@ -181,7 +181,10 @@ export default function AdminPanel({ employees, groups, onAddEmployee, onDeleteE
                 </button>
                 <button
                   title="Tashkilotni o'chirish"
-                  onClick={() => onDeleteGroup(currentGroup.id)}
+                  onClick={() => {
+                    if (window.confirm(`"${currentGroup.name}" tashkilotini o'chirasizmi?\n\nBarcha xodimlar ham o'chib ketadi!`))
+                      onDeleteGroup(currentGroup.id)
+                  }}
                   style={{ padding: '8px', background: '#fff1f2', border: '1px solid #fecdd3', borderRadius: '8px', cursor: 'pointer', display: 'flex', color: '#e11d48' }}>
                   <Trash2 size={16} />
                 </button>
