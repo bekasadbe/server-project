@@ -89,75 +89,76 @@ export default function History({ groups = [] }) {
     return { dateFormatted, orgName, ontime, late, absent, head, body }
   }
 
-  const drawBrand = (doc) => {
-    const pw = doc.internal.pageSize.getWidth()
-    // Logo box (top right) — kichikroq
-    const bx = pw - 46, by = 9, bw = 32, bh = 12
-    doc.setFillColor(239, 246, 255)  // ko'k fon
-    doc.roundedRect(bx, by, bw, bh, 2.5, 2.5, 'F')
-    // Checkmark circle — ko'k, kichik
-    doc.setDrawColor(37, 99, 235)
-    doc.setLineWidth(0.45)
-    doc.circle(bx + 6, by + 6, 3, 'S')
-    // Checkmark tick — ko'k, kichik
-    doc.setDrawColor(37, 99, 235)
-    doc.setLineWidth(0.55)
-    doc.line(bx + 4.5, by + 6, bx + 5.6, by + 7.2)
-    doc.line(bx + 5.6, by + 7.2, bx + 7.8, by + 4.9)
-    // Brand text
-    doc.setFont('helvetica', 'bold')
-    doc.setFontSize(7)
-    doc.setTextColor(37, 99, 235)
-    doc.text('Davomatlar.uz', bx + 11.5, by + 5.5)
-    doc.setFont('helvetica', 'normal')
-    doc.setFontSize(6)
-    doc.setTextColor(148, 163, 184)
-    doc.text('Boshqaruv tizimi', bx + 11.5, by + 9.5)
-    doc.setTextColor(0)
-  }
-
   const handleDownloadPDF = () => {
     const { dateFormatted, orgName, ontime, late, absent, head, body } = buildTableData()
     const doc = new jsPDF({ orientation: 'portrait', unit: 'mm', format: 'a4' })
+    const pw  = doc.internal.pageSize.getWidth()
 
-    // Brend (o'ng yuqori burchak)
-    drawBrand(doc)
+    // ── HEADER BAND ──────────────────────────────────────
+    doc.setFillColor(239, 246, 255)
+    doc.rect(0, 0, pw, 28, 'F')
 
-    // Sarlavha
+    // Sarlavha (chapda)
     doc.setFont('helvetica', 'bold')
     doc.setFontSize(16)
     doc.setTextColor(15, 23, 42)
-    doc.text(`Davomat hisoboti — ${dateFormatted}`, 14, 18)
+    doc.text(`Davomat hisoboti — ${dateFormatted}`, 14, 13)
     doc.setFont('helvetica', 'normal')
     doc.setFontSize(10)
     doc.setTextColor(100, 116, 139)
-    doc.text(orgName, 14, 25)
+    doc.text(orgName, 14, 22)
 
-    // Statistika qutilari
+    // ── BREND (o'ng, header ichida) ──────────────────────
+    const bw = 38, bh = 18, bx = pw - bw - 10, by = 5
+    doc.setFillColor(255, 255, 255)
+    doc.roundedRect(bx, by, bw, bh, 3, 3, 'F')
+    // Doira
+    doc.setDrawColor(37, 99, 235)
+    doc.setLineWidth(0.5)
+    doc.circle(bx + 7, by + 9, 4, 'S')
+    // Belgi (ptichka)
+    doc.setLineWidth(0.6)
+    doc.line(bx + 5.0, by + 9.0, bx + 6.5, by + 10.7)
+    doc.line(bx + 6.5, by + 10.7, bx + 9.2, by + 7.4)
+    // Matn
+    doc.setFont('helvetica', 'bold')
+    doc.setFontSize(9)
+    doc.setTextColor(37, 99, 235)
+    doc.text('Davomatlar.uz', bx + 13, by + 8.5)
+    doc.setFont('helvetica', 'normal')
+    doc.setFontSize(7)
+    doc.setTextColor(148, 163, 184)
+    doc.text('Boshqaruv tizimi', bx + 13, by + 14)
+    doc.setTextColor(0)
+
+    // ── STATISTIKA QUTILARI ───────────────────────────────
     const stats = [
-      { label: 'Jami',         val: filtered.length, c: [37,99,235]  },
-      { label: "O'z vaqtida",  val: ontime,           c: [22,163,74]  },
-      { label: 'Kech keldi',   val: late,             c: [217,119,6]  },
-      { label: 'Kelmadi',      val: absent,           c: [220,38,38]  },
+      { label: 'Jami',        val: filtered.length, c: [37,99,235]  },
+      { label: "O'z vaqtida", val: ontime,           c: [22,163,74]  },
+      { label: 'Kech keldi',  val: late,             c: [217,119,6]  },
+      { label: 'Kelmadi',     val: absent,           c: [220,38,38]  },
     ]
+    const boxH = 18, boxW = 42, boxY = 32
     stats.forEach((s, i) => {
-      const x = 14 + i * 46
+      const x = 14 + i * (boxW + 2)
       doc.setFillColor(248, 250, 252)
-      doc.roundedRect(x, 30, 42, 14, 2, 2, 'F')
+      doc.roundedRect(x, boxY, boxW, boxH, 2, 2, 'F')
+      // Raqam — markazda
       doc.setFont('helvetica', 'bold')
       doc.setFontSize(14)
       doc.setTextColor(...s.c)
-      doc.text(String(s.val), x + 21, 39, { align: 'center' })
+      doc.text(String(s.val), x + boxW / 2, boxY + 9, { align: 'center' })
+      // Label — pastda
       doc.setFont('helvetica', 'normal')
       doc.setFontSize(7)
       doc.setTextColor(100, 116, 139)
-      doc.text(s.label, x + 21, 43, { align: 'center' })
+      doc.text(s.label, x + boxW / 2, boxY + 15, { align: 'center' })
     })
 
     doc.setTextColor(0)
     autoTable(doc, {
       head, body,
-      startY: 50,
+      startY: 54,
       styles: { fontSize: 9, cellPadding: 3 },
       headStyles: { fillColor: [37, 99, 235], textColor: 255, fontStyle: 'bold' },
       alternateRowStyles: { fillColor: [248, 250, 252] },
