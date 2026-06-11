@@ -174,20 +174,72 @@ export default function History({ groups = [] }) {
   }
 
   const handlePrint = () => {
-    const { dateFormatted, orgName, ontime, late, absent } = buildTableData()
-    const rows_html = filtered.map((r, i) => {
-      const lm = getLate(r.first_in, r.group_id)
-      const st = getStatus(r)
-      return `<tr><td>${i+1}</td><td>${r.name||'—'}</td>${multiOrg?`<td>${groupName(r.group_id)}</td>`:''}<td>${r.first_in||'—'}</td><td>${r.last_out||'—'}</td><td>${lm>0?lm+' daq.':'—'}</td><td style="color:${st.color};font-weight:600">${st.label}</td></tr>`
-    }).join('')
-    const win = window.open('', '_blank')
-    win.document.write(`<!DOCTYPE html><html><head><meta charset="UTF-8"><title>Davomat ${dateFormatted}</title>
-    <style>body{font-family:Arial,sans-serif;padding:20px;color:#0f172a}h2{margin:0 0 4px}p{margin:0 0 12px;color:#64748b;font-size:13px}.s{display:flex;gap:12px;margin-bottom:16px}.si{background:#f8fafc;border-radius:6px;padding:8px 14px;font-size:12px}.si b{font-size:18px;display:block}table{width:100%;border-collapse:collapse;font-size:12px}th{background:#f1f5f9;padding:7px 10px;text-align:left;font-size:10px;text-transform:uppercase;color:#64748b}td{padding:7px 10px;border-bottom:1px solid #f1f5f9}tr:nth-child(even){background:#f9fafb}</style></head><body>
-    <h2>Davomat hisoboti — ${dateFormatted}</h2><p>${orgName}</p>
-    <div class="s"><div class="si"><b>${filtered.length}</b>Jami</div><div class="si" style="color:#16a34a"><b>${ontime}</b>O'z vaqtida</div><div class="si" style="color:#d97706"><b>${late}</b>Kech keldi</div><div class="si" style="color:#dc2626"><b>${absent}</b>Kelmadi</div></div>
-    <table><thead><tr><th>#</th><th>Ism Familiya</th>${multiOrg?'<th>Tashkilot</th>':''}<th>Keldi</th><th>Ketdi</th><th>Kechikish</th><th>Holat</th></tr></thead><tbody>${rows_html}</tbody></table>
-    <script>window.onload=()=>{window.print()}<\/script></body></html>`)
-    win.document.close()
+    // PDF ni yaratib, avtomatik print dialogini ochamiz
+    const { head, body, dateFormatted, orgName, ontime, late, absent } = buildTableData()
+    const doc = new jsPDF({ orientation: 'portrait', unit: 'mm', format: 'a4' })
+    const pw  = doc.internal.pageSize.getWidth()
+
+    // Brend
+    const bw = 38, bh = 14, bx = pw - 52, by = 8
+    doc.setFillColor(239, 246, 255)
+    doc.roundedRect(bx, by, bw, bh, 2.5, 2.5, 'F')
+    doc.setDrawColor(37, 99, 235); doc.setLineWidth(0.45)
+    doc.circle(bx + 6, by + 6, 3, 'S')
+    doc.setLineWidth(0.55)
+    doc.line(bx + 4.5, by + 6, bx + 5.6, by + 7.2)
+    doc.line(bx + 5.6, by + 7.2, bx + 7.8, by + 4.9)
+    doc.setFont('helvetica', 'bold'); doc.setFontSize(9); doc.setTextColor(37, 99, 235)
+    doc.text('Davomatlar.uz', bx + 13, by + 6)
+    doc.setFont('helvetica', 'normal'); doc.setFontSize(8); doc.setTextColor(148, 163, 184)
+    doc.text('Boshqaruv tizimi', bx + 13, by + 11)
+    doc.setTextColor(0)
+
+    // Sarlavha
+    doc.setFont('helvetica', 'bold'); doc.setFontSize(16); doc.setTextColor(15, 23, 42)
+    doc.text(`Davomat hisoboti — ${dateFormatted}`, 14, 18)
+    doc.setFont('helvetica', 'normal'); doc.setFontSize(10); doc.setTextColor(100, 116, 139)
+    doc.text(orgName, 14, 25)
+
+    // Statistika
+    const stats = [
+      { label: 'Jami',        val: filtered.length, c: [37,99,235]  },
+      { label: "O'z vaqtida", val: ontime,           c: [22,163,74]  },
+      { label: 'Kech keldi',  val: late,             c: [217,119,6]  },
+      { label: 'Kelmadi',     val: absent,           c: [220,38,38]  },
+    ]
+    stats.forEach((s, i) => {
+      const x = 14 + i * 44
+      doc.setFillColor(248, 250, 252); doc.roundedRect(x, 30, 42, 18, 2, 2, 'F')
+      doc.setFont('helvetica', 'bold'); doc.setFontSize(14); doc.setTextColor(...s.c)
+      doc.text(String(s.val), x + 21, 39, { align: 'center' })
+      doc.setFont('helvetica', 'normal'); doc.setFontSize(7); doc.setTextColor(100, 116, 139)
+      doc.text(s.label, x + 21, 45, { align: 'center' })
+    })
+    doc.setTextColor(0)
+
+    autoTable(doc, {
+      head, body, startY: 54,
+      styles: { fontSize: 9, cellPadding: 3 },
+      headStyles: { fillColor: [37, 99, 235], textColor: 255, fontStyle: 'bold' },
+      alternateRowStyles: { fillColor: [248, 250, 252] },
+      didParseCell: (data) => {
+        if (data.section === 'body' && data.column.index === (multiOrg ? 6 : 5)) {
+          const v = data.cell.raw
+          if (v === 'Kelmadi')         data.cell.styles.textColor = [220, 38, 38]
+          else if (v === 'Kech keldi') data.cell.styles.textColor = [217, 119, 6]
+          else                         data.cell.styles.textColor = [22, 163, 74]
+        }
+      },
+      didDrawPage: () => {
+        const ph = doc.internal.pageSize.getHeight()
+        doc.setFontSize(7); doc.setTextColor(203, 213, 225)
+        doc.text('davomatlar.uz', pw / 2, ph - 6, { align: 'center' })
+      }
+    })
+
+    // Print dialogini ochish
+    doc.autoPrint()
+    window.open(doc.output('bloburl'), '_blank')
   }
 
   return (
