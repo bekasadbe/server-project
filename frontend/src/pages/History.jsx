@@ -89,31 +89,94 @@ export default function History({ groups = [] }) {
     return { dateFormatted, orgName, ontime, late, absent, head, body }
   }
 
+  const drawBrand = (doc) => {
+    const pw = doc.internal.pageSize.getWidth()
+    // Logo box (top right)
+    const bx = pw - 52, by = 8, bw = 38, bh = 14
+    doc.setFillColor(239, 246, 255)
+    doc.roundedRect(bx, by, bw, bh, 3, 3, 'F')
+    // Checkmark circle
+    doc.setDrawColor(37, 99, 235)
+    doc.setLineWidth(0.5)
+    doc.circle(bx + 7, by + 7, 4.5, 'S')
+    // Checkmark tick
+    doc.setLineWidth(0.7)
+    doc.line(bx + 4.8, by + 7, bx + 6.5, by + 9)
+    doc.line(bx + 6.5, by + 9, bx + 9.5, by + 5.5)
+    // Brand text
+    doc.setFont('helvetica', 'bold')
+    doc.setFontSize(8)
+    doc.setTextColor(37, 99, 235)
+    doc.text('Davomatlar.uz', bx + 13, by + 6.5)
+    doc.setFont('helvetica', 'normal')
+    doc.setFontSize(6.5)
+    doc.setTextColor(148, 163, 184)
+    doc.text('Boshqaruv tizimi', bx + 13, by + 11)
+    doc.setTextColor(0)
+  }
+
   const handleDownloadPDF = () => {
     const { dateFormatted, orgName, ontime, late, absent, head, body } = buildTableData()
-    const doc = new jsPDF({ orientation: 'landscape', unit: 'mm', format: 'a4' })
+    const doc = new jsPDF({ orientation: 'portrait', unit: 'mm', format: 'a4' })
+
+    // Brend (o'ng yuqori burchak)
+    drawBrand(doc)
+
+    // Sarlavha
     doc.setFont('helvetica', 'bold')
     doc.setFontSize(16)
-    doc.text(`Davomat hisoboti — ${dateFormatted}`, 14, 16)
+    doc.setTextColor(15, 23, 42)
+    doc.text(`Davomat hisoboti — ${dateFormatted}`, 14, 18)
     doc.setFont('helvetica', 'normal')
     doc.setFontSize(10)
-    doc.setTextColor(100)
-    doc.text(orgName, 14, 23)
-    doc.text(`Jami: ${filtered.length}   O'z vaqtida: ${ontime}   Kech keldi: ${late}   Kelmadi: ${absent}`, 14, 29)
+    doc.setTextColor(100, 116, 139)
+    doc.text(orgName, 14, 25)
+
+    // Statistika qutilari
+    const stats = [
+      { label: 'Jami',         val: filtered.length, c: [37,99,235]  },
+      { label: "O'z vaqtida",  val: ontime,           c: [22,163,74]  },
+      { label: 'Kech keldi',   val: late,             c: [217,119,6]  },
+      { label: 'Kelmadi',      val: absent,           c: [220,38,38]  },
+    ]
+    stats.forEach((s, i) => {
+      const x = 14 + i * 46
+      doc.setFillColor(248, 250, 252)
+      doc.roundedRect(x, 30, 42, 14, 2, 2, 'F')
+      doc.setFont('helvetica', 'bold')
+      doc.setFontSize(14)
+      doc.setTextColor(...s.c)
+      doc.text(String(s.val), x + 21, 39, { align: 'center' })
+      doc.setFont('helvetica', 'normal')
+      doc.setFontSize(7)
+      doc.setTextColor(100, 116, 139)
+      doc.text(s.label, x + 21, 43, { align: 'center' })
+    })
+
     doc.setTextColor(0)
     autoTable(doc, {
       head, body,
-      startY: 34,
+      startY: 50,
       styles: { fontSize: 9, cellPadding: 3 },
       headStyles: { fillColor: [37, 99, 235], textColor: 255, fontStyle: 'bold' },
       alternateRowStyles: { fillColor: [248, 250, 252] },
       didParseCell: (data) => {
         if (data.section === 'body' && data.column.index === (multiOrg ? 6 : 5)) {
           const v = data.cell.raw
-          if (v === 'Kelmadi')      data.cell.styles.textColor = [220, 38, 38]
+          if (v === 'Kelmadi')         data.cell.styles.textColor = [220, 38, 38]
           else if (v === 'Kech keldi') data.cell.styles.textColor = [217, 119, 6]
-          else                      data.cell.styles.textColor = [22, 163, 74]
+          else                         data.cell.styles.textColor = [22, 163, 74]
         }
+      },
+      didDrawPage: () => {
+        // Har sahifada brend
+        drawBrand(doc)
+        // Pastki qism
+        const ph = doc.internal.pageSize.getHeight()
+        const pw = doc.internal.pageSize.getWidth()
+        doc.setFontSize(7)
+        doc.setTextColor(203, 213, 225)
+        doc.text('davomatlar.uz', pw / 2, ph - 6, { align: 'center' })
       }
     })
     doc.save(`davomat_${date}.pdf`)
