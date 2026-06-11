@@ -54,9 +54,23 @@ export default function Dashboard({ employees = [], groups = [] }) {
     return g?.work_start || '09:00'
   }
 
+  const getWorkBegin = (group_id) => {
+    const g = groups.find(g => g.id === group_id)
+    return g?.work_begin || '06:00'
+  }
+
+  // first_in ni work_begin dan oldin bo'lsa null qaytaradi
+  const getEffectiveFirstIn = (row) => {
+    if (!row.first_in) return null
+    const timeStr = row.first_in.slice(11, 16) // "HH:MM"
+    return timeStr >= getWorkBegin(row.group_id) ? row.first_in : null
+  }
+
   const getStatus = (row) => {
-    if (!row.first_in) return 'absent'
-    return row.first_in <= getWorkStart(row.group_id) ? 'ontime' : 'late'
+    const effectiveIn = getEffectiveFirstIn(row)
+    if (!effectiveIn) return 'absent'
+    const timeStr = effectiveIn.slice(11, 16)
+    return timeStr <= getWorkStart(row.group_id) ? 'ontime' : 'late'
   }
 
   const visibleGroupIds = groups.map(g => g.id)
@@ -144,8 +158,8 @@ export default function Dashboard({ employees = [], groups = [] }) {
                         </span>
                       </td>
                     )}
-                    <td style={{ padding:'11px 16px', fontSize:'14px', color:row.first_in?'#16a34a':'#cbd5e1', fontWeight:600, fontFamily:'monospace' }}>{row.first_in || '—'}</td>
-                    <td style={{ padding:'11px 16px', fontSize:'14px', color:row.last_out?'#475569':'#cbd5e1', fontFamily:'monospace' }}>{row.last_out || '—'}</td>
+                    <td style={{ padding:'11px 16px', fontSize:'14px', color:getEffectiveFirstIn(row)?'#16a34a':'#cbd5e1', fontWeight:600, fontFamily:'monospace' }}>{getEffectiveFirstIn(row)?.slice(11,16) || '—'}</td>
+                    <td style={{ padding:'11px 16px', fontSize:'14px', color:row.last_out?'#475569':'#cbd5e1', fontFamily:'monospace' }}>{row.last_out?.slice(11,16) || '—'}</td>
                     <td style={{ padding:'11px 16px' }}>
                       <span style={{ padding:'4px 10px', borderRadius:'20px', fontSize:'12px', fontWeight:600, background:s.bg, color:s.color }}>{s.label}</span>
                     </td>

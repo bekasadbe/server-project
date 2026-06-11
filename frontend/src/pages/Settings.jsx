@@ -2,18 +2,20 @@ import { useState, useRef } from 'react'
 import { Settings2, Eye, EyeOff, Clock, Key, Save } from 'lucide-react'
 
 export default function Settings({ group, onUpdateGroup }) {
-  const [login, setLogin]         = useState(group?.login || '')
-  const [pass, setPass]           = useState(group?.password || '')
-  const [showPass, setShowPass]   = useState(false)
-  const [workStart, setWorkStart] = useState(group?.work_start || '09:00')
-  const timeRef = useRef(null)
-  const [saved, setSaved]         = useState(false)
-  const [error, setError]         = useState('')
+  const [login, setLogin]           = useState(group?.login || '')
+  const [pass, setPass]             = useState(group?.password || '')
+  const [showPass, setShowPass]     = useState(false)
+  const [workStart, setWorkStart]   = useState(group?.work_start || '09:00')
+  const [workBegin, setWorkBegin]   = useState(group?.work_begin || '06:00')
+  const timeRef  = useRef(null)
+  const beginRef = useRef(null)
+  const [saved, setSaved]           = useState(false)
+  const [error, setError]           = useState('')
 
   const handleSave = () => {
     if (!login.trim()) return setError('Login kiriting')
     if (!pass.trim())  return setError('Parol kiriting')
-    onUpdateGroup(group.id, { login: login.trim(), password: pass.trim(), work_start: workStart })
+    onUpdateGroup(group.id, { login: login.trim(), password: pass.trim(), work_start: workStart, work_begin: workBegin })
     setError('')
     setSaved(true)
     setTimeout(() => setSaved(false), 2500)
@@ -36,6 +38,29 @@ export default function Settings({ group, onUpdateGroup }) {
       </div>
 
       <div style={{ maxWidth: '480px', display: 'flex', flexDirection: 'column', gap: '16px' }}>
+
+        {/* Kelish hisobi boshlanishi */}
+        <div style={{ background: '#fff', borderRadius: '14px', border: '1px solid #e2e8f0', padding: '24px' }}>
+          <div style={{ display: 'flex', alignItems: 'center', gap: '8px', marginBottom: '16px' }}>
+            <Clock size={17} color="#7c3aed" />
+            <span style={{ fontWeight: 700, fontSize: '15px', color: '#0f172a' }}>Kelish hisobi boshlanadi</span>
+          </div>
+          <p style={{ margin: '0 0 12px', fontSize: '13px', color: '#64748b' }}>
+            Shu vaqtdan <strong>oldin</strong> kelgan eventlar hisoblanmaydi — kechasi kech ketganlar bugun keldi deb ko'rinmasin
+          </p>
+          <div style={{ position: 'relative', display: 'inline-flex', alignItems: 'center' }}>
+            <button onClick={() => beginRef.current?.showPicker()} style={{
+              display: 'flex', alignItems: 'center', gap: '8px',
+              padding: '9px 18px', background: '#f5f3ff', border: '1px solid #ddd6fe',
+              borderRadius: '9px', color: '#7c3aed', fontSize: '16px', fontWeight: 700,
+              cursor: 'pointer', letterSpacing: '1px',
+            }}>
+              <Clock size={16} /> {workBegin}
+            </button>
+            <input ref={beginRef} type="time" value={workBegin} onChange={e => setWorkBegin(e.target.value)}
+              style={{ position: 'absolute', opacity: 0, pointerEvents: 'none', width: '1px', height: '1px' }} />
+          </div>
+        </div>
 
         {/* Ish vaqti */}
         <div style={{ background: '#fff', borderRadius: '14px', border: '1px solid #e2e8f0', padding: '24px' }}>

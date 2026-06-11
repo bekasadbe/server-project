@@ -22,10 +22,10 @@ async function apiFetch(path, opts = {}) {
 }
 
 // localStorage da login/parol saqlash
-function saveGroupCred(id, login, password, work_start) {
+function saveGroupCred(id, login, password, work_start, work_begin) {
   const saved = JSON.parse(localStorage.getItem('groups') || '[]')
   const idx = saved.findIndex(g => g.id === id)
-  const entry = { id, login, password, work_start: work_start || '09:00' }
+  const entry = { id, login, password, work_start: work_start || '09:00', work_begin: work_begin || '06:00' }
   if (idx >= 0) saved[idx] = { ...saved[idx], ...entry }
   else saved.push(entry)
   localStorage.setItem('groups', JSON.stringify(saved))
@@ -57,6 +57,7 @@ export default function App() {
           login:      fromStorage?.login      || fromStatic?.username || g.id,
           password:   fromStorage?.password   || fromStatic?.password || '',
           work_start: fromStorage?.work_start || '09:00',
+          work_begin: fromStorage?.work_begin || '06:00',
         }
       })
       setGroups(merged)
@@ -118,7 +119,7 @@ export default function App() {
   }
 
   const updateGroup = (id, changes) => {
-    saveGroupCred(id, changes.login, changes.password, changes.work_start)
+    saveGroupCred(id, changes.login, changes.password, changes.work_start, changes.work_begin)
     loadData()
   }
 
