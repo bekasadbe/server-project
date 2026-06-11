@@ -1,5 +1,6 @@
 import { LayoutDashboard, Users, Clock, FileBarChart2, Building2, Settings, LogOut, Shield, ChevronRight, Radio, Settings2 } from 'lucide-react'
 
+
 const menu = [
   { key: 'dashboard',  label: 'Davomat',      icon: LayoutDashboard, roles: ['admin','kadrlar'] },
   { key: 'live',       label: 'Jonli lenta',  icon: Radio,           roles: ['admin'] },
@@ -25,11 +26,25 @@ export default function Sidebar({ current, onChange, user, onLogout }) {
     }}>
       {/* Logo */}
       <div style={{ padding: '22px 20px', borderBottom: '1px solid #f1f5f9', display: 'flex', alignItems: 'center', gap: '12px' }}>
-        <div style={{ background: 'linear-gradient(135deg,#2563eb,#7c3aed)', borderRadius: '12px', width: '38px', height: '38px', display: 'flex', alignItems: 'center', justifyContent: 'center', flexShrink: 0, boxShadow: '0 4px 12px #2563eb30' }}>
-          <Building2 size={20} color="white" />
+        <div style={{ flexShrink: 0 }}>
+          <svg width="38" height="38" viewBox="0 0 64 64" fill="none" xmlns="http://www.w3.org/2000/svg">
+            <defs>
+              <linearGradient id="logoGrad" x1="0" y1="0" x2="64" y2="64" gradientUnits="userSpaceOnUse">
+                <stop offset="0%" stopColor="#60a5fa"/>
+                <stop offset="100%" stopColor="#1d4ed8"/>
+              </linearGradient>
+            </defs>
+            <rect width="64" height="64" rx="14" fill="#EFF6FF"/>
+            <circle cx="32" cy="32" r="18" fill="none" stroke="url(#logoGrad)" strokeWidth="2.5"/>
+            <path d="M23 32.5L29 38.5L41 25.5" stroke="url(#logoGrad)" strokeWidth="3.5" strokeLinecap="round" strokeLinejoin="round"/>
+          </svg>
         </div>
         <div>
-          <div style={{ fontWeight: 700, fontSize: '16px', color: '#0f172a', letterSpacing: '-0.3px' }}>Davomat</div>
+          <div style={{
+            fontWeight: 800, fontSize: '16px', letterSpacing: '-0.4px',
+            background: 'linear-gradient(135deg, #3b82f6 0%, #1d4ed8 100%)',
+            WebkitBackgroundClip: 'text', WebkitTextFillColor: 'transparent', backgroundClip: 'text',
+          }}>Davomatlar.uz</div>
           <div style={{ fontSize: '11px', color: '#94a3b8', marginTop: '1px' }}>Boshqaruv tizimi</div>
         </div>
       </div>
