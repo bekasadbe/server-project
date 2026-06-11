@@ -121,6 +121,7 @@ export default function History({ groups = [] }) {
     doc.setTextColor(148, 163, 184)
     doc.text('Boshqaruv tizimi', bx + 13, by + 11)
     doc.setTextColor(0)
+    doc.link(bx, by, bw, bh, { url: 'https://davomatlar.uz' })
 
     // ── SARLAVHA ──────────────────────────────────────────
     doc.setFont('helvetica', 'bold')
@@ -201,6 +202,7 @@ export default function History({ groups = [] }) {
     doc.setFont('helvetica', 'normal'); doc.setFontSize(8); doc.setTextColor(148, 163, 184)
     doc.text('Boshqaruv tizimi', bx + 13, by + 11)
     doc.setTextColor(0)
+    doc.link(bx, by, bw, bh, { url: 'https://davomatlar.uz' })
 
     // Sarlavha
     doc.setFont('helvetica', 'bold'); doc.setFontSize(16); doc.setTextColor(15, 23, 42)
