@@ -20,11 +20,12 @@ export default function AdminPanel({ employees, groups, onAddEmployee, onDeleteE
   const [showPassFor, setShowPassFor] = useState(null)
 
   const [showEditEmp, setShowEditEmp] = useState(false)
-  const [editEmpId, setEditEmpId]       = useState('')
-  const [editEmpNewId, setEditEmpNewId] = useState('')
-  const [editEmpName, setEditEmpName]   = useState('')
+  const [editEmpId, setEditEmpId]           = useState('')
+  const [editEmpNewId, setEditEmpNewId]     = useState('')
+  const [editEmpName, setEditEmpName]       = useState('')
   const [editEmpLavozim, setEditEmpLavozim] = useState('')
-  const [editEmpError, setEditEmpError] = useState('')
+  const [editEmpGroupId, setEditEmpGroupId] = useState('')
+  const [editEmpError, setEditEmpError]     = useState('')
 
   const [showAddEmp, setShowAddEmp] = useState(false)
 
@@ -65,6 +66,7 @@ export default function AdminPanel({ employees, groups, onAddEmployee, onDeleteE
     setEditEmpNewId(emp.id)
     setEditEmpName(emp.name)
     setEditEmpLavozim(emp.lavozim || '')
+    setEditEmpGroupId(emp.group_id || emp.group || '')
     setEditEmpError('')
     setShowEditEmp(true)
   }
@@ -75,7 +77,7 @@ export default function AdminPanel({ employees, groups, onAddEmployee, onDeleteE
     const fid = editEmpNewId.trim().padStart(8, '0')
     if (fid !== editEmpId && employees.find(e => e.id === fid))
       return setEditEmpError('Bu ID allaqachon mavjud')
-    onUpdateEmployee(editEmpId, { id: fid, name: editEmpName.trim(), lavozim: editEmpLavozim.trim() })
+    onUpdateEmployee(editEmpId, { id: fid, name: editEmpName.trim(), lavozim: editEmpLavozim.trim(), group_id: editEmpGroupId })
     setShowEditEmp(false)
   }
 
