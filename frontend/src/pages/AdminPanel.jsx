@@ -237,7 +237,7 @@ export default function AdminPanel({ employees, groups, onAddEmployee, onDeleteE
                       onChange={toggleAll}
                       style={{ cursor: 'pointer', accentColor: '#2563eb' }} />
                   </th>
-                  {['Ism Familiya', 'Lavozim', 'Face ID', 'Guruh', ''].map((h, i) => (
+                  {['Ism Familiya', 'Lavozim', 'Face ID', ''].map((h, i) => (
                     <th key={i} style={{ padding: '11px 14px', textAlign: 'left', fontSize: '11px', color: '#94a3b8', fontWeight: 700, textTransform: 'uppercase', letterSpacing: '0.5px' }}>{h}</th>
                   ))}
                 </tr>
@@ -266,12 +266,6 @@ export default function AdminPanel({ employees, groups, onAddEmployee, onDeleteE
                       </td>
                       <td style={{ padding: '11px 14px', fontSize: '13px', color: '#64748b', fontFamily: 'monospace' }}>
                         #{emp.id}
-                      </td>
-                      <td style={{ padding: '11px 14px' }}>
-                        <select value={emp.group} onChange={e => onMoveEmployee(emp.id, e.target.value)}
-                          style={{ padding: '5px 8px', background: '#f8fafc', border: '1px solid #e2e8f0', borderRadius: '6px', color: '#475569', fontSize: '12px', outline: 'none', cursor: 'pointer' }}>
-                          {groups.map(g => <option key={g.id} value={g.id}>{g.name}</option>)}
-                        </select>
                       </td>
                       <td style={{ padding: '11px 14px', textAlign: 'right' }}>
                         <button onClick={() => openEditEmp(emp)} style={{
