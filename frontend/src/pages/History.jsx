@@ -91,27 +91,28 @@ export default function History({ groups = [] }) {
 
   const drawBrand = (doc) => {
     const pw = doc.internal.pageSize.getWidth()
-    // Logo box (top right)
-    const bx = pw - 52, by = 8, bw = 38, bh = 14
-    doc.setFillColor(239, 246, 255)
-    doc.roundedRect(bx, by, bw, bh, 3, 3, 'F')
-    // Checkmark circle
-    doc.setDrawColor(37, 99, 235)
+    // Logo box (top right) — kichikroq
+    const bx = pw - 46, by = 9, bw = 32, bh = 12
+    doc.setFillColor(240, 253, 244)  // yashil fon
+    doc.roundedRect(bx, by, bw, bh, 2.5, 2.5, 'F')
+    // Checkmark circle — yashil
+    doc.setDrawColor(22, 163, 74)
     doc.setLineWidth(0.5)
-    doc.circle(bx + 7, by + 7, 4.5, 'S')
-    // Checkmark tick
-    doc.setLineWidth(0.7)
-    doc.line(bx + 4.8, by + 7, bx + 6.5, by + 9)
-    doc.line(bx + 6.5, by + 9, bx + 9.5, by + 5.5)
+    doc.circle(bx + 6, by + 6, 3.8, 'S')
+    // Checkmark tick — yashil
+    doc.setDrawColor(22, 163, 74)
+    doc.setLineWidth(0.65)
+    doc.line(bx + 4.1, by + 6, bx + 5.5, by + 7.6)
+    doc.line(bx + 5.5, by + 7.6, bx + 8.1, by + 4.6)
     // Brand text
     doc.setFont('helvetica', 'bold')
-    doc.setFontSize(8)
-    doc.setTextColor(37, 99, 235)
-    doc.text('Davomatlar.uz', bx + 13, by + 6.5)
+    doc.setFontSize(7)
+    doc.setTextColor(22, 163, 74)
+    doc.text('Davomatlar.uz', bx + 11.5, by + 5.5)
     doc.setFont('helvetica', 'normal')
-    doc.setFontSize(6.5)
+    doc.setFontSize(6)
     doc.setTextColor(148, 163, 184)
-    doc.text('Boshqaruv tizimi', bx + 13, by + 11)
+    doc.text('Boshqaruv tizimi', bx + 11.5, by + 9.5)
     doc.setTextColor(0)
   }
 
@@ -168,10 +169,8 @@ export default function History({ groups = [] }) {
           else                         data.cell.styles.textColor = [22, 163, 74]
         }
       },
-      didDrawPage: () => {
-        // Har sahifada brend
-        drawBrand(doc)
-        // Pastki qism
+      didDrawPage: (data) => {
+        // Faqat pastki qism (har sahifada)
         const ph = doc.internal.pageSize.getHeight()
         const pw = doc.internal.pageSize.getWidth()
         doc.setFontSize(7)
