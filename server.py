@@ -17,17 +17,30 @@ def now_uzb():
 
 app = Flask(__name__)
 
-# Deduplicate: {employee_id: last_saved_timestamp}
+# Kamera IP → yo'nalish (in = kirish, out = chiqish)
+CAMERA_DIRECTIONS = {
+    '10.0.3.1': 'in',
+    '10.0.3.2': 'in',
+    '10.0.3.3': 'out',
+    '10.0.3.4': 'out',
+}
+DEFAULT_DIRECTION = 'in'
+
+def get_direction_by_ip(ip):
+    return CAMERA_DIRECTIONS.get(ip, DEFAULT_DIRECTION)
+
+# Deduplicate: {employee_id+direction: last_saved_timestamp}
 _last_seen    = {}
 DEDUP_SECONDS = 60  # Bir xodim 60 soniyada bir marta saqlanadi
 
 
-def is_duplicate(employee_id):
+def is_duplicate(employee_id, direction):
+    key  = f"{employee_id}_{direction}"
     now  = now_uzb().timestamp()
-    last = _last_seen.get(employee_id, 0)
+    last = _last_seen.get(key, 0)
     if now - last < DEDUP_SECONDS:
         return True
-    _last_seen[employee_id] = now
+    _last_seen[key] = now
     return False
 
 
@@ -92,14 +105,18 @@ def receive_event():
             except Exception:
                 pass
 
-        # Deduplicate — 60 soniyada bir marta
-        if is_duplicate(employee_id):
+        # Kamera IP bo'yicha yo'nalishni aniqlaymiz
+        direction = get_direction_by_ip(camera_ip)
+
+        # Deduplicate — 60 soniyada bir marta (direction bo'yicha)
+        if is_duplicate(employee_id, direction):
             return jsonify({'result': 'ok'}), 200
 
         # Server vaqtini saqlash (Toshkent UTC+5)
         server_time = now_uzb().strftime('%Y-%m-%dT%H:%M:%S')
-        save_event(employee_id, server_time, camera_ip)
-        print(f"[{now_uzb().strftime('%H:%M:%S')}] EVENT | {employee_id} | {server_time} | {camera_ip}", flush=True)
+        save_event(employee_id, server_time, camera_ip, direction)
+        arrow = '→ KIRDI' if direction == 'in' else '← CHIQDI'
+        print(f"[{now_uzb().strftime('%H:%M:%S')}] {arrow} | {employee_id} | {server_time} | {camera_ip}", flush=True)
 
     except Exception as e:
         print(f"[{datetime.now().strftime('%H:%M:%S')}] XATOLIK: {e}", flush=True)

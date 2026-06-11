@@ -141,7 +141,7 @@ export default function Dashboard({ employees = [], groups = [] }) {
           <table style={{ width:'100%', borderCollapse:'collapse' }}>
             <thead>
               <tr style={{ background:'#f8fafc' }}>
-                {['Ism Familiya', ...(multiOrg?['Tashkilot']:[]), 'Keldi', 'Ketdi', 'Holat'].map(h => (
+                {['Ism Familiya', ...(multiOrg?['Tashkilot']:[]), 'Keldi', 'Oxirgi o\'tish', 'Holat'].map(h => (
                   <th key={h} style={{ padding:'10px 16px', textAlign:'left', fontSize:'11px', color:'#94a3b8', fontWeight:700, textTransform:'uppercase', letterSpacing:'0.5px' }}>{h}</th>
                 ))}
               </tr>

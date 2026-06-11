@@ -11,9 +11,11 @@ export default function History({ groups = [] }) {
   const [search, setSearch]   = useState('')
   const [date, setDate]       = useState(new Date().toISOString().slice(0, 10))
 
-  const dateRef  = useRef(null)
-  const multiOrg = groups.length > 1
+  const dateRef    = useRef(null)
+  const multiOrg   = groups.length > 1
   const visibleGroupIds = groups.map(g => g.id)
+  const isToday    = date === new Date().toISOString().slice(0, 10)
+  const lastColLabel = isToday ? "Oxirgi o'tish" : 'Ketdi'
 
   const getWorkStart = (group_id) => {
     const g = groups.find(g => g.id === group_id)
@@ -82,8 +84,8 @@ export default function History({ groups = [] }) {
     const late    = filtered.filter(r => r.first_in && getLate(r.first_in, r.group_id) > 0).length
     const absent  = filtered.filter(r => !r.first_in).length
     const head    = multiOrg
-      ? [['#', 'Ism Familiya', 'Tashkilot', 'Keldi', 'Ketdi', 'Kechikish', 'Holat']]
-      : [['#', 'Ism Familiya', 'Keldi', 'Ketdi', 'Kechikish', 'Holat']]
+      ? [['#', 'Ism Familiya', 'Tashkilot', 'Keldi', lastColLabel, 'Kechikish', 'Holat']]
+      : [['#', 'Ism Familiya', 'Keldi', lastColLabel, 'Kechikish', 'Holat']]
     const body = filtered.map((r, i) => {
       const eff = getEffectiveFirstIn(r.first_in, r.group_id)
       const lm  = getLate(r.first_in, r.group_id)
@@ -301,7 +303,7 @@ export default function History({ groups = [] }) {
         <table style={{ width:'100%', borderCollapse:'collapse' }}>
           <thead>
             <tr style={{ background:'#f8fafc', borderBottom:'1px solid #e2e8f0' }}>
-              {['Ism Familiya', ...(multiOrg?['Tashkilot']:[]), 'Keldi', 'Ketdi', 'Kechikish', 'Holat'].map(h => (
+              {['Ism Familiya', ...(multiOrg?['Tashkilot']:[]), 'Keldi', lastColLabel, 'Kechikish', 'Holat'].map(h => (
                 <th key={h} style={{ padding:'11px 16px', textAlign:'left', fontSize:'11px', color:'#94a3b8', fontWeight:700, textTransform:'uppercase', letterSpacing:'0.5px' }}>{h}</th>
               ))}
             </tr>
