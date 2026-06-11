@@ -94,42 +94,35 @@ export default function History({ groups = [] }) {
     const doc = new jsPDF({ orientation: 'portrait', unit: 'mm', format: 'a4' })
     const pw  = doc.internal.pageSize.getWidth()
 
-    // ── HEADER BAND ──────────────────────────────────────
+    // ── BREND (o'ng yuqori burchak) ───────────────────────
+    const bw = 32, bh = 12, bx = pw - 46, by = 9
     doc.setFillColor(239, 246, 255)
-    doc.rect(0, 0, pw, 28, 'F')
+    doc.roundedRect(bx, by, bw, bh, 2.5, 2.5, 'F')
+    doc.setDrawColor(37, 99, 235)
+    doc.setLineWidth(0.45)
+    doc.circle(bx + 6, by + 6, 3, 'S')
+    doc.setLineWidth(0.55)
+    doc.line(bx + 4.5, by + 6,   bx + 5.6, by + 7.2)
+    doc.line(bx + 5.6, by + 7.2, bx + 7.8, by + 4.9)
+    doc.setFont('helvetica', 'bold')
+    doc.setFontSize(7)
+    doc.setTextColor(37, 99, 235)
+    doc.text('Davomatlar.uz', bx + 11.5, by + 5.5)
+    doc.setFont('helvetica', 'normal')
+    doc.setFontSize(6)
+    doc.setTextColor(148, 163, 184)
+    doc.text('Boshqaruv tizimi', bx + 11.5, by + 9.5)
+    doc.setTextColor(0)
 
-    // Sarlavha (chapda)
+    // ── SARLAVHA ──────────────────────────────────────────
     doc.setFont('helvetica', 'bold')
     doc.setFontSize(16)
     doc.setTextColor(15, 23, 42)
-    doc.text(`Davomat hisoboti — ${dateFormatted}`, 14, 13)
+    doc.text(`Davomat hisoboti — ${dateFormatted}`, 14, 18)
     doc.setFont('helvetica', 'normal')
     doc.setFontSize(10)
     doc.setTextColor(100, 116, 139)
-    doc.text(orgName, 14, 22)
-
-    // ── BREND (o'ng, header ichida) ──────────────────────
-    const bw = 38, bh = 18, bx = pw - bw - 10, by = 5
-    doc.setFillColor(255, 255, 255)
-    doc.roundedRect(bx, by, bw, bh, 3, 3, 'F')
-    // Doira
-    doc.setDrawColor(37, 99, 235)
-    doc.setLineWidth(0.5)
-    doc.circle(bx + 7, by + 9, 4, 'S')
-    // Belgi (ptichka)
-    doc.setLineWidth(0.6)
-    doc.line(bx + 5.0, by + 9.0, bx + 6.5, by + 10.7)
-    doc.line(bx + 6.5, by + 10.7, bx + 9.2, by + 7.4)
-    // Matn
-    doc.setFont('helvetica', 'bold')
-    doc.setFontSize(9)
-    doc.setTextColor(37, 99, 235)
-    doc.text('Davomatlar.uz', bx + 13, by + 8.5)
-    doc.setFont('helvetica', 'normal')
-    doc.setFontSize(7)
-    doc.setTextColor(148, 163, 184)
-    doc.text('Boshqaruv tizimi', bx + 13, by + 14)
-    doc.setTextColor(0)
+    doc.text(orgName, 14, 25)
 
     // ── STATISTIKA QUTILARI ───────────────────────────────
     const stats = [
@@ -138,17 +131,15 @@ export default function History({ groups = [] }) {
       { label: 'Kech keldi',  val: late,             c: [217,119,6]  },
       { label: 'Kelmadi',     val: absent,           c: [220,38,38]  },
     ]
-    const boxH = 18, boxW = 42, boxY = 32
+    const boxH = 18, boxW = 42, boxY = 30
     stats.forEach((s, i) => {
       const x = 14 + i * (boxW + 2)
       doc.setFillColor(248, 250, 252)
       doc.roundedRect(x, boxY, boxW, boxH, 2, 2, 'F')
-      // Raqam — markazda
       doc.setFont('helvetica', 'bold')
       doc.setFontSize(14)
       doc.setTextColor(...s.c)
       doc.text(String(s.val), x + boxW / 2, boxY + 9, { align: 'center' })
-      // Label — pastda
       doc.setFont('helvetica', 'normal')
       doc.setFontSize(7)
       doc.setTextColor(100, 116, 139)
