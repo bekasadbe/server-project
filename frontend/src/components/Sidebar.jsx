@@ -1,7 +1,7 @@
 import { LayoutDashboard, Users, Clock, FileBarChart2, Building2, Settings, LogOut, Shield, ChevronRight, Radio, Settings2 } from 'lucide-react'
 
 const menu = [
-  { key: 'dashboard',  label: 'Dashboard',    icon: LayoutDashboard, roles: ['admin','kadrlar'] },
+  { key: 'dashboard',  label: 'Davomat',      icon: LayoutDashboard, roles: ['admin','kadrlar'] },
   { key: 'live',       label: 'Jonli lenta',  icon: Radio,           roles: ['admin'] },
   { key: 'history',    label: 'Tarix',        icon: Clock,           roles: ['kadrlar'] },
   { key: 'employees',  label: 'Xodimlar',     icon: Users,           roles: ['kadrlar'] },
