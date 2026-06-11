@@ -27,7 +27,7 @@ export default function Login({ onLogin }) {
   return (
     <div style={{
       width:'100vw', minHeight:'100vh', overflowY:'auto', overflowX:'hidden', position:'relative',
-      background:'linear-gradient(145deg, #bdd9ff 0%, #5a9ef5 20%, #2d6fe0 45%, #1a52cc 65%, #0f3aaa 100%)',
+      background:'linear-gradient(135deg, #60b8ff 0%, #1a7fe8 25%, #0a5fd4 50%, #0038b8 75%, #001e8a 100%)',
       display:'flex', flexDirection:'column',
     }}>
       {/* Fon effektlari */}
