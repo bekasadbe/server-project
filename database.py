@@ -3,8 +3,25 @@ SQLite database — xodimlar va eventlar saqlanadi.
 """
 import sqlite3
 import os
+import bcrypt
 
 DB_FILE = os.environ.get('DB_FILE', os.path.join(os.path.dirname(__file__), 'davomat.db'))
+
+def hash_password(plain: str) -> str:
+    """Parolni bcrypt bilan hash qilish"""
+    return bcrypt.hashpw(plain.encode(), bcrypt.gensalt(rounds=12)).decode()
+
+def verify_password(plain: str, hashed: str) -> bool:
+    """Kiritilgan parolni hash bilan solishtirish"""
+    try:
+        return bcrypt.checkpw(plain.encode(), hashed.encode())
+    except Exception:
+        return False
+
+def is_hashed(password: str) -> bool:
+    """Parol allaqachon hash qilinganmi?"""
+    return password.startswith('$2b$') or password.startswith('$2a$')
+
 
 def get_direction(camera_ip):
     return 'in'
@@ -126,7 +143,22 @@ def init_db():
                 (emp_id, name, group_id)
             )
         conn.commit()
+
+    # Parollarni hash qilish (agar hali hash qilinmagan bo'lsa)
+    _migrate_passwords()
     print("✅ Database tayyor")
+
+
+def _migrate_passwords():
+    """Plain text parollarni bcrypt hash ga o'tkazish"""
+    with get_conn() as conn:
+        groups = conn.execute("SELECT id, password FROM groups WHERE password != ''").fetchall()
+        for g in groups:
+            if g['password'] and not is_hashed(g['password']):
+                hashed = hash_password(g['password'])
+                conn.execute("UPDATE groups SET password=? WHERE id=?", (hashed, g['id']))
+                print(f"  🔒 {g['id']} paroli hash qilindi")
+        conn.commit()
 
 
 def save_event(employee_id, event_time, device_ip, direction='in'):

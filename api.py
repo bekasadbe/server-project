@@ -9,7 +9,8 @@ from database import (
     get_employees, get_groups,
     add_employee, update_employee, delete_employee,
     add_group, update_group_settings, delete_group,
-    save_event, get_direction
+    save_event, get_direction,
+    hash_password, verify_password, is_hashed, get_conn
 )
 from datetime import date, datetime, timezone, timedelta
 import os
@@ -142,9 +143,11 @@ def group_add():
     name = data.get('name', '').strip()
     if not gid or not name:
         return jsonify({'error': 'id va name majburiy'}), 400
+    plain_pass = data.get('password', '')
+    hashed = hash_password(plain_pass) if plain_pass and not is_hashed(plain_pass) else plain_pass
     add_group(gid, name,
               login=data.get('login', ''),
-              password=data.get('password', ''),
+              password=hashed,
               work_start=data.get('work_start', '09:00'),
               work_begin=data.get('work_begin', '06:00'))
     return jsonify({'ok': True})
@@ -155,10 +158,13 @@ def group_update(gid):
     if not check_token():
         return jsonify({'error': 'Unauthorized'}), 401
     data = request.json or {}
+    plain_pass = data.get('password', '')
+    # Agar yangi parol berilgan bo'lsa — hash qilamiz
+    hashed = hash_password(plain_pass) if plain_pass and not is_hashed(plain_pass) else plain_pass
     update_group_settings(
         gid,
         login=data.get('login', ''),
-        password=data.get('password', ''),
+        password=hashed,
         work_start=data.get('work_start', '09:00'),
         work_begin=data.get('work_begin', '06:00'),
     )
@@ -203,19 +209,22 @@ def auth_login():
     password = data.get('password', '').strip()
 
     # Super admin
-    if username == 'admin' and password == os.environ.get('ADMIN_PASSWORD', 'Inno@Adm!n2026'):
-        return jsonify({'ok': True, 'role': 'admin', 'name': 'Administrator', 'groupId': None})
+    admin_pass = os.environ.get('ADMIN_PASSWORD', 'Inno@Adm!n2026')
+    if username == 'admin':
+        ok = verify_password(password, admin_pass) if is_hashed(admin_pass) else (password == admin_pass)
+        if ok:
+            return jsonify({'ok': True, 'role': 'admin', 'name': 'Administrator', 'groupId': None})
 
-    # Kadrlar — bazadan tekshirish
-    with __import__('database').get_conn() as conn:
+    # Kadrlar — bazadan tekshirish (bcrypt)
+    with get_conn() as conn:
         row = conn.execute(
-            "SELECT id, name, login, password FROM groups WHERE login=? AND password=?",
-            (username, password)
+            "SELECT id, name, login, password FROM groups WHERE login=?",
+            (username,)
         ).fetchone()
-    if row:
+    if row and row['password'] and verify_password(password, row['password']):
         return jsonify({'ok': True, 'role': 'kadrlar', 'name': row['name'], 'groupId': row['id'], 'username': row['login']})
 
-    return jsonify({'ok': False, 'error': 'Login yoki parol noto\'g\'ri'}), 401
+    return jsonify({'ok': False, 'error': "Login yoki parol noto'g'ri"}), 401
 
 
 @app.route('/ping', methods=['GET'])
