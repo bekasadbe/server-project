@@ -46,9 +46,16 @@ export default function History({ groups = [] }) {
 
   const groupName = (gid) => groups.find(g => g.id === gid)?.name || gid
 
-  const filtered = rows.filter(r =>
-    !search || (r.name || '').toLowerCase().includes(search.toLowerCase()) || r.employee_id.includes(search)
-  )
+  const filtered = rows
+    .filter(r => !search || (r.name || '').toLowerCase().includes(search.toLowerCase()) || r.employee_id.includes(search))
+    .sort((a, b) => {
+      const ea = getEffectiveFirstIn(a.first_in, a.group_id)
+      const eb = getEffectiveFirstIn(b.first_in, b.group_id)
+      if (ea && eb) return ea.localeCompare(eb)   // ikkalasi kelgan — vaqt bo'yicha
+      if (ea) return -1                            // a kelgan, b kelmagan — a oldin
+      if (eb) return 1                             // b kelgan, a kelmagan — b oldin
+      return (a.name || '').localeCompare(b.name || '') // ikkalasi kelmagan — ism bo'yicha
+    })
 
   const getLate = (first_in, group_id) => {
     const eff = getEffectiveFirstIn(first_in, group_id)
