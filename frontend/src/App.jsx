@@ -8,7 +8,7 @@ import History from './pages/History'
 import Reports from './pages/Reports'
 import AdminPanel from './pages/AdminPanel'
 import Login from './pages/Login'
-import { getUser, logout, USERS } from './auth'
+import { getUser, logout } from './auth'
 
 import { apiFetch } from './config'
 
