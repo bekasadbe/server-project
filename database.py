@@ -185,7 +185,7 @@ def get_recent_events(limit=50):
 
 
 def get_attendance(date_str):
-    """Bir kun uchun: birinchi kirish + oxirgi chiqish"""
+    """Bir kun uchun: birinchi kirish (work_begin dan keyin) + oxirgi chiqish"""
     with get_conn() as conn:
         rows = conn.execute('''
             SELECT
@@ -193,9 +193,17 @@ def get_attendance(date_str):
                 emp.name,
                 emp.group_id,
                 emp.lavozim,
-                MIN(e.event_time) as first_in,
-                MAX(e.event_time) as last_out
+                MIN(CASE
+                    WHEN e.direction = 'in'
+                     AND time(e.event_time) >= COALESCE(g.work_begin, '06:00')
+                    THEN e.event_time
+                END) as first_in,
+                MAX(CASE
+                    WHEN e.direction = 'out'
+                    THEN e.event_time
+                END) as last_out
             FROM employees emp
+            LEFT JOIN groups g ON g.id = emp.group_id
             LEFT JOIN events e
                 ON e.employee_id = emp.id
                 AND e.event_time >= ?
