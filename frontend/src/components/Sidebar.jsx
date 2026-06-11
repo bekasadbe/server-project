@@ -4,9 +4,9 @@ import { LayoutDashboard, Users, Clock, FileBarChart2, Building2, Settings, LogO
 const menu = [
   { key: 'dashboard',  label: 'Davomat',      icon: LayoutDashboard, roles: ['admin','kadrlar'] },
   { key: 'live',       label: 'Jonli lenta',  icon: Radio,           roles: ['admin'] },
-  { key: 'history',    label: 'Tarix',        icon: Clock,           roles: ['kadrlar'] },
+  { key: 'history',    label: 'Hisobotlar',   icon: Clock,           roles: ['kadrlar'] },
   { key: 'employees',  label: 'Xodimlar',     icon: Users,           roles: ['kadrlar'] },
-  { key: 'reports',    label: 'Hisobotlar',   icon: FileBarChart2,   roles: ['kadrlar'] },
+  { key: 'reports',    label: 'Statistika',   icon: FileBarChart2,   roles: ['kadrlar'] },
   { key: 'settings',   label: 'Sozlamalar',   icon: Settings2,       roles: ['kadrlar'] },
   { key: 'admin',      label: 'Admin panel',  icon: Settings,        roles: ['admin'] },
 ]
