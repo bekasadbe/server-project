@@ -1,7 +1,7 @@
 import { useState } from 'react'
-import { Users, Search, Building2, Pencil } from 'lucide-react'
+import { Users, Search, Building2, Pencil, Trash2 } from 'lucide-react'
 
-export default function Employees({ employees = [], groups = [], onUpdateEmployee }) {
+export default function Employees({ employees = [], groups = [], onUpdateEmployee, onDeleteEmployee }) {
   const [search, setSearch]       = useState('')
   const [orgFilter, setOrgFilter] = useState('all')
 
@@ -160,6 +160,16 @@ export default function Employees({ employees = [], groups = [], onUpdateEmploye
                 <div style={{ padding:'8px 12px', background:'#dcfce7', border:'1px solid #bbf7d0', borderRadius:'7px', color:'#16a34a', fontSize:'13px', fontWeight:600 }}>✅ Saqlandi!</div>
               )}
               <div style={{ display:'flex', gap:'10px', marginTop:'4px' }}>
+                {onDeleteEmployee && (
+                  <button onClick={() => {
+                    if (window.confirm(`"${editName}" xodimini o'chirasizmi?\n\nBu amalni qaytarib bo'lmaydi!`)) {
+                      onDeleteEmployee(editEmp.id)
+                      setShowEdit(false)
+                    }
+                  }} style={{ padding:'10px 14px', background:'#fff1f2', border:'1px solid #fecdd3', borderRadius:'9px', color:'#e11d48', fontSize:'14px', cursor:'pointer', display:'flex', alignItems:'center', gap:'5px' }}>
+                    <Trash2 size={14}/> O'chirish
+                  </button>
+                )}
                 <button onClick={() => setShowEdit(false)}
                   style={{ flex:1, padding:'10px', background:'#f8fafc', border:'1px solid #e2e8f0', borderRadius:'9px', color:'#64748b', fontSize:'14px', cursor:'pointer' }}>
                   Bekor qilish
