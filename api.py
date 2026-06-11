@@ -196,6 +196,28 @@ def events_push():
     return jsonify({'ok': True})
 
 
+@app.route('/auth', methods=['POST'])
+def auth_login():
+    data     = request.json or {}
+    username = data.get('username', '').strip()
+    password = data.get('password', '').strip()
+
+    # Super admin
+    if username == 'admin' and password == os.environ.get('ADMIN_PASSWORD', 'Inno@Adm!n2026'):
+        return jsonify({'ok': True, 'role': 'admin', 'name': 'Administrator', 'groupId': None})
+
+    # Kadrlar — bazadan tekshirish
+    with __import__('database').get_conn() as conn:
+        row = conn.execute(
+            "SELECT id, name, login, password FROM groups WHERE login=? AND password=?",
+            (username, password)
+        ).fetchone()
+    if row:
+        return jsonify({'ok': True, 'role': 'kadrlar', 'name': row['name'], 'groupId': row['id'], 'username': row['login']})
+
+    return jsonify({'ok': False, 'error': 'Login yoki parol noto\'g\'ri'}), 401
+
+
 @app.route('/ping', methods=['GET'])
 def ping():
     return jsonify({'status': 'ok', 'time': now_uzb().strftime('%Y-%m-%d %H:%M:%S')})

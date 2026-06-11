@@ -1,5 +1,5 @@
 import { useState } from 'react'
-import { login } from '../auth'
+import { loginAsync } from '../auth'
 import { Eye, EyeOff, CheckCircle, Clock, Users, TrendingUp, X, Mail, Send, Phone, Camera, MapPin } from 'lucide-react'
 
 export default function Login({ onLogin }) {
@@ -13,8 +13,7 @@ export default function Login({ onLogin }) {
   const handleSubmit = async (e) => {
     e.preventDefault()
     setLoading(true)
-    await new Promise(r => setTimeout(r, 600))
-    const user = login(username, password)
+    const user = await loginAsync(username, password)
     if (user) { onLogin(user) }
     else { setError("Login yoki parol noto'g'ri"); setLoading(false) }
   }
