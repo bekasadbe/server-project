@@ -8,7 +8,7 @@ from database import (
     get_attendance, get_recent_events,
     get_employees, get_groups,
     add_employee, update_employee, delete_employee,
-    add_group, delete_group,
+    add_group, update_group_settings, delete_group,
     save_event, get_direction
 )
 from datetime import date, datetime, timezone, timedelta
@@ -142,7 +142,26 @@ def group_add():
     name = data.get('name', '').strip()
     if not gid or not name:
         return jsonify({'error': 'id va name majburiy'}), 400
-    add_group(gid, name)
+    add_group(gid, name,
+              login=data.get('login', ''),
+              password=data.get('password', ''),
+              work_start=data.get('work_start', '09:00'),
+              work_begin=data.get('work_begin', '06:00'))
+    return jsonify({'ok': True})
+
+
+@app.route('/groups/<gid>', methods=['PUT'])
+def group_update(gid):
+    if not check_token():
+        return jsonify({'error': 'Unauthorized'}), 401
+    data = request.json or {}
+    update_group_settings(
+        gid,
+        login=data.get('login', ''),
+        password=data.get('password', ''),
+        work_start=data.get('work_start', '09:00'),
+        work_begin=data.get('work_begin', '06:00'),
+    )
     return jsonify({'ok': True})
 
 

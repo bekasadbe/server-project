@@ -21,20 +21,6 @@ async function apiFetch(path, opts = {}) {
   return res.json()
 }
 
-// localStorage da login/parol saqlash
-function saveGroupCred(id, login, password, work_start, work_begin) {
-  const saved = JSON.parse(localStorage.getItem('groups') || '[]')
-  const idx = saved.findIndex(g => g.id === id)
-  const entry = { id, login, password, work_start: work_start || '09:00', work_begin: work_begin || '06:00' }
-  if (idx >= 0) saved[idx] = { ...saved[idx], ...entry }
-  else saved.push(entry)
-  localStorage.setItem('groups', JSON.stringify(saved))
-}
-
-function removeGroupCred(id) {
-  const saved = JSON.parse(localStorage.getItem('groups') || '[]')
-  localStorage.setItem('groups', JSON.stringify(saved.filter(g => g.id !== id)))
-}
 
 export default function App() {
   const [user, setUser]           = useState(getUser)
@@ -48,18 +34,13 @@ export default function App() {
     try {
       const data = await apiFetch('/employees')
       setEmployees((data.employees || []).map(e => ({ ...e, group: e.group_id })))
-      const savedGroups = JSON.parse(localStorage.getItem('groups') || '[]')
-      const merged = (data.groups || []).map(g => {
-        const fromStorage = savedGroups.find(s => s.id === g.id)
-        const fromStatic  = USERS.find(u => u.groupId === g.id)
-        return {
-          ...g,
-          login:      fromStorage?.login      || fromStatic?.username || g.id,
-          password:   fromStorage?.password   || fromStatic?.password || '',
-          work_start: fromStorage?.work_start || '09:00',
-          work_begin: fromStorage?.work_begin || '06:00',
-        }
-      })
+      const merged = (data.groups || []).map(g => ({
+        ...g,
+        login:      g.login      || g.id,
+        password:   g.password   || '',
+        work_start: g.work_start || '09:00',
+        work_begin: g.work_begin || '06:00',
+      }))
       setGroups(merged)
     } catch {}
   }
@@ -106,20 +87,28 @@ export default function App() {
   const addGroup = async (grp) => {
     await apiFetch('/groups', {
       method: 'POST',
-      body: JSON.stringify({ id: grp.id, name: grp.name }),
+      body: JSON.stringify({
+        id: grp.id, name: grp.name,
+        login: grp.login || '', password: grp.password || '',
+        work_start: grp.work_start || '09:00', work_begin: grp.work_begin || '06:00',
+      }),
     })
-    saveGroupCred(grp.id, grp.login, grp.password)
     loadData()
   }
 
   const deleteGroup = async (id) => {
     await apiFetch(`/groups/${id}`, { method: 'DELETE' })
-    removeGroupCred(id)
     loadData()
   }
 
-  const updateGroup = (id, changes) => {
-    saveGroupCred(id, changes.login, changes.password, changes.work_start, changes.work_begin)
+  const updateGroup = async (id, changes) => {
+    await apiFetch(`/groups/${id}`, {
+      method: 'PUT',
+      body: JSON.stringify({
+        login: changes.login, password: changes.password,
+        work_start: changes.work_start, work_begin: changes.work_begin,
+      }),
+    })
     loadData()
   }
 
