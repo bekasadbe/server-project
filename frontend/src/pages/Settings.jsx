@@ -1,4 +1,4 @@
-import { useState, useRef } from 'react'
+import { useState, useRef, useEffect } from 'react'
 import { Settings2, Eye, EyeOff, Clock, Key, Save } from 'lucide-react'
 
 export default function Settings({ group, onUpdateGroup }) {
@@ -7,6 +7,16 @@ export default function Settings({ group, onUpdateGroup }) {
   const [showPass, setShowPass]     = useState(false)
   const [workStart, setWorkStart]   = useState(group?.work_start || '09:00')
   const [workBegin, setWorkBegin]   = useState(group?.work_begin || '06:00')
+
+  // group prop o'zgarganda (API dan kelganda) state ni yangilash
+  useEffect(() => {
+    if (group) {
+      setLogin(group.login || '')
+      setPass(group.password || '')
+      setWorkStart(group.work_start || '09:00')
+      setWorkBegin(group.work_begin || '06:00')
+    }
+  }, [group?.id, group?.login, group?.password, group?.work_start, group?.work_begin])
   const timeRef  = useRef(null)
   const beginRef = useRef(null)
   const [saved, setSaved]           = useState(false)
