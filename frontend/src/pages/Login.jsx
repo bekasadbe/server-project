@@ -1,6 +1,6 @@
 import { useState } from 'react'
 import { loginAsync } from '../auth'
-import { Eye, EyeOff, CheckCircle, Clock, Users, TrendingUp, X, Mail, Send, Phone, Camera, MapPin } from 'lucide-react'
+import { Eye, EyeOff, CheckCircle, Clock, Users, TrendingUp, X, Phone, MapPin } from 'lucide-react'
 
 export default function Login({ onLogin }) {
   const [showModal, setShowModal] = useState(false)
@@ -215,10 +215,7 @@ export default function Login({ onLogin }) {
       <footer style={{ position:'relative', zIndex:10 }}>
         <div style={{ display:'flex', flexWrap:'wrap', justifyContent:'center', gap:'6px', padding:'12px 24px 28px' }}>
           {[
-            { icon: Mail,      text:'info@davomatlar.uz',           href:'mailto:info@davomatlar.uz' },
-            { icon: Send,      text:'@davomatlar.uz',               href:'https://t.me/davomatlaruz' },
             { icon: Phone,     text:'+998 90-873-89-63',            href:'tel:+998908738963' },
-            { icon: Camera,    text:'@davomatlar.uz',               href:'https://instagram.com/davomatlar.uz' },
             { icon: MapPin,    text:"Toshkent sh, Olmazor Qamarniso 13", href:null },
           ].map(({ icon: Icon, text, href }) => {
             const inner = (
