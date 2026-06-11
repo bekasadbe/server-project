@@ -42,7 +42,7 @@ export default function App() {
   const [employees, setEmployees] = useState([])
   const [groups, setGroups]       = useState([])
 
-  useEffect(() => { if (user) loadData() }, [user])
+  useEffect(() => { if (user) { loadData(); setPage('dashboard') } }, [user])
 
   const loadData = async () => {
     try {
@@ -151,7 +151,7 @@ export default function App() {
     <div style={{ display:'flex', height:'100vh', background:'#f8fafc', color:'#0f172a', overflow:'hidden' }}>
       <Sidebar current={page} onChange={setPage} user={user} onLogout={handleLogout} />
       <main style={{ flex:1, overflowY:'auto', padding:'28px 32px', background:'#f8fafc' }}>
-        {pages[page]}
+        {pages[page] ?? pages['dashboard']}
       </main>
     </div>
   )
