@@ -198,10 +198,7 @@ def get_attendance(date_str):
                      AND time(e.event_time) >= COALESCE(g.work_begin, '06:00')
                     THEN e.event_time
                 END) as first_in,
-                MAX(CASE
-                    WHEN e.direction = 'out'
-                    THEN e.event_time
-                END) as last_out
+                MAX(e.event_time) as last_out
             FROM employees emp
             LEFT JOIN groups g ON g.id = emp.group_id
             LEFT JOIN events e
