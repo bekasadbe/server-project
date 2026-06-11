@@ -1,6 +1,6 @@
 import { useState } from 'react'
 import { loginAsync } from '../auth'
-import { Eye, EyeOff, CheckCircle, Clock, Users, TrendingUp, X, Phone, MapPin } from 'lucide-react'
+import { Eye, EyeOff, CheckCircle, Clock, Users, TrendingUp, X, Phone, MapPin, Send } from 'lucide-react'
 
 export default function Login({ onLogin }) {
   const [showModal, setShowModal] = useState(false)
@@ -215,6 +215,7 @@ export default function Login({ onLogin }) {
       <footer style={{ position:'relative', zIndex:10 }}>
         <div style={{ display:'flex', flexWrap:'wrap', justifyContent:'center', gap:'6px', padding:'12px 24px 28px' }}>
           {[
+            { icon: Send,      text:'@acsham',                      href:'https://t.me/acsham' },
             { icon: Phone,     text:'+998 90-873-89-63',            href:'tel:+998908738963' },
             { icon: MapPin,    text:"Toshkent sh, Olmazor Qamarniso 13", href:null },
           ].map(({ icon: Icon, text, href }) => {
