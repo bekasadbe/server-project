@@ -1,8 +1,7 @@
 import { useState, useEffect } from 'react'
 import { CheckCircle, Clock, XCircle, Users, Building2, RefreshCw } from 'lucide-react'
 
-const API_URL = import.meta.env.VITE_API_URL || 'http://localhost:8000'
-const TOKEN   = 'Dav0mat@API#2026!'
+import { API_URL, TOKEN } from '../config'
 
 const statusInfo = {
   ontime: { label:"O'z vaqtida", color:'#16a34a', bg:'#dcfce7' },

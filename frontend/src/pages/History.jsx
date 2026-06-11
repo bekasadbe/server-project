@@ -3,8 +3,7 @@ import { Clock, Search, Building2, Download, Calendar, Printer } from 'lucide-re
 import jsPDF from 'jspdf'
 import autoTable from 'jspdf-autotable'
 
-const API_URL = import.meta.env.VITE_API_URL || 'http://localhost:8000'
-const TOKEN   = 'Dav0mat@API#2026!'
+import { API_URL, TOKEN } from '../config'
 
 export default function History({ groups = [] }) {
   const [rows, setRows]       = useState([])

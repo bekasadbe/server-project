@@ -1,14 +1,6 @@
-const API_URL = import.meta.env.VITE_API_URL || 'http://localhost:8000'
-const TOKEN   = 'Dav0mat@API#2026!'
+import { API_URL, TOKEN } from './config'
 
-// Statik fallback (faqat oflayn holat uchun)
-export const USERS = [
-  { username: 'admin',  password: 'Inno@Adm!n2026', role: 'admin',   name: 'Administrator' },
-  { username: 'inno',   password: 'Inno@2026#kdr',   role: 'kadrlar', name: 'Inno Texnopark', groupId: 'inno'   },
-  { username: 'milliy', password: 'Milliy@2026#kdr',  role: 'kadrlar', name: 'Milliy Offis',   groupId: 'milliy' },
-]
-
-// API orqali login (async)
+// API orqali login — bazadan tekshiradi (bcrypt)
 export async function loginAsync(username, password) {
   try {
     const res = await fetch(`${API_URL}/auth`, {
@@ -18,29 +10,14 @@ export async function loginAsync(username, password) {
     })
     const data = await res.json()
     if (data.ok) {
-      const user = { username, password, role: data.role, name: data.name, groupId: data.groupId || null }
+      const user = { username, role: data.role, name: data.name, groupId: data.groupId || null, loginAt: Date.now() }
       localStorage.setItem('user', JSON.stringify(user))
       return user
     }
     return null
   } catch {
-    // API ishlamasa — statik foydalanuvchilardan qidirish
-    return loginStatic(username, password)
+    return null
   }
-}
-
-function loginStatic(username, password) {
-  const user = USERS.find(u => u.username === username && u.password === password)
-  if (user) {
-    localStorage.setItem('user', JSON.stringify(user))
-    return user
-  }
-  return null
-}
-
-// Eski sync login (faqat fallback)
-export function login(username, password) {
-  return loginStatic(username, password)
 }
 
 export function logout() {
@@ -49,10 +26,20 @@ export function logout() {
 
 export function getUser() {
   const u = localStorage.getItem('user')
-  return u ? JSON.parse(u) : null
+  if (!u) return null
+  try {
+    const user = JSON.parse(u)
+    // Session muddati: 12 soat
+    if (user.loginAt && Date.now() - user.loginAt > 12 * 60 * 60 * 1000) {
+      localStorage.removeItem('user')
+      return null
+    }
+    return user
+  } catch {
+    return null
+  }
 }
 
 export function isAdmin() {
-  const u = getUser()
-  return u?.role === 'admin'
+  return getUser()?.role === 'admin'
 }

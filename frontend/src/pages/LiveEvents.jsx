@@ -1,8 +1,7 @@
 import { useState, useEffect, useRef } from 'react'
 import { Wifi, WifiOff } from 'lucide-react'
 
-const API_URL = import.meta.env.VITE_API_URL || 'http://192.168.5.127:8000'
-const TOKEN   = 'Dav0mat@API#2026!'
+import { API_URL, TOKEN } from '../config'
 
 export default function LiveEvents({ groups = [] }) {
   const [events, setEvents]       = useState([])

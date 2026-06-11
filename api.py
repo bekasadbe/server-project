@@ -13,13 +13,27 @@ from database import (
     hash_password, verify_password, is_hashed, get_conn
 )
 from datetime import date, datetime, timezone, timedelta
-import os
+from collections import defaultdict
+import os, time
 
 TZ_UZB = timezone(timedelta(hours=5))
 def now_uzb():
     return datetime.now(TZ_UZB)
 
 app = Flask(__name__)
+
+# ── RATE LIMITING (/auth uchun) ───────────────────────────
+_login_attempts = defaultdict(list)  # ip → [timestamp, ...]
+
+def check_rate_limit(ip, max_attempts=10, window=300):
+    """5 daqiqada 10 tadan ko'p urinish bo'lsa bloklash"""
+    now = time.time()
+    attempts = [t for t in _login_attempts[ip] if now - t < window]
+    _login_attempts[ip] = attempts
+    if len(attempts) >= max_attempts:
+        return False
+    _login_attempts[ip].append(now)
+    return True
 
 API_TOKEN = os.environ.get('API_TOKEN', 'Dav0mat@API#2026!')
 
@@ -204,6 +218,10 @@ def events_push():
 
 @app.route('/auth', methods=['POST'])
 def auth_login():
+    ip = request.headers.get('X-Forwarded-For', request.remote_addr)
+    if not check_rate_limit(ip):
+        return jsonify({'ok': False, 'error': 'Juda ko\'p urinish. 5 daqiqa kuting.'}), 429
+
     data     = request.json or {}
     username = data.get('username', '').strip()
     password = data.get('password', '').strip()

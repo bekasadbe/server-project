@@ -2,8 +2,7 @@ import { useState, useEffect } from 'react'
 import { BarChart2, TrendingUp, UserX, UserCheck, Clock, Award, AlertTriangle } from 'lucide-react'
 import { AreaChart, Area, BarChart, Bar, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer, Legend } from 'recharts'
 
-const API_URL = import.meta.env.VITE_API_URL || 'http://localhost:8000'
-const TOKEN   = 'Dav0mat@API#2026!'
+import { API_URL, TOKEN } from '../config'
 
 function getLast7Days() {
   const days = []
@@ -28,6 +27,8 @@ export default function Reports({ groups = [] }) {
   const multiOrg = groups.length > 1
 
   const getWorkStart = (gid) => groups.find(g => g.id === gid)?.work_start || '09:00'
+  const getWorkBegin = (gid) => groups.find(g => g.id === gid)?.work_begin || '06:00'
+  const effectiveIn  = (r) => (r.first_in && r.first_in >= getWorkBegin(r.group_id)) ? r.first_in : null
 
   useEffect(() => {
     const load = async () => {
@@ -47,9 +48,9 @@ export default function Reports({ groups = [] }) {
       const dayStats = allData.map(({ date, rows }) => {
         const filtered = rows.filter(r => orgFilter === 'all' || r.group_id === orgFilter)
         const total  = filtered.length
-        const ontime = filtered.filter(r => r.first_in && r.first_in <= getWorkStart(r.group_id)).length
-        const late   = filtered.filter(r => r.first_in && r.first_in > getWorkStart(r.group_id)).length
-        const absent = filtered.filter(r => !r.first_in).length
+        const ontime = filtered.filter(r => { const e = effectiveIn(r); return e && e <= getWorkStart(r.group_id) }).length
+        const late   = filtered.filter(r => { const e = effectiveIn(r); return e && e > getWorkStart(r.group_id) }).length
+        const absent = filtered.filter(r => !effectiveIn(r)).length
         const pct    = total ? Math.round((ontime + late) / total * 100) : 0
         return { date, label: dayLabel(date), total, ontime, late, absent, pct }
       })
@@ -61,8 +62,9 @@ export default function Reports({ groups = [] }) {
         const filtered = rows.filter(r => orgFilter === 'all' || r.group_id === orgFilter)
         filtered.forEach(r => {
           if (!empMap[r.employee_id]) empMap[r.employee_id] = { name: r.name, absent: 0, late: 0, present: 0 }
-          if (!r.first_in) empMap[r.employee_id].absent++
-          else if (r.first_in > getWorkStart(r.group_id)) empMap[r.employee_id].late++
+          const e = effectiveIn(r)
+          if (!e) empMap[r.employee_id].absent++
+          else if (e > getWorkStart(r.group_id)) empMap[r.employee_id].late++
           else empMap[r.employee_id].present++
         })
       })

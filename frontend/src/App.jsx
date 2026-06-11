@@ -10,16 +10,7 @@ import AdminPanel from './pages/AdminPanel'
 import Login from './pages/Login'
 import { getUser, logout, USERS } from './auth'
 
-const API_URL = import.meta.env.VITE_API_URL || 'http://localhost:8000'
-const TOKEN   = 'Dav0mat@API#2026!'
-
-async function apiFetch(path, opts = {}) {
-  const res = await fetch(`${API_URL}${path}`, {
-    ...opts,
-    headers: { 'X-API-Token': TOKEN, 'Content-Type': 'application/json', ...opts.headers },
-  })
-  return res.json()
-}
+import { apiFetch } from './config'
 
 
 export default function App() {
