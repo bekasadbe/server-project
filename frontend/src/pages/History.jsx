@@ -93,21 +93,21 @@ export default function History({ groups = [] }) {
     const pw = doc.internal.pageSize.getWidth()
     // Logo box (top right) — kichikroq
     const bx = pw - 46, by = 9, bw = 32, bh = 12
-    doc.setFillColor(240, 253, 244)  // yashil fon
+    doc.setFillColor(239, 246, 255)  // ko'k fon
     doc.roundedRect(bx, by, bw, bh, 2.5, 2.5, 'F')
-    // Checkmark circle — yashil
-    doc.setDrawColor(22, 163, 74)
-    doc.setLineWidth(0.5)
-    doc.circle(bx + 6, by + 6, 3.8, 'S')
-    // Checkmark tick — yashil
-    doc.setDrawColor(22, 163, 74)
-    doc.setLineWidth(0.65)
-    doc.line(bx + 4.1, by + 6, bx + 5.5, by + 7.6)
-    doc.line(bx + 5.5, by + 7.6, bx + 8.1, by + 4.6)
+    // Checkmark circle — ko'k, kichik
+    doc.setDrawColor(37, 99, 235)
+    doc.setLineWidth(0.45)
+    doc.circle(bx + 6, by + 6, 3, 'S')
+    // Checkmark tick — ko'k, kichik
+    doc.setDrawColor(37, 99, 235)
+    doc.setLineWidth(0.55)
+    doc.line(bx + 4.5, by + 6, bx + 5.6, by + 7.2)
+    doc.line(bx + 5.6, by + 7.2, bx + 7.8, by + 4.9)
     // Brand text
     doc.setFont('helvetica', 'bold')
     doc.setFontSize(7)
-    doc.setTextColor(22, 163, 74)
+    doc.setTextColor(37, 99, 235)
     doc.text('Davomatlar.uz', bx + 11.5, by + 5.5)
     doc.setFont('helvetica', 'normal')
     doc.setFontSize(6)
