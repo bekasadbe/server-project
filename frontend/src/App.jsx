@@ -127,7 +127,7 @@ export default function App() {
     dashboard: <Dashboard  employees={visibleEmps} groups={visibleGrps} />,
     ...(user.role === 'admin' ? { live: <LiveEvents groups={groups} /> } : {}),
     history:   <History    groups={visibleGrps} />,
-    employees: <Employees  employees={visibleEmps} groups={visibleGrps} />,
+    employees: <Employees  employees={visibleEmps} groups={visibleGrps} onUpdateEmployee={updateEmployee} />,
     reports:   <Reports    groups={visibleGrps} />,
     ...(user.role === 'kadrlar' ? {
       settings: <Settings group={visibleGrps[0]} onUpdateGroup={updateGroup} />
