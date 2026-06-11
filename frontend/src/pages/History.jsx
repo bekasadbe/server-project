@@ -21,6 +21,17 @@ export default function History({ groups = [] }) {
     return g?.work_start || '09:00'
   }
 
+  const getWorkBegin = (group_id) => {
+    const g = groups.find(g => g.id === group_id)
+    return g?.work_begin || '06:00'
+  }
+
+  // first_in work_begin dan oldin bo'lsa — kechagi event, hisoblanmaydi
+  const getEffectiveFirstIn = (first_in, group_id) => {
+    if (!first_in) return null
+    return first_in >= getWorkBegin(group_id) ? first_in : null
+  }
+
   const fetchData = async (d) => {
     setLoading(true)
     try {
@@ -40,20 +51,22 @@ export default function History({ groups = [] }) {
   )
 
   const getLate = (first_in, group_id) => {
-    if (!first_in) return null
+    const eff = getEffectiveFirstIn(first_in, group_id)
+    if (!eff) return null
     const workStart = getWorkStart(group_id)
     const [wh, wm] = workStart.split(':').map(Number)
-    const [h, m]   = first_in.split(':').map(Number)
+    const [h, m]   = eff.split(':').map(Number)
     const mins = (h - wh) * 60 + (m - wm)
     return mins > 0 ? mins : 0
   }
 
   const getStatus = (r) => {
-    if (!r.first_in) return { label: 'Kelmadi',      color: '#dc2626', bg: '#fee2e2' }
+    const eff = getEffectiveFirstIn(r.first_in, r.group_id)
+    if (!eff) return { label: 'Kelmadi',     color: '#dc2626', bg: '#fee2e2' }
     const late = getLate(r.first_in, r.group_id)
     return late > 0
-      ? { label: 'Kech keldi',   color: '#d97706', bg: '#fef3c7' }
-      : { label: "O'z vaqtida",  color: '#16a34a', bg: '#dcfce7' }
+      ? { label: 'Kech keldi',  color: '#d97706', bg: '#fef3c7' }
+      : { label: "O'z vaqtida", color: '#16a34a', bg: '#dcfce7' }
   }
 
   const buildTableData = () => {
@@ -66,10 +79,11 @@ export default function History({ groups = [] }) {
       ? [['#', 'Ism Familiya', 'Tashkilot', 'Keldi', 'Ketdi', 'Kechikish', 'Holat']]
       : [['#', 'Ism Familiya', 'Keldi', 'Ketdi', 'Kechikish', 'Holat']]
     const body = filtered.map((r, i) => {
-      const lm = getLate(r.first_in, r.group_id)
-      const st = getStatus(r)
+      const eff = getEffectiveFirstIn(r.first_in, r.group_id)
+      const lm  = getLate(r.first_in, r.group_id)
+      const st  = getStatus(r)
       const row = [i+1, r.name || '—', ...(multiOrg ? [groupName(r.group_id)] : []),
-        r.first_in || '—', r.last_out || '—', lm > 0 ? `${lm} daq.` : '—', st.label]
+        eff || '—', r.last_out || '—', lm > 0 ? `${lm} daq.` : '—', st.label]
       return row
     })
     return { dateFormatted, orgName, ontime, late, absent, head, body }
@@ -201,7 +215,7 @@ export default function History({ groups = [] }) {
                       </span>
                     </td>
                   )}
-                  <td style={{ padding:'11px 16px', fontFamily:'monospace', fontSize:'14px', color:r.first_in?'#16a34a':'#cbd5e1', fontWeight:600 }}>{r.first_in || '—'}</td>
+                  <td style={{ padding:'11px 16px', fontFamily:'monospace', fontSize:'14px', color:getEffectiveFirstIn(r.first_in,r.group_id)?'#16a34a':'#cbd5e1', fontWeight:600 }}>{getEffectiveFirstIn(r.first_in,r.group_id) || '—'}</td>
                   <td style={{ padding:'11px 16px', fontFamily:'monospace', fontSize:'14px', color:r.last_out?'#475569':'#cbd5e1' }}>{r.last_out || '—'}</td>
                   <td style={{ padding:'11px 16px', fontSize:'13px', color: late_min > 0 ? '#d97706' : '#94a3b8' }}>
                     {late_min > 0 ? `${late_min} daq.` : '—'}
