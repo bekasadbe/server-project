@@ -95,7 +95,7 @@ export default function History({ groups = [] }) {
     const pw  = doc.internal.pageSize.getWidth()
 
     // ── BREND (o'ng yuqori burchak) ───────────────────────
-    const bw = 32, bh = 12, bx = pw - 46, by = 9
+    const bw = 38, bh = 14, bx = pw - 52, by = 8
     doc.setFillColor(239, 246, 255)
     doc.roundedRect(bx, by, bw, bh, 2.5, 2.5, 'F')
     doc.setDrawColor(37, 99, 235)
@@ -105,13 +105,13 @@ export default function History({ groups = [] }) {
     doc.line(bx + 4.5, by + 6,   bx + 5.6, by + 7.2)
     doc.line(bx + 5.6, by + 7.2, bx + 7.8, by + 4.9)
     doc.setFont('helvetica', 'bold')
-    doc.setFontSize(7)
+    doc.setFontSize(9)
     doc.setTextColor(37, 99, 235)
-    doc.text('Davomatlar.uz', bx + 11.5, by + 5.5)
+    doc.text('Davomatlar.uz', bx + 13, by + 6)
     doc.setFont('helvetica', 'normal')
-    doc.setFontSize(6)
+    doc.setFontSize(8)
     doc.setTextColor(148, 163, 184)
-    doc.text('Boshqaruv tizimi', bx + 11.5, by + 9.5)
+    doc.text('Boshqaruv tizimi', bx + 13, by + 11)
     doc.setTextColor(0)
 
     // ── SARLAVHA ──────────────────────────────────────────
