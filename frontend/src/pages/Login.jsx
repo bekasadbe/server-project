@@ -66,7 +66,7 @@ export default function Login({ onLogin }) {
           <div style={{ width:'36px', height:'36px', borderRadius:'10px', background:'rgba(255,255,255,0.15)', backdropFilter:'blur(10px)', border:'1px solid rgba(255,255,255,0.2)', display:'flex', alignItems:'center', justifyContent:'center', flexShrink:0 }}>
             <CheckCircle size={20} color="white"/>
           </div>
-          <span style={{ fontSize:'18px', fontWeight:700, color:'white', letterSpacing:'-0.5px' }}>Davomatlar</span>
+          <span style={{ fontSize:'18px', fontWeight:800, letterSpacing:'-0.5px', background:'linear-gradient(135deg, #ffffff 0%, #93c5fd 100%)', WebkitBackgroundClip:'text', WebkitTextFillColor:'transparent', backgroundClip:'text' }}>Davomatlar.uz</span>
         </div>
 
         {/* Kirish tugmasi */}
