@@ -30,6 +30,9 @@ export default function Reports({ groups = [] }) {
   const getWorkBegin = (gid) => groups.find(g => g.id === gid)?.work_begin || '06:00'
   const effectiveIn  = (r) => (r.first_in && r.first_in >= getWorkBegin(r.group_id)) ? r.first_in : null
 
+  // Faqat ko'rinadigan guruhlar ro'yxati (kadrlar uchun cheklangan)
+  const visibleGroupIds = groups.map(g => g.id)
+
   useEffect(() => {
     const load = async () => {
       setLoading(true)
@@ -46,7 +49,7 @@ export default function Reports({ groups = [] }) {
 
       // Kunlik statistika
       const dayStats = allData.map(({ date, rows }) => {
-        const filtered = rows.filter(r => orgFilter === 'all' || r.group_id === orgFilter)
+        const filtered = rows.filter(r => visibleGroupIds.includes(r.group_id) && (orgFilter === 'all' || r.group_id === orgFilter))
         const total  = filtered.length
         const ontime = filtered.filter(r => { const e = effectiveIn(r); return e && e <= getWorkStart(r.group_id) }).length
         const late   = filtered.filter(r => { const e = effectiveIn(r); return e && e > getWorkStart(r.group_id) }).length
@@ -59,7 +62,7 @@ export default function Reports({ groups = [] }) {
       // Xodim reytingi (7 kun bo'yicha)
       const empMap = {}
       allData.forEach(({ rows }) => {
-        const filtered = rows.filter(r => orgFilter === 'all' || r.group_id === orgFilter)
+        const filtered = rows.filter(r => visibleGroupIds.includes(r.group_id) && (orgFilter === 'all' || r.group_id === orgFilter))
         filtered.forEach(r => {
           if (!empMap[r.employee_id]) empMap[r.employee_id] = { name: r.name, absent: 0, late: 0, present: 0 }
           const e = effectiveIn(r)
@@ -72,7 +75,8 @@ export default function Reports({ groups = [] }) {
       setLoading(false)
     }
     load()
-  }, [orgFilter])
+  // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [orgFilter, groups.map(g => g.id).join(',')])
 
   const totalDays = stats.length
   const avgPct    = totalDays ? Math.round(stats.reduce((s, r) => s + r.pct, 0) / totalDays) : 0
