@@ -84,14 +84,14 @@ export default function History({ groups = [] }) {
     const late    = filtered.filter(r => r.first_in && getLate(r.first_in, r.group_id) > 0).length
     const absent  = filtered.filter(r => !r.first_in).length
     const head    = multiOrg
-      ? [['#', 'Ism Familiya', 'Tashkilot', 'Keldi', lastColLabel, 'Kechikish', 'Holat']]
-      : [['#', 'Ism Familiya', 'Keldi', lastColLabel, 'Kechikish', 'Holat']]
+      ? [['#', 'Ism Familiya', 'Tashkilot', 'Keldi', 'Kechikish', 'Holat']]
+      : [['#', 'Ism Familiya', 'Keldi', 'Kechikish', 'Holat']]
     const body = filtered.map((r, i) => {
       const eff = getEffectiveFirstIn(r.first_in, r.group_id)
       const lm  = getLate(r.first_in, r.group_id)
       const st  = getStatus(r)
       const row = [i+1, r.name || '—', ...(multiOrg ? [groupName(r.group_id)] : []),
-        eff || '—', r.last_out || '—', lm > 0 ? `${lm} daq.` : '—', st.label]
+        eff || '—', lm > 0 ? `${lm} daq.` : '—', st.label]
       return row
     })
     return { dateFormatted, orgName, ontime, late, absent, head, body }
@@ -163,7 +163,7 @@ export default function History({ groups = [] }) {
       headStyles: { fillColor: [37, 99, 235], textColor: 255, fontStyle: 'bold' },
       alternateRowStyles: { fillColor: [248, 250, 252] },
       didParseCell: (data) => {
-        if (data.section === 'body' && data.column.index === (multiOrg ? 6 : 5)) {
+        if (data.section === 'body' && data.column.index === (multiOrg ? 5 : 4)) {
           const v = data.cell.raw
           if (v === 'Kelmadi')         data.cell.styles.textColor = [220, 38, 38]
           else if (v === 'Kech keldi') data.cell.styles.textColor = [217, 119, 6]
@@ -233,7 +233,7 @@ export default function History({ groups = [] }) {
       headStyles: { fillColor: [37, 99, 235], textColor: 255, fontStyle: 'bold' },
       alternateRowStyles: { fillColor: [248, 250, 252] },
       didParseCell: (data) => {
-        if (data.section === 'body' && data.column.index === (multiOrg ? 6 : 5)) {
+        if (data.section === 'body' && data.column.index === (multiOrg ? 5 : 4)) {
           const v = data.cell.raw
           if (v === 'Kelmadi')         data.cell.styles.textColor = [220, 38, 38]
           else if (v === 'Kech keldi') data.cell.styles.textColor = [217, 119, 6]
