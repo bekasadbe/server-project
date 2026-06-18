@@ -138,13 +138,6 @@ export default function Jadvallar({ groups = [], employees = [] }) {
       )
     }
 
-    // Dam olish kuni
-    if (off) return (
-      <div style={cellStyle('#e2e8f0', '#f8fafc')}>
-        <div style={{ ...plannedStyle, marginBottom: 0, color: '#cbd5e1' }}>Dam olish</div>
-      </div>
-    )
-
     // Ma'lumot bor
     if (rec && (rec.first_in || rec.last_out)) {
       const fi            = rec.first_in
@@ -167,6 +160,13 @@ export default function Jadvallar({ groups = [], employees = [] }) {
         </div>
       )
     }
+
+    // Dam olish kuni (ma'lumot yo'q)
+    if (off) return (
+      <div style={cellStyle('#e2e8f0', '#f8fafc')}>
+        <div style={{ ...plannedStyle, marginBottom: 0, color: '#cbd5e1' }}>Dam olish</div>
+      </div>
+    )
 
     // Ma'lumot yo'q (ish kuni)
     return (
