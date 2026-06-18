@@ -7,6 +7,7 @@ import Settings from './pages/Settings'
 import History from './pages/History'
 import Reports from './pages/Reports'
 import AdminPanel from './pages/AdminPanel'
+import Accounts from './pages/Accounts'
 import Login from './pages/Login'
 import { getUser, logout } from './auth'
 
@@ -126,6 +127,12 @@ export default function App() {
         onDeleteGroup={deleteGroup}
         onMoveEmployee={moveEmployee}
         onUpdateGroup={updateGroup}
+      />,
+      accounts: <Accounts
+        groups={groups}
+        onUpdateGroup={updateGroup}
+        onAddGroup={addGroup}
+        onDeleteGroup={deleteGroup}
       />
     } : {})
   }

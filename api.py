@@ -175,8 +175,13 @@ def group_update(gid):
         return jsonify({'error': 'Unauthorized'}), 401
     data = request.json or {}
     plain_pass = data.get('password', '')
-    # Agar yangi parol berilgan bo'lsa — hash qilamiz
-    hashed = hash_password(plain_pass) if plain_pass and not is_hashed(plain_pass) else plain_pass
+    if plain_pass == '[[keep]]':
+        # Parol o'zgarmaydi — bazadan olish
+        with get_conn() as _c:
+            _row = _c.execute("SELECT password FROM groups WHERE id=?", (gid,)).fetchone()
+            hashed = _row['password'] if _row else ''
+    else:
+        hashed = hash_password(plain_pass) if plain_pass and not is_hashed(plain_pass) else plain_pass
     linked = ','.join([g.strip() for g in data.get('linked_groups', []) if g.strip()])
     update_group_settings(
         gid,

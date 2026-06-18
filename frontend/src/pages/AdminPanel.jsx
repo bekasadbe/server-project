@@ -1,5 +1,5 @@
 import { useState } from 'react'
-import { Plus, Trash2, Search, FolderOpen, Folder, Eye, EyeOff, Key, Pencil, UserPlus, Settings2, AlertCircle, MoreHorizontal, ChevronLeft, ChevronRight } from 'lucide-react'
+import { Plus, Trash2, Search, FolderOpen, Folder, Pencil, UserPlus, ChevronLeft, ChevronRight } from 'lucide-react'
 
 export default function AdminPanel({ employees, groups, onAddEmployee, onDeleteEmployee, onDeleteEmployees, onUpdateEmployee, onAddGroup, onDeleteGroup, onMoveEmployee, onUpdateGroup }) {
   const [selectedGroup, setSelectedGroup] = useState(groups[0]?.id || null)
@@ -177,12 +177,6 @@ export default function AdminPanel({ employees, groups, onAddEmployee, onDeleteE
               {/* Action icons */}
               <div style={{ display: 'flex', gap: '6px' }}>
                 <button
-                  title="Sozlamalar"
-                  onClick={() => { setEditLogin(currentGroup.login); setEditPass(currentGroup.password); setEditWorkStart(currentGroup.work_start || '09:00'); setEditLinkedGroups((currentGroup.linked_groups||'').split(',').filter(Boolean)); setShowEditCred(true) }}
-                  style={{ padding: '8px', background: '#f8fafc', border: '1px solid #e2e8f0', borderRadius: '8px', cursor: 'pointer', display: 'flex', color: '#64748b' }}>
-                  <Settings2 size={16} />
-                </button>
-                <button
                   title="Tashkilotni o'chirish"
                   onClick={() => {
                     if (window.confirm(`"${currentGroup.name}" tashkilotini o'chirasizmi?\n\nBarcha xodimlar ham o'chib ketadi!`))
@@ -190,15 +184,6 @@ export default function AdminPanel({ employees, groups, onAddEmployee, onDeleteE
                   }}
                   style={{ padding: '8px', background: '#fff1f2', border: '1px solid #fecdd3', borderRadius: '8px', cursor: 'pointer', display: 'flex', color: '#e11d48' }}>
                   <Trash2 size={16} />
-                </button>
-                <button
-                  title="Login/parolni ko'rish"
-                  onClick={() => setShowPassFor(showPassFor === currentGroup.id ? null : currentGroup.id)}
-                  style={{ padding: '8px', background: '#fffbeb', border: '1px solid #fde68a', borderRadius: '8px', cursor: 'pointer', display: 'flex', color: '#d97706' }}>
-                  <AlertCircle size={16} />
-                </button>
-                <button style={{ padding: '8px', background: '#f8fafc', border: '1px solid #e2e8f0', borderRadius: '8px', cursor: 'pointer', display: 'flex', color: '#64748b' }}>
-                  <MoreHorizontal size={16} />
                 </button>
               </div>
 
@@ -222,16 +207,6 @@ export default function AdminPanel({ employees, groups, onAddEmployee, onDeleteE
               </div>
             </div>
 
-            {/* Parol ko'rinishi */}
-            {showPassFor === currentGroup.id && (
-              <div style={{ padding: '10px 18px', background: '#fffbeb', borderBottom: '1px solid #fde68a', display: 'flex', alignItems: 'center', gap: '8px' }}>
-                <Key size={13} color="#d97706" />
-                <span style={{ fontSize: '13px', color: '#92400e' }}>Login: <strong>{currentGroup.login}</strong></span>
-                <span style={{ color: '#fde68a' }}>|</span>
-                <span style={{ fontSize: '13px', color: '#92400e' }}>Parol: <strong style={{ fontFamily: 'monospace' }}>{currentGroup.password}</strong></span>
-                <button onClick={() => setShowPassFor(null)} style={{ marginLeft: 'auto', background: 'none', border: 'none', cursor: 'pointer', color: '#d97706', fontSize: '18px', lineHeight: 1 }}>×</button>
-              </div>
-            )}
 
             {/* Table */}
             <table style={{ width: '100%', borderCollapse: 'collapse' }}>
@@ -374,68 +349,6 @@ export default function AdminPanel({ employees, groups, onAddEmployee, onDeleteE
                 <button onClick={handleAddEmployee}
                   style={{ flex: 1, padding: '10px', background: '#2563eb', border: 'none', borderRadius: '9px', color: 'white', fontSize: '14px', fontWeight: 600, cursor: 'pointer', boxShadow: '0 2px 8px #2563eb30' }}>
                   Qo'shish
-                </button>
-              </div>
-            </div>
-          </div>
-        </div>
-      )}
-
-      {/* LOGIN/PAROL O'ZGARTIRISH MODAL */}
-      {showEditCred && (
-        <div style={overlayStyle}>
-          <div style={{ ...modalStyle, maxWidth: '400px' }}>
-            <h2 style={{ margin: '0 0 6px', fontSize: '18px', fontWeight: 700, color: '#0f172a' }}>Sozlamalar</h2>
-            <p style={{ margin: '0 0 24px', fontSize: '13px', color: '#94a3b8' }}>{currentGroup?.name}</p>
-            <div style={{ display: 'flex', flexDirection: 'column', gap: '14px' }}>
-              <div>
-                <label style={{ fontSize: '12px', color: '#64748b', display: 'block', marginBottom: '5px', fontWeight: 600 }}>Login</label>
-                <input value={editLogin} onChange={e => { setEditLogin(e.target.value); setCredError('') }} style={inputStyle} />
-              </div>
-              <div>
-                <label style={{ fontSize: '12px', color: '#64748b', display: 'block', marginBottom: '5px', fontWeight: 600 }}>Parol</label>
-                <div style={{ position: 'relative' }}>
-                  <input type={editPassShow ? 'text' : 'password'} value={editPass}
-                    onChange={e => { setEditPass(e.target.value); setCredError('') }}
-                    style={{ ...inputStyle, paddingRight: '40px' }} />
-                  <button type="button" onClick={() => setEditPassShow(!editPassShow)}
-                    style={{ position: 'absolute', right: '10px', top: '50%', transform: 'translateY(-50%)', background: 'none', border: 'none', cursor: 'pointer', color: '#94a3b8', display: 'flex' }}>
-                    {editPassShow ? <EyeOff size={15} /> : <Eye size={15} />}
-                  </button>
-                </div>
-              </div>
-              <div style={{ borderTop: '1px solid #f1f5f9', paddingTop: '14px' }}>
-                <label style={{ fontSize: '12px', color: '#64748b', display: 'block', marginBottom: '8px', fontWeight: 600 }}>
-                  Bog'liq tashkilotlar
-                  <span style={{ fontWeight: 400, color: '#94a3b8', marginLeft: '6px' }}>— bu login qaysi guruhlarni ham ko'ra olsin</span>
-                </label>
-                <div style={{ display: 'flex', flexDirection: 'column', gap: '6px' }}>
-                  {groups.filter(g => g.id !== selectedGroup).map(g => {
-                    const checked = editLinkedGroups.includes(g.id)
-                    return (
-                      <label key={g.id} style={{ display: 'flex', alignItems: 'center', gap: '8px', cursor: 'pointer', fontSize: '13px', color: '#374151' }}>
-                        <input type="checkbox" checked={checked}
-                          onChange={() => setEditLinkedGroups(prev => checked ? prev.filter(x => x !== g.id) : [...prev, g.id])}
-                          style={{ width: '15px', height: '15px', cursor: 'pointer' }} />
-                        {g.name}
-                      </label>
-                    )
-                  })}
-                </div>
-              </div>
-              {credError && (
-                <div style={{ padding: '8px 12px', background: '#fff1f2', border: '1px solid #fecdd3', borderRadius: '7px', color: '#e11d48', fontSize: '13px' }}>
-                  {credError}
-                </div>
-              )}
-              <div style={{ display: 'flex', gap: '10px', marginTop: '4px' }}>
-                <button onClick={() => setShowEditCred(false)}
-                  style={{ flex: 1, padding: '10px', background: '#f8fafc', border: '1px solid #e2e8f0', borderRadius: '9px', color: '#64748b', fontSize: '14px', cursor: 'pointer' }}>
-                  Bekor qilish
-                </button>
-                <button onClick={handleSaveCred}
-                  style={{ flex: 1, padding: '10px', background: '#2563eb', border: 'none', borderRadius: '9px', color: 'white', fontSize: '14px', fontWeight: 600, cursor: 'pointer', boxShadow: '0 2px 8px #2563eb30' }}>
-                  Saqlash
                 </button>
               </div>
             </div>
