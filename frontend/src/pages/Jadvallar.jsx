@@ -116,35 +116,32 @@ export default function Jadvallar({ groups = [], employees = [] }) {
     const off      = isDayOff(day, emp.group_id)
     const leave    = getLeaveForDay(emp.id, ds)
 
+    const cellStyle = (borderColor, bg = '#fff') => ({
+      margin: '4px', padding: '9px 11px', borderRadius: '10px',
+      background: bg, border: `2px solid ${borderColor}`,
+      minHeight: '58px', display: 'flex', flexDirection: 'column', justifyContent: 'center',
+    })
+    const plannedStyle = { fontSize: '13px', color: '#94a3b8', fontFamily: 'Arial, sans-serif', fontWeight: 400, marginBottom: '5px' }
+    const timeStyle    = { fontSize: '15px', fontFamily: 'Arial, sans-serif', fontWeight: 700 }
+
     // Ta'til / Kasallik
     if (leave) {
       const isSick = leave.leave_type === 'sick'
+      const lColor = isSick ? '#9333ea' : '#06b6d4'
       return (
-        <div style={{
-          margin: '3px', padding: '8px 10px', borderRadius: '10px',
-          background: isSick ? '#fdf4ff' : '#ecfeff',
-          border: `1.5px solid ${isSick ? '#d8b4fe' : '#a5f3fc'}`,
-          display: 'flex', flexDirection: 'column', alignItems: 'center', gap: '4px',
-        }}>
-          {isSick
-            ? <Stethoscope size={15} color="#9333ea" />
-            : <Palmtree size={15} color="#0891b2" />}
-          <span style={{ fontSize: '13px', fontWeight: 600, color: isSick ? '#9333ea' : '#0891b2', fontFamily: 'Arial, sans-serif' }}>
+        <div style={cellStyle(lColor, isSick ? '#fdf4ff' : '#ecfeff')}>
+          <div style={{ ...timeStyle, color: lColor, display: 'flex', alignItems: 'center', gap: '6px' }}>
+            {isSick ? <Stethoscope size={15} color={lColor} /> : <Palmtree size={15} color={lColor} />}
             {isSick ? 'Kasallik' : "Ta'til"}
-          </span>
+          </div>
         </div>
       )
     }
 
     // Dam olish kuni
     if (off) return (
-      <div style={{
-        margin: '3px', padding: '8px 10px', borderRadius: '10px',
-        background: '#f8fafc', border: '1.5px solid #e2e8f0',
-        display: 'flex', alignItems: 'center', justifyContent: 'center',
-        minHeight: '52px',
-      }}>
-        <span style={{ fontSize: '13px', color: '#cbd5e1', fontWeight: 500, fontFamily: 'Arial, sans-serif' }}>Dam olish</span>
+      <div style={cellStyle('#e2e8f0', '#f8fafc')}>
+        <div style={{ ...plannedStyle, marginBottom: 0, color: '#cbd5e1' }}>Dam olish</div>
       </div>
     )
 
@@ -156,21 +153,17 @@ export default function Jadvallar({ groups = [], employees = [] }) {
       const eff           = fi && fi >= wb ? fi : null
       const late          = eff && eff > lateThreshold
       const earlyOut      = lo && lo < wf
-      const inColor       = !eff ? '#94a3b8' : late ? '#f59e0b' : '#16a34a'
-      const outColor      = earlyOut ? '#f43f5e' : '#475569'
+      const inColor       = !eff ? '#94a3b8' : late ? '#f43f5e' : '#22c55e'
+      const outColor      = earlyOut ? '#f43f5e' : '#22c55e'
+      const borderColor   = late ? '#f43f5e' : '#06b6d4'
 
       return (
-        <div style={{
-          margin: '4px', padding: '8px 6px', borderRadius: '10px',
-          background: '#f0fdf4', border: `1.5px solid ${late ? '#fde68a' : '#bbf7d0'}`,
-        }}>
-          <div style={{ fontSize: '13px', color: '#94a3b8', textAlign: 'center', marginBottom: '5px', fontFamily: 'Arial, sans-serif', fontWeight: 400 }}>
-            {ws} – {wf}
-          </div>
-          <div style={{ display: 'flex', justifyContent: 'center', gap: '2px', fontFamily: 'Arial, sans-serif', fontSize: '14px', fontWeight: 700 }}>
+        <div style={cellStyle(borderColor, late ? '#fff5f5' : '#f0fdfa')}>
+          <div style={plannedStyle}>{ws} - {wf}</div>
+          <div style={{ display: 'flex', gap: '3px', ...timeStyle }}>
             <span style={{ color: inColor }}>{eff || '—:——'}</span>
-            <span style={{ color: '#cbd5e1' }}>–</span>
-            <span style={{ color: lo ? outColor : '#cbd5e1' }}>{lo || '—:——'}</span>
+            <span style={{ color: '#d1d5db' }}> - </span>
+            <span style={{ color: lo ? outColor : '#d1d5db' }}>{lo || '—:——'}</span>
           </div>
         </div>
       )
@@ -178,15 +171,9 @@ export default function Jadvallar({ groups = [], employees = [] }) {
 
     // Ma'lumot yo'q (ish kuni)
     return (
-      <div style={{
-        margin: '4px', padding: '8px 6px', borderRadius: '10px',
-        background: future ? '#fafafa' : '#fff',
-        border: `1.5px solid ${todayDay ? '#fde68a' : '#e2e8f0'}`,
-      }}>
-        <div style={{ fontSize: '13px', color: future ? '#e2e8f0' : '#cbd5e1', textAlign: 'center', fontFamily: 'Arial, sans-serif', fontWeight: 400 }}>
-          {ws} – {wf}
-        </div>
-        <div style={{ fontSize: '13px', color: todayDay ? '#f59e0b' : (future ? '#e2e8f0' : '#cbd5e1'), textAlign: 'center', fontWeight: 600, marginTop: '4px', fontFamily: 'Arial, sans-serif' }}>
+      <div style={cellStyle(todayDay ? '#fbbf24' : future ? '#f1f5f9' : '#e2e8f0', '#fff')}>
+        <div style={plannedStyle}>{ws} - {wf}</div>
+        <div style={{ ...timeStyle, fontSize: '13px', color: todayDay ? '#f59e0b' : future ? '#e2e8f0' : '#cbd5e1', fontWeight: 600 }}>
           {todayDay ? "hali yo'q" : future ? '—' : 'kelmadi'}
         </div>
       </div>
