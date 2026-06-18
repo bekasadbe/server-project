@@ -70,6 +70,7 @@ export default function Reports({ groups = [] }) {
   const multiOrg        = groups.length > 1
   const visibleGroupIds = groups.map(g => g.id)
   const getWorkStart    = (gid) => groups.find(g => g.id === gid)?.work_start  || '09:00'
+  const getWorkFinish   = (gid) => groups.find(g => g.id === gid)?.work_finish || '18:00'
   const getWorkBegin    = (gid) => groups.find(g => g.id === gid)?.work_begin  || '06:00'
   const getWorkDays     = (gid) => (groups.find(g => g.id === gid)?.work_days  || '1,2,3,4,5,6').split(',').filter(Boolean)
   const getGrace        = (gid) => groups.find(g => g.id === gid)?.grace_minutes ?? 0
@@ -134,15 +135,17 @@ export default function Reports({ groups = [] }) {
     filtered.forEach(({ date, rows }) => {
       rows.forEach(r => {
         if (!isWorkDay(date, r.group_id)) return
-        if (!map[r.employee_id]) map[r.employee_id] = { name: r.name, group_id: r.group_id, ontime: 0, late: 0, absent: 0 }
+        if (!map[r.employee_id]) map[r.employee_id] = { name: r.name, group_id: r.group_id, ontime: 0, late: 0, absent: 0, earlyOut: 0 }
         const fi  = r.first_in
         const wb  = getWorkBegin(r.group_id)
         const ws  = getWorkStart(r.group_id)
+        const wf  = getWorkFinish(r.group_id)
         const lateThreshold = addMinutes(ws, getGrace(r.group_id))
         const eff = fi && fi >= wb ? fi : null
         if (!eff) map[r.employee_id].absent++
         else if (eff > lateThreshold) map[r.employee_id].late++
         else map[r.employee_id].ontime++
+        if (r.last_out && r.last_out < wf) map[r.employee_id].earlyOut++
       })
     })
     return { empMap: map, totalDays: days, totalEmps: Object.keys(map).length }
@@ -152,25 +155,28 @@ export default function Reports({ groups = [] }) {
   const empList = Object.values(empMap)
 
   // Umumiy sanlar
-  const totalOntime = empList.reduce((s, e) => s + e.ontime, 0)
-  const totalLate   = empList.reduce((s, e) => s + e.late,   0)
-  const totalAbsent = empList.reduce((s, e) => s + e.absent, 0)
-  const grandTotal  = totalOntime + totalLate + totalAbsent || 1
+  const totalOntime   = empList.reduce((s, e) => s + e.ontime,   0)
+  const totalLate     = empList.reduce((s, e) => s + e.late,     0)
+  const totalAbsent   = empList.reduce((s, e) => s + e.absent,   0)
+  const totalEarlyOut = empList.reduce((s, e) => s + e.earlyOut, 0)
+  const grandTotal    = totalOntime + totalLate + totalAbsent || 1
 
   const pctOntime = Math.round(totalOntime / grandTotal * 100)
   const pctLate   = Math.round(totalLate   / grandTotal * 100)
   const pctAbsent = Math.round(totalAbsent / grandTotal * 100)
 
   // Har bir xodim uchun o'rtacha
-  const avgOntimeDays  = totalEmps ? (totalOntime / totalEmps).toFixed(1) : 0
-  const avgLateDays    = totalEmps ? (totalLate   / totalEmps).toFixed(1) : 0
-  const avgAbsentDays  = totalEmps ? (totalAbsent / totalEmps).toFixed(1) : 0
+  const avgOntimeDays    = totalEmps ? (totalOntime   / totalEmps).toFixed(1) : 0
+  const avgLateDays      = totalEmps ? (totalLate     / totalEmps).toFixed(1) : 0
+  const avgAbsentDays    = totalEmps ? (totalAbsent   / totalEmps).toFixed(1) : 0
+  const avgEarlyOutDays  = totalEmps ? (totalEarlyOut / totalEmps).toFixed(1) : 0
 
   // TOP-10 tab ma'lumotlari
   const tabs = [
-    { key: 'late',   label: 'Kech keldi',  color: '#f59e0b', sort: e => -e.late,   val: e => `${e.late} kun` },
-    { key: 'absent', label: 'Kelmadi',     color: '#ef4444', sort: e => -e.absent, val: e => `${e.absent} kun` },
-    { key: 'ontime', label: "O'z vaqtida", color: '#22c55e', sort: e => -e.ontime, val: e => `${e.ontime} kun` },
+    { key: 'late',     label: 'Kech keldi',  color: '#f59e0b', sort: e => -e.late,     val: e => `${e.late} kun`     },
+    { key: 'absent',   label: 'Kelmadi',     color: '#ef4444', sort: e => -e.absent,   val: e => `${e.absent} kun`   },
+    { key: 'earlyOut', label: 'Erta ketdi',  color: '#9333ea', sort: e => -e.earlyOut, val: e => `${e.earlyOut} kun` },
+    { key: 'ontime',   label: "O'z vaqtida", color: '#22c55e', sort: e => -e.ontime,   val: e => `${e.ontime} kun`   },
   ]
   const activeTabInfo = tabs.find(t => t.key === activeTab)
   const topList = [...empList].sort(activeTabInfo.sort).slice(0, 10)
@@ -214,19 +220,21 @@ export default function Reports({ groups = [] }) {
       ) : (<>
 
         {/* ── DONUT + O'RTACHA ── */}
-        <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr 1fr 1.2fr', gap: '14px', marginBottom: '20px' }}>
+        <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr 1fr 1fr 1.2fr', gap: '14px', marginBottom: '20px' }}>
           <DonutCard label="O'z vaqtida" pct={pctOntime} count={Math.round(totalOntime / (totalDays || 1))} total={totalDays} color="#2563eb" trackColor="#dbeafe" />
           <DonutCard label="Kelmadi"     pct={pctAbsent} count={Math.round(totalAbsent / (totalDays || 1))} total={totalDays} color="#ef4444" trackColor="#fee2e2" />
           <DonutCard label="Kech keldi"  pct={pctLate}   count={Math.round(totalLate / (totalDays || 1))}   total={totalDays} color="#f59e0b" trackColor="#fef3c7" />
+          <DonutCard label="Erta ketdi"  pct={Math.round(totalEarlyOut / (grandTotal) * 100)} count={Math.round(totalEarlyOut / (totalDays || 1))} total={totalDays} color="#9333ea" trackColor="#f3e8ff" />
 
           {/* O'rtacha panel */}
           <div style={{ background: '#fff', borderRadius: '16px', border: '1px solid #e2e8f0', padding: '20px 22px', boxShadow: '0 1px 4px #0f172a06' }}>
             <div style={{ fontSize: '13px', fontWeight: 700, color: '#374151', marginBottom: '16px' }}>Har bir xodimga o'rtacha / oy</div>
             {[
-              { label: "O'z vaqtida",  val: `${avgOntimeDays} kun`, color: '#2563eb', bg: '#eff6ff' },
-              { label: 'Kech keldi',   val: `${avgLateDays} kun`,   color: '#f59e0b', bg: '#fef3c7' },
-              { label: 'Kelmadi',      val: `${avgAbsentDays} kun`, color: '#ef4444', bg: '#fee2e2' },
-              { label: 'Ish kunlari',  val: `${totalDays} kun`,     color: '#64748b', bg: '#f1f5f9' },
+              { label: "O'z vaqtida",  val: `${avgOntimeDays} kun`,   color: '#2563eb', bg: '#eff6ff' },
+              { label: 'Kech keldi',   val: `${avgLateDays} kun`,     color: '#f59e0b', bg: '#fef3c7' },
+              { label: 'Kelmadi',      val: `${avgAbsentDays} kun`,   color: '#ef4444', bg: '#fee2e2' },
+              { label: 'Erta ketdi',   val: `${avgEarlyOutDays} kun`, color: '#9333ea', bg: '#f3e8ff' },
+              { label: 'Ish kunlari',  val: `${totalDays} kun`,       color: '#64748b', bg: '#f1f5f9' },
             ].map(r => (
               <div key={r.label} style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: '10px' }}>
                 <span style={{ fontSize: '13px', color: '#64748b' }}>{r.label}</span>
@@ -301,10 +309,11 @@ export default function Reports({ groups = [] }) {
                   <div style={{ fontSize: '13px', fontWeight: 500, color: '#0f172a', overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>{emp.name}</div>
                   {multiOrg && <div style={{ fontSize: '11px', color: '#94a3b8' }}>{groups.find(g => g.id === emp.group_id)?.name || ''}</div>}
                 </div>
-                <div style={{ display: 'flex', gap: '8px', flexShrink: 0 }}>
+                <div style={{ display: 'flex', gap: '6px', flexShrink: 0, flexWrap: 'wrap' }}>
                   <span style={{ fontSize: '12px', padding: '2px 8px', borderRadius: '12px', background: '#eff6ff', color: '#2563eb', fontWeight: 600 }}>{emp.ontime}✓</span>
                   <span style={{ fontSize: '12px', padding: '2px 8px', borderRadius: '12px', background: '#fef3c7', color: '#d97706', fontWeight: 600 }}>{emp.late}⚡</span>
                   <span style={{ fontSize: '12px', padding: '2px 8px', borderRadius: '12px', background: '#fee2e2', color: '#dc2626', fontWeight: 600 }}>{emp.absent}✗</span>
+                  <span style={{ fontSize: '12px', padding: '2px 8px', borderRadius: '12px', background: '#f3e8ff', color: '#9333ea', fontWeight: 600 }}>{emp.earlyOut}↩</span>
                 </div>
               </div>
             ))}

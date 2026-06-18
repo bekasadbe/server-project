@@ -50,8 +50,11 @@ export default function Dashboard({ employees = [], groups = [] }) {
 
   const getGroup      = (gid) => groups.find(g => g.id === gid)
   const getWorkStart  = (gid) => getGroup(gid)?.work_start    || '09:00'
+  const getWorkFinish = (gid) => getGroup(gid)?.work_finish   || '18:00'
   const getWorkBegin  = (gid) => getGroup(gid)?.work_begin    || '06:00'
   const getGrace      = (gid) => getGroup(gid)?.grace_minutes ?? 0
+
+  const isEarlyOut = (row) => row.last_out && row.last_out < getWorkFinish(row.group_id)
 
   const addMinutes = (t, min) => {
     const [h, m] = t.split(':').map(Number)
@@ -92,9 +95,10 @@ export default function Dashboard({ employees = [], groups = [] }) {
     return (a.name || '').localeCompare(b.name || '')
   })
 
-  const ontime = filtered.filter(r => getStatus(r) === 'ontime').length
-  const late   = filtered.filter(r => getStatus(r) === 'late').length
-  const absent = filtered.filter(r => getStatus(r) === 'absent').length
+  const ontime   = filtered.filter(r => getStatus(r) === 'ontime').length
+  const late     = filtered.filter(r => getStatus(r) === 'late').length
+  const absent   = filtered.filter(r => getStatus(r) === 'absent').length
+  const earlyOut = filtered.filter(r => isEarlyOut(r)).length
 
   const groupName = (gid) => groups.find(g => g.id === gid)?.name || gid
 
@@ -122,11 +126,12 @@ export default function Dashboard({ employees = [], groups = [] }) {
       </div>
 
       {/* Stat cards */}
-      <div style={{ display:'grid', gridTemplateColumns:'repeat(4,1fr)', gap:'14px', marginBottom:'24px' }}>
+      <div style={{ display:'grid', gridTemplateColumns:'repeat(5,1fr)', gap:'14px', marginBottom:'24px' }}>
         <StatCard icon={Users}       label="Jami xodim"  value={loading ? '...' : filtered.length} color="#2563eb" bg="#eff6ff" />
         <StatCard icon={CheckCircle} label="O'z vaqtida" value={loading ? '...' : ontime}          color="#16a34a" bg="#dcfce7" />
         <StatCard icon={Clock}       label="Kech keldi"  value={loading ? '...' : late}            color="#d97706" bg="#fef3c7" />
         <StatCard icon={XCircle}     label="Kelmadi"     value={loading ? '...' : absent}          color="#dc2626" bg="#fee2e2" />
+        <StatCard icon={Clock}       label="Erta ketdi"  value={loading ? '...' : earlyOut}        color="#9333ea" bg="#f3e8ff" />
       </div>
 
       {/* Table */}
@@ -165,7 +170,10 @@ export default function Dashboard({ employees = [], groups = [] }) {
                     <td style={{ padding:'11px 16px', fontSize:'14px', color:getEffectiveFirstIn(row)?'#16a34a':'#cbd5e1', fontWeight:600, fontFamily:'monospace' }}>{getEffectiveFirstIn(row) ? toHHMM(getEffectiveFirstIn(row)) : '—'}</td>
                     <td style={{ padding:'11px 16px', fontSize:'14px', color:row.last_out?'#475569':'#cbd5e1', fontFamily:'monospace' }}>{row.last_out ? toHHMM(row.last_out) : '—'}</td>
                     <td style={{ padding:'11px 16px' }}>
-                      <span style={{ padding:'4px 10px', borderRadius:'20px', fontSize:'12px', fontWeight:600, background:s.bg, color:s.color }}>{s.label}</span>
+                      <div style={{ display:'flex', flexDirection:'column', gap:'4px', alignItems:'flex-start' }}>
+                        <span style={{ padding:'4px 10px', borderRadius:'20px', fontSize:'12px', fontWeight:600, background:s.bg, color:s.color }}>{s.label}</span>
+                        {isEarlyOut(row) && <span style={{ padding:'3px 8px', borderRadius:'20px', fontSize:'11px', fontWeight:600, background:'#f3e8ff', color:'#9333ea' }}>Erta ketdi</span>}
+                      </div>
                     </td>
                   </tr>
                 )

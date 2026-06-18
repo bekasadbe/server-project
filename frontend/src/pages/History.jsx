@@ -19,6 +19,7 @@ export default function History({ groups = [] }) {
 
   const getGroup      = (gid) => groups.find(g => g.id === gid)
   const getWorkStart  = (gid) => getGroup(gid)?.work_start    || '09:00'
+  const getWorkFinish = (gid) => getGroup(gid)?.work_finish   || '18:00'
   const getWorkBegin  = (gid) => getGroup(gid)?.work_begin    || '06:00'
   const getGrace      = (gid) => getGroup(gid)?.grace_minutes ?? 0
 
@@ -70,13 +71,16 @@ export default function History({ groups = [] }) {
     return mins > 0 ? mins : 0
   }
 
+  const isEarlyOut = (last_out, gid) => last_out && last_out < getWorkFinish(gid)
+
   const getStatus = (r) => {
     const eff = getEffectiveFirstIn(r.first_in, r.group_id)
-    if (!eff) return { label: 'Kelmadi',     color: '#dc2626', bg: '#fee2e2' }
+    const early = isEarlyOut(r.last_out, r.group_id)
+    if (!eff) return { label: 'Kelmadi',     color: '#dc2626', bg: '#fee2e2', early }
     const late = getLate(r.first_in, r.group_id)
     return late > 0
-      ? { label: 'Kech keldi',  color: '#d97706', bg: '#fef3c7' }
-      : { label: "O'z vaqtida", color: '#16a34a', bg: '#dcfce7' }
+      ? { label: 'Kech keldi',  color: '#d97706', bg: '#fef3c7', early }
+      : { label: "O'z vaqtida", color: '#16a34a', bg: '#dcfce7', early }
   }
 
   const buildTableData = () => {
@@ -85,22 +89,24 @@ export default function History({ groups = [] }) {
     const ontime  = filtered.filter(r => r.first_in && getLate(r.first_in, r.group_id) === 0).length
     const late    = filtered.filter(r => r.first_in && getLate(r.first_in, r.group_id) > 0).length
     const absent  = filtered.filter(r => !r.first_in).length
+    const early   = filtered.filter(r => isEarlyOut(r.last_out, r.group_id)).length
     const head    = multiOrg
-      ? [['#', 'Ism Familiya', 'Tashkilot', 'Keldi', 'Kechikish', 'Holat']]
-      : [['#', 'Ism Familiya', 'Keldi', 'Kechikish', 'Holat']]
+      ? [['#', 'Ism Familiya', 'Tashkilot', 'Keldi', 'Ketdi', 'Kechikish', 'Holat']]
+      : [['#', 'Ism Familiya', 'Keldi', 'Ketdi', 'Kechikish', 'Holat']]
     const body = filtered.map((r, i) => {
       const eff = getEffectiveFirstIn(r.first_in, r.group_id)
       const lm  = getLate(r.first_in, r.group_id)
       const st  = getStatus(r)
+      const statusLabel = st.early ? `${st.label} / Erta ketdi` : st.label
       const row = [i+1, r.name || '—', ...(multiOrg ? [groupName(r.group_id)] : []),
-        eff || '—', lm > 0 ? `${lm} daq.` : '—', st.label]
+        eff || '—', r.last_out || '—', lm > 0 ? `${lm} daq.` : '—', statusLabel]
       return row
     })
-    return { dateFormatted, orgName, ontime, late, absent, head, body }
+    return { dateFormatted, orgName, ontime, late, absent, early, head, body }
   }
 
   const handleDownloadPDF = () => {
-    const { dateFormatted, orgName, ontime, late, absent, head, body } = buildTableData()
+    const { dateFormatted, orgName, ontime, late, absent, early, head, body } = buildTableData()
     const doc = new jsPDF({ orientation: 'portrait', unit: 'mm', format: 'a4' })
     const pw  = doc.internal.pageSize.getWidth()
 
@@ -137,12 +143,13 @@ export default function History({ groups = [] }) {
 
     // ── STATISTIKA QUTILARI ───────────────────────────────
     const stats = [
-      { label: 'Jami',        val: filtered.length, c: [37,99,235]  },
-      { label: "O'z vaqtida", val: ontime,           c: [22,163,74]  },
-      { label: 'Kech keldi',  val: late,             c: [217,119,6]  },
-      { label: 'Kelmadi',     val: absent,           c: [220,38,38]  },
+      { label: 'Jami',        val: filtered.length, c: [37,99,235]   },
+      { label: "O'z vaqtida", val: ontime,           c: [22,163,74]   },
+      { label: 'Kech keldi',  val: late,             c: [217,119,6]   },
+      { label: 'Kelmadi',     val: absent,           c: [220,38,38]   },
+      { label: 'Erta ketdi',  val: early,            c: [147,51,234]  },
     ]
-    const boxH = 18, boxW = 42, boxY = 30
+    const boxH = 18, boxW = 33, boxY = 30
     stats.forEach((s, i) => {
       const x = 14 + i * (boxW + 2)
       doc.setFillColor(248, 250, 252)
@@ -165,15 +172,15 @@ export default function History({ groups = [] }) {
       headStyles: { fillColor: [37, 99, 235], textColor: 255, fontStyle: 'bold' },
       alternateRowStyles: { fillColor: [248, 250, 252] },
       didParseCell: (data) => {
-        if (data.section === 'body' && data.column.index === (multiOrg ? 5 : 4)) {
-          const v = data.cell.raw
-          if (v === 'Kelmadi')         data.cell.styles.textColor = [220, 38, 38]
-          else if (v === 'Kech keldi') data.cell.styles.textColor = [217, 119, 6]
-          else                         data.cell.styles.textColor = [22, 163, 74]
+        if (data.section === 'body' && data.column.index === (multiOrg ? 6 : 5)) {
+          const v = String(data.cell.raw)
+          if (v.includes('Kelmadi'))        data.cell.styles.textColor = [220, 38, 38]
+          else if (v.includes('Kech'))      data.cell.styles.textColor = [217, 119, 6]
+          else if (v.includes('Erta'))      data.cell.styles.textColor = [147, 51, 234]
+          else                              data.cell.styles.textColor = [22, 163, 74]
         }
       },
       didDrawPage: (data) => {
-        // Faqat pastki qism (har sahifada)
         const ph = doc.internal.pageSize.getHeight()
         const pw = doc.internal.pageSize.getWidth()
         doc.setFontSize(7)
@@ -185,8 +192,7 @@ export default function History({ groups = [] }) {
   }
 
   const handlePrint = () => {
-    // PDF ni yaratib, avtomatik print dialogini ochamiz
-    const { head, body, dateFormatted, orgName, ontime, late, absent } = buildTableData()
+    const { head, body, dateFormatted, orgName, ontime, late, absent, early } = buildTableData()
     const doc = new jsPDF({ orientation: 'portrait', unit: 'mm', format: 'a4' })
     const pw  = doc.internal.pageSize.getWidth()
 
@@ -218,14 +224,15 @@ export default function History({ groups = [] }) {
       { label: "O'z vaqtida", val: ontime,           c: [22,163,74]  },
       { label: 'Kech keldi',  val: late,             c: [217,119,6]  },
       { label: 'Kelmadi',     val: absent,           c: [220,38,38]  },
+      { label: 'Erta ketdi',  val: early,            c: [147,51,234] },
     ]
     stats.forEach((s, i) => {
-      const x = 14 + i * 44
-      doc.setFillColor(248, 250, 252); doc.roundedRect(x, 30, 42, 18, 2, 2, 'F')
+      const x = 14 + i * 35
+      doc.setFillColor(248, 250, 252); doc.roundedRect(x, 30, 33, 18, 2, 2, 'F')
       doc.setFont('helvetica', 'bold'); doc.setFontSize(14); doc.setTextColor(...s.c)
-      doc.text(String(s.val), x + 21, 39, { align: 'center' })
+      doc.text(String(s.val), x + 16.5, 39, { align: 'center' })
       doc.setFont('helvetica', 'normal'); doc.setFontSize(7); doc.setTextColor(100, 116, 139)
-      doc.text(s.label, x + 21, 45, { align: 'center' })
+      doc.text(s.label, x + 16.5, 45, { align: 'center' })
     })
     doc.setTextColor(0)
 
@@ -235,10 +242,11 @@ export default function History({ groups = [] }) {
       headStyles: { fillColor: [37, 99, 235], textColor: 255, fontStyle: 'bold' },
       alternateRowStyles: { fillColor: [248, 250, 252] },
       didParseCell: (data) => {
-        if (data.section === 'body' && data.column.index === (multiOrg ? 5 : 4)) {
-          const v = data.cell.raw
-          if (v === 'Kelmadi')         data.cell.styles.textColor = [220, 38, 38]
-          else if (v === 'Kech keldi') data.cell.styles.textColor = [217, 119, 6]
+        if (data.section === 'body' && data.column.index === (multiOrg ? 6 : 5)) {
+          const v = String(data.cell.raw)
+          if (v.includes('Kelmadi'))   data.cell.styles.textColor = [220, 38, 38]
+          else if (v.includes('Kech')) data.cell.styles.textColor = [217, 119, 6]
+          else if (v.includes('Erta')) data.cell.styles.textColor = [147, 51, 234]
           else                         data.cell.styles.textColor = [22, 163, 74]
         }
       },
@@ -339,7 +347,10 @@ export default function History({ groups = [] }) {
                     {late_min > 0 ? `${late_min} daq.` : '—'}
                   </td>
                   <td style={{ padding:'11px 16px' }}>
-                    <span style={{ padding:'4px 10px', borderRadius:'20px', fontSize:'12px', fontWeight:600, background:st.bg, color:st.color }}>{st.label}</span>
+                    <div style={{ display:'flex', flexDirection:'column', gap:'4px', alignItems:'flex-start' }}>
+                      <span style={{ padding:'4px 10px', borderRadius:'20px', fontSize:'12px', fontWeight:600, background:st.bg, color:st.color }}>{st.label}</span>
+                      {st.early && <span style={{ padding:'3px 8px', borderRadius:'20px', fontSize:'11px', fontWeight:600, background:'#fdf4ff', color:'#9333ea' }}>Erta ketdi</span>}
+                    </div>
                   </td>
                 </tr>
               )

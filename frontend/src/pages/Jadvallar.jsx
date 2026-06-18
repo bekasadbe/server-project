@@ -119,18 +119,24 @@ export default function Jadvallar({ groups = [], employees = [] }) {
       const eff = fi && fi >= wb ? fi : null
       const late = eff && eff > lateThreshold
       const statusColor = !eff ? '#94a3b8' : late ? '#f59e0b' : '#16a34a'
+      const earlyOut = lo && lo < wf
 
       return (
         <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', gap: '2px' }}>
           <span style={{ fontSize: '13px', fontWeight: 700, color: eff ? statusColor : '#94a3b8' }}>
             {eff || '—:——'}
           </span>
-          <span style={{ fontSize: '12px', color: '#64748b' }}>
+          <span style={{ fontSize: '12px', color: earlyOut ? '#9333ea' : '#64748b' }}>
             {lo || '—:——'}
           </span>
           {eff && (
             <span style={{ fontSize: '10px', padding: '1px 6px', borderRadius: '8px', background: late ? '#fef3c7' : '#dcfce7', color: late ? '#d97706' : '#16a34a', fontWeight: 600, marginTop: '1px' }}>
               {late ? 'Kech' : "O'z vaqtida"}
+            </span>
+          )}
+          {earlyOut && (
+            <span style={{ fontSize: '10px', padding: '1px 6px', borderRadius: '8px', background: '#f3e8ff', color: '#9333ea', fontWeight: 600 }}>
+              Erta ketdi
             </span>
           )}
         </div>
