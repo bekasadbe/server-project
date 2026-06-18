@@ -132,8 +132,8 @@ export default function Jadvallar({ groups = [], employees = [] }) {
       const lColor = isSick ? '#9333ea' : '#06b6d4'
       return (
         <div style={cellStyle(lColor, isSick ? '#fdf4ff' : '#ecfeff')}>
-          <div style={{ ...timeStyle, color: lColor, display: 'flex', alignItems: 'center', gap: '6px' }}>
-            {isSick ? <Stethoscope size={15} color={lColor} /> : <Palmtree size={15} color={lColor} />}
+          <div style={{ fontSize: '12px', fontWeight: 400, color: lColor, display: 'flex', alignItems: 'center', gap: '4px' }}>
+            {isSick ? <Stethoscope size={12} color={lColor} /> : <Palmtree size={12} color={lColor} />}
             {isSick ? 'Kasallik' : "Ta'til"}
           </div>
         </div>
