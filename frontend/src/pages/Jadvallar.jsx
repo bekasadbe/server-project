@@ -2,11 +2,11 @@ import { useState, useEffect } from 'react'
 import { ChevronLeft, ChevronRight } from 'lucide-react'
 import { API_URL, TOKEN } from '../config'
 
-const DAY_LABELS = ['Dush', 'Sesh', 'Chor', 'Pay', 'Jum', 'Shan']
+const DAY_LABELS = ['Dush', 'Sesh', 'Chor', 'Pay', 'Jum', 'Shan', 'Yak']
 const MONTH_SHORT = ['Yan','Fev','Mar','Apr','May','Iyn','Iyl','Avg','Sen','Okt','Noy','Dek']
 
 function getWeekDays(baseMonday) {
-  return Array.from({ length: 6 }, (_, i) => {
+  return Array.from({ length: 7 }, (_, i) => {
     const d = new Date(baseMonday)
     d.setDate(d.getDate() + i)
     return d
@@ -93,70 +93,47 @@ export default function Jadvallar({ groups = [], employees = [] }) {
   }
 
   const CellContent = ({ emp, day }) => {
-    const ds = toDateStr(day)
+    const ds       = toDateStr(day)
     const future   = isFuture(day)
     const todayDay = isToday(day)
     const rec      = dayData[ds]?.[emp.id]
-    const wb  = getWorkBegin(emp.group_id)
-    const ws  = getWorkStart(emp.group_id)
-    const wf  = getWorkFinish(emp.group_id)
-    const off = isDayOff(day, emp.group_id)
+    const wb       = getWorkBegin(emp.group_id)
+    const ws       = getWorkStart(emp.group_id)
+    const wf       = getWorkFinish(emp.group_id)
+    const off      = isDayOff(day, emp.group_id)
 
-    // Dam olish kuni
-    if (off) {
-      return (
-        <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', gap: '2px' }}>
-          <span style={{ fontSize: '11px', padding: '2px 8px', borderRadius: '8px', background: '#f1f5f9', color: '#94a3b8', fontWeight: 600 }}>Dam olish</span>
-        </div>
-      )
-    }
+    if (off) return (
+      <div style={{ fontSize: '11px', color: '#cbd5e1', fontWeight: 500, textAlign: 'center' }}>—</div>
+    )
 
-    // Ma'lumot bor
     if (rec && (rec.first_in || rec.last_out)) {
-      const fi = rec.first_in
-      const lo = rec.last_out
+      const fi           = rec.first_in
+      const lo           = rec.last_out
       const lateThreshold = addMinutes(ws, getGrace(emp.group_id))
-      const eff = fi && fi >= wb ? fi : null
-      const late = eff && eff > lateThreshold
-      const statusColor = !eff ? '#94a3b8' : late ? '#f59e0b' : '#16a34a'
-      const earlyOut = lo && lo < wf
+      const eff          = fi && fi >= wb ? fi : null
+      const late         = eff && eff > lateThreshold
+      const earlyOut     = lo && lo < wf
+      const inColor      = !eff ? '#cbd5e1' : late ? '#f59e0b' : '#16a34a'
+      const outColor     = earlyOut ? '#9333ea' : '#64748b'
 
       return (
-        <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', gap: '2px' }}>
-          <span style={{ fontSize: '13px', fontWeight: 700, color: eff ? statusColor : '#94a3b8' }}>
+        <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', gap: '1px' }}>
+          <span style={{ fontSize: '13px', fontWeight: 700, color: inColor, fontFamily: 'monospace' }}>
             {eff || '—:——'}
           </span>
-          <span style={{ fontSize: '12px', color: earlyOut ? '#9333ea' : '#64748b' }}>
+          <span style={{ fontSize: '11px', color: outColor, fontFamily: 'monospace' }}>
             {lo || '—:——'}
           </span>
-          {eff && (
-            <span style={{ fontSize: '10px', padding: '1px 6px', borderRadius: '8px', background: late ? '#fef3c7' : '#dcfce7', color: late ? '#d97706' : '#16a34a', fontWeight: 600, marginTop: '1px' }}>
-              {late ? 'Kech' : "O'z vaqtida"}
-            </span>
-          )}
-          {earlyOut && (
-            <span style={{ fontSize: '10px', padding: '1px 6px', borderRadius: '8px', background: '#f3e8ff', color: '#9333ea', fontWeight: 600 }}>
-              Erta ketdi
-            </span>
-          )}
         </div>
       )
     }
 
-    // Kelajak / bugun / o'tgan ish kuni — ma'lumot yo'q
+    // Ma'lumot yo'q
     return (
-      <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', gap: '2px' }}>
-        <span style={{ fontSize: '13px', fontWeight: 500, color: future ? '#d1d5db' : '#94a3b8' }}>
-          {ws}
-        </span>
-        <span style={{ fontSize: '12px', color: future ? '#e5e7eb' : '#cbd5e1' }}>
-          {wf}
-        </span>
-        {todayDay && (
-          <span style={{ fontSize: '10px', padding: '1px 6px', borderRadius: '8px', background: '#fef3c7', color: '#d97706', fontWeight: 600, marginTop: '1px' }}>
-            Hali yo'q
-          </span>
-        )}
+      <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', gap: '1px' }}>
+        <span style={{ fontSize: '12px', color: future ? '#e2e8f0' : '#cbd5e1', fontFamily: 'monospace' }}>{ws}</span>
+        <span style={{ fontSize: '11px', color: future ? '#e2e8f0' : '#e2e8f0', fontFamily: 'monospace' }}>{wf}</span>
+        {todayDay && <span style={{ fontSize: '10px', color: '#f59e0b', fontWeight: 600 }}>hali yo'q</span>}
       </div>
     )
   }
@@ -166,8 +143,6 @@ export default function Jadvallar({ groups = [], employees = [] }) {
     const colors = ['#2563eb','#7c3aed','#059669','#d97706','#dc2626','#0891b2']
     return colors[(name || '').length % colors.length]
   }
-
-  const colW = 110
 
   return (
     <div>
@@ -202,20 +177,25 @@ export default function Jadvallar({ groups = [], employees = [] }) {
       {/* Grid */}
       <div style={{ background: '#fff', borderRadius: '14px', border: '1px solid #e2e8f0', overflow: 'hidden', boxShadow: '0 1px 4px #0f172a06' }}>
         <div style={{ overflowX: 'auto' }}>
-          <table style={{ width: '100%', borderCollapse: 'collapse', minWidth: 700 }}>
+          <table style={{ width: '100%', borderCollapse: 'collapse', tableLayout: 'fixed' }}>
+            <colgroup>
+              <col style={{ width: '22%' }} />
+              {days.map((_, i) => <col key={i} style={{ width: `${78 / days.length}%` }} />)}
+            </colgroup>
             {/* Column headers */}
             <thead>
               <tr style={{ background: '#f8fafc', borderBottom: '2px solid #e2e8f0' }}>
-                <th style={{ padding: '14px 20px', textAlign: 'left', minWidth: 200, position: 'sticky', left: 0, background: '#f8fafc', zIndex: 2, borderRight: '1px solid #e2e8f0' }}>
-                  <span style={{ fontSize: '12px', fontWeight: 700, color: '#64748b', letterSpacing: '0.5px' }}>ISM FAMILIYA</span>
+                <th style={{ padding: '12px 16px', textAlign: 'left', borderRight: '1px solid #e2e8f0' }}>
+                  <span style={{ fontSize: '11px', fontWeight: 700, color: '#94a3b8', letterSpacing: '0.5px' }}>ISM FAMILIYA</span>
                 </th>
                 {days.map((d, i) => {
                   const today = isToday(d)
+                  const isSun = d.getDay() === 0
                   return (
-                    <th key={i} style={{ padding: '12px 8px', textAlign: 'center', width: colW, background: today ? '#eff6ff' : '#f8fafc', borderLeft: '1px solid #e2e8f0', borderBottom: today ? '2px solid #2563eb' : 'none' }}>
-                      <div style={{ fontSize: '12px', fontWeight: 700, color: today ? '#2563eb' : '#64748b' }}>{DAY_LABELS[i]}</div>
-                      <div style={{ fontSize: '16px', fontWeight: 800, color: today ? '#2563eb' : '#0f172a', marginTop: '2px' }}>{d.getDate()}</div>
-                      <div style={{ fontSize: '11px', color: today ? '#93c5fd' : '#94a3b8' }}>{MONTH_SHORT[d.getMonth()]}</div>
+                    <th key={i} style={{ padding: '10px 4px', textAlign: 'center', background: today ? '#eff6ff' : isSun ? '#fafafa' : '#f8fafc', borderLeft: '1px solid #e2e8f0', borderBottom: today ? '2px solid #2563eb' : 'none' }}>
+                      <div style={{ fontSize: '11px', fontWeight: 700, color: today ? '#2563eb' : isSun ? '#f43f5e' : '#64748b' }}>{DAY_LABELS[i]}</div>
+                      <div style={{ fontSize: '15px', fontWeight: 800, color: today ? '#2563eb' : isSun ? '#f43f5e' : '#0f172a', marginTop: '1px' }}>{d.getDate()}</div>
+                      <div style={{ fontSize: '10px', color: today ? '#93c5fd' : '#94a3b8' }}>{MONTH_SHORT[d.getMonth()]}</div>
                     </th>
                   )
                 })}
@@ -224,35 +204,36 @@ export default function Jadvallar({ groups = [], employees = [] }) {
             <tbody>
               {loading ? (
                 <tr>
-                  <td colSpan={7} style={{ padding: '48px', textAlign: 'center', color: '#94a3b8', fontSize: '13px' }}>
+                  <td colSpan={8} style={{ padding: '48px', textAlign: 'center', color: '#94a3b8', fontSize: '13px' }}>
                     Yuklanmoqda...
                   </td>
                 </tr>
               ) : filteredEmps.length === 0 ? (
                 <tr>
-                  <td colSpan={7} style={{ padding: '48px', textAlign: 'center', color: '#94a3b8', fontSize: '13px' }}>
+                  <td colSpan={8} style={{ padding: '48px', textAlign: 'center', color: '#94a3b8', fontSize: '13px' }}>
                     Xodimlar topilmadi
                   </td>
                 </tr>
               ) : filteredEmps.map((emp, ri) => (
                 <tr key={emp.id} style={{ borderBottom: ri < filteredEmps.length - 1 ? '1px solid #f1f5f9' : 'none', background: ri % 2 === 0 ? '#fff' : '#fafafa' }}>
                   {/* Name column */}
-                  <td style={{ padding: '12px 20px', position: 'sticky', left: 0, background: ri % 2 === 0 ? '#fff' : '#fafafa', zIndex: 1, borderRight: '1px solid #e2e8f0' }}>
-                    <div style={{ display: 'flex', alignItems: 'center', gap: '10px' }}>
-                      <div style={{ width: 36, height: 36, borderRadius: '50%', background: nameColor(emp.name), display: 'flex', alignItems: 'center', justifyContent: 'center', color: '#fff', fontWeight: 700, fontSize: '12px', flexShrink: 0 }}>
+                  <td style={{ padding: '10px 16px', borderRight: '1px solid #e2e8f0', overflow: 'hidden' }}>
+                    <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
+                      <div style={{ width: 32, height: 32, borderRadius: '50%', background: nameColor(emp.name), display: 'flex', alignItems: 'center', justifyContent: 'center', color: '#fff', fontWeight: 700, fontSize: '11px', flexShrink: 0 }}>
                         {nameInitials(emp.name)}
                       </div>
                       <div style={{ minWidth: 0 }}>
-                        <div style={{ fontSize: '13px', fontWeight: 600, color: '#0f172a', overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap', maxWidth: 145 }}>{emp.name}</div>
-                        {emp.lavozim && <div style={{ fontSize: '11px', color: '#94a3b8', marginTop: '1px', overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>{emp.lavozim}</div>}
+                        <div style={{ fontSize: '12px', fontWeight: 600, color: '#0f172a', overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>{emp.name}</div>
+                        {emp.lavozim && <div style={{ fontSize: '10px', color: '#94a3b8', marginTop: '1px', overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>{emp.lavozim}</div>}
                       </div>
                     </div>
                   </td>
                   {/* Day cells */}
                   {days.map((d, di) => {
-                    const today = isToday(d)
+                    const today  = isToday(d)
+                    const isSun  = d.getDay() === 0
                     return (
-                      <td key={di} style={{ padding: '10px 8px', textAlign: 'center', borderLeft: '1px solid #f1f5f9', background: today ? '#f8fbff' : 'transparent', verticalAlign: 'middle' }}>
+                      <td key={di} style={{ padding: '8px 4px', textAlign: 'center', borderLeft: '1px solid #f1f5f9', background: today ? '#f8fbff' : isSun ? '#fdf8f8' : 'transparent', verticalAlign: 'middle' }}>
                         <CellContent emp={emp} day={d} />
                       </td>
                     )
@@ -264,15 +245,15 @@ export default function Jadvallar({ groups = [], employees = [] }) {
         </div>
 
         {/* Legend */}
-        <div style={{ padding: '12px 20px', borderTop: '1px solid #f1f5f9', display: 'flex', gap: '16px', flexWrap: 'wrap' }}>
+        <div style={{ padding: '10px 16px', borderTop: '1px solid #f1f5f9', display: 'flex', gap: '20px', flexWrap: 'wrap' }}>
           {[
-            { color: '#16a34a', bg: '#dcfce7', label: "O'z vaqtida keldi" },
-            { color: '#f59e0b', bg: '#fef3c7', label: 'Kech keldi' },
-            { color: '#94a3b8', bg: '#f1f5f9', label: "Kelmadi / Ma'lumot yo'q" },
-            { color: '#d1d5db', bg: '#f9fafb', label: 'Rejalashtirilgan vaqt' },
+            { color: '#16a34a', label: "O'z vaqtida" },
+            { color: '#f59e0b', label: 'Kech keldi' },
+            { color: '#9333ea', label: 'Erta ketdi' },
+            { color: '#cbd5e1', label: "Kelmadi / Rejalashtirilgan" },
           ].map(l => (
             <div key={l.label} style={{ display: 'flex', alignItems: 'center', gap: '5px' }}>
-              <div style={{ width: 10, height: 10, borderRadius: '3px', background: l.bg, border: `1.5px solid ${l.color}` }} />
+              <div style={{ width: 8, height: 8, borderRadius: '50%', background: l.color }} />
               <span style={{ fontSize: '11px', color: '#64748b' }}>{l.label}</span>
             </div>
           ))}
