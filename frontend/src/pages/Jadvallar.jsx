@@ -80,8 +80,9 @@ export default function Jadvallar({ groups = [], employees = [] }) {
         apiFetch(`/leaves?from=${from}&to=${to}`).catch(() => ({ leaves: [] }))
       ])
 
+      const empIds = new Set(employees.map(e => e.id))
       setDayData(Object.fromEntries(attResults))
-      setLeaves(leavesData.leaves || [])
+      setLeaves((leavesData.leaves || []).filter(l => empIds.has(l.employee_id)))
       setLoading(false)
     }
     load()

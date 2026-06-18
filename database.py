@@ -122,65 +122,6 @@ def init_db():
         conn.execute("INSERT OR IGNORE INTO groups (id, name, work_start, work_begin) VALUES ('milliy', 'Milliy Offis',   '09:00', '06:00')")
         conn.execute("INSERT OR IGNORE INTO groups (id, name, work_start, work_begin) VALUES ('markaz', 'Markaz',         '09:00', '06:00')")
 
-        # Default xodimlar
-        employees = [
-            ('00000014','Urinboyev Sadriddin','inno'),
-            ('00000016','Abdunofiyev Suxbatjon','inno'),
-            ('00000017',"Ne'matov Asadbek",'inno'),
-            ('00000021','Toshmatov Shoxruh','inno'),
-            ('00000022','Maxamatov Xamidulla','inno'),
-            ('00000024','Abdujabbarov Abdumuxtor','inno'),
-            ('00000025','Yusupov Baxrom','inno'),
-            ('00000026','Atabayev Murodjon','inno'),
-            ('00000028','Torayev Mixritdin','inno'),
-            ('00000029','Ermatov Xamid','inno'),
-            ('00000030','Xaydarova Shaxnoza','inno'),
-            ('00000031','Darvisheva Nodira','inno'),
-            ('00000032','Yakubova Rano','inno'),
-            ('00000099','Doniyorov Ahror','inno'),
-            ('00000100','Sardor Madrimov','inno'),
-            ('00000137','Begzod Qodirov','inno'),
-            ('00000142','Shoxrux Asqaraliyev','inno'),
-            ('00000143','Salohiddinov Mahmud','inno'),
-            ('00000147','Sobirjon Boriyev','inno'),
-            ('00000166','Akbarova Dilsora','inno'),
-            ('00000185','Umid Buxgalter','inno'),
-            ('00000259','Buxgalter Nematjon','inno'),
-            ('00000346','Kamola Rasulova','inno'),
-            ('00000381','Nargiza Vazliyeva','inno'),
-            ('00000401','Sarimov Fahriddin','inno'),
-            ('00000405','Nodir Avezimbetov','inno'),
-            ('00000415','Boymatov Elbek','inno'),
-            ('00000425','Isayeva Feruza','inno'),
-            ('00000426','Muzaffar Eshonqulov','inno'),
-            ('00000500','Akbarxon Sobirxonov','inno'),
-            ('00000009','Zafar Asrorov','milliy'),
-            ('00000010','Erkin Davirov','milliy'),
-            ('00000013','Allabergenov Shokhrukhbek','milliy'),
-            ('00000019','Otaxonov Obidxon','milliy'),
-            ('00000090','Baxtiyor Islomov','milliy'),
-            ('00000149','Aziz Akramov','milliy'),
-            ('00000154','Kenjayev Nuriddin','milliy'),
-            ('00000414','Yaqubov Oktam','milliy'),
-            ('00000422','Akbarali Yakubov','milliy'),
-            ('00000423','Sanjarbek Usmonov','milliy'),
-            ('00000424','Shaxobiddin Shamsiyev','milliy'),
-            ('00000427','Malik Rashidov','milliy'),
-            ('00000434','Otaxojayeva Madina','milliy'),
-            ('00000436','Sultonova Aziza','milliy'),
-            ('00000437','Saydivaliyeva Saida','milliy'),
-            ('00000438','Pulatova Shaxnoza','milliy'),
-            ('00000456','Sadirov Jamoliddin','milliy'),
-            ('00000466','Ermataliyev Mehmonali','milliy'),
-            ('00000467','Madaminova Shaxnoza','milliy'),
-            ('00000473','Ibragimova Feruza','milliy'),
-            ('00000490','Qurbonov Behzod','milliy'),
-        ]
-        for emp_id, name, group_id in employees:
-            conn.execute(
-                "INSERT OR IGNORE INTO employees (id, name, group_id) VALUES (?, ?, ?)",
-                (emp_id, name, group_id)
-            )
         conn.commit()
 
     # Parollarni hash qilish (agar hali hash qilinmagan bo'lsa)

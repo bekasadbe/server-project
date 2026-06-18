@@ -34,7 +34,8 @@ export default function Leaves({ employees = [], groups = [] }) {
     setLoading(true)
     try {
       const data = await apiFetch(`/leaves?from=${fromDate}&to=${toDate}`)
-      setLeaves(data.leaves || [])
+      const empIds = new Set(employees.map(e => e.id))
+      setLeaves((data.leaves || []).filter(l => empIds.has(l.employee_id)))
     } catch {}
     setLoading(false)
   }
