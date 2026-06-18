@@ -57,9 +57,14 @@ def init_db():
                 name          TEXT NOT NULL,
                 login         TEXT UNIQUE DEFAULT '',
                 password      TEXT DEFAULT '',
-                linked_groups TEXT DEFAULT ''
+                linked_groups TEXT DEFAULT '',
+                role          TEXT DEFAULT 'kadrlar'
             )
         ''')
+        try:
+            conn.execute("ALTER TABLE accounts ADD COLUMN role TEXT DEFAULT 'kadrlar'")
+        except Exception:
+            pass
 
         # Eski groups jadvalidagi login/password ma'lumotlarini accounts ga ko'chirish
         try:
@@ -267,26 +272,26 @@ def get_accounts():
     return [dict(r) for r in rows]
 
 
-def add_account(aid, name, login, password, linked_groups=''):
+def add_account(aid, name, login, password, linked_groups='', role='kadrlar'):
     with get_conn() as conn:
         conn.execute(
-            'INSERT OR REPLACE INTO accounts (id, name, login, password, linked_groups) VALUES (?, ?, ?, ?, ?)',
-            (aid, name, login, password, linked_groups)
+            'INSERT OR REPLACE INTO accounts (id, name, login, password, linked_groups, role) VALUES (?, ?, ?, ?, ?, ?)',
+            (aid, name, login, password, linked_groups, role)
         )
         conn.commit()
 
 
-def update_account(aid, name, login, password, linked_groups=''):
+def update_account(aid, name, login, password, linked_groups='', role='kadrlar'):
     with get_conn() as conn:
         if password and password != '[[keep]]':
             conn.execute(
-                'UPDATE accounts SET name=?, login=?, password=?, linked_groups=? WHERE id=?',
-                (name, login, password, linked_groups, aid)
+                'UPDATE accounts SET name=?, login=?, password=?, linked_groups=?, role=? WHERE id=?',
+                (name, login, password, linked_groups, role, aid)
             )
         else:
             conn.execute(
-                'UPDATE accounts SET name=?, login=?, linked_groups=? WHERE id=?',
-                (name, login, linked_groups, aid)
+                'UPDATE accounts SET name=?, login=?, linked_groups=?, role=? WHERE id=?',
+                (name, login, linked_groups, role, aid)
             )
         conn.commit()
 
