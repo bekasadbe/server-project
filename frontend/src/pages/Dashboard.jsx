@@ -146,7 +146,7 @@ export default function Dashboard({ employees = [], groups = [] }) {
             <thead>
               <tr style={{ background:'#f8fafc' }}>
                 {['Ism Familiya', ...(multiOrg?['Tashkilot']:[]), 'Keldi', 'Kechikish', 'Oxirgi o\'tish', 'Holat'].map(h => (
-                  <th key={h} style={{ padding:'10px 16px', textAlign:'left', fontSize:'11px', color:'#94a3b8', fontWeight:700, textTransform:'uppercase', letterSpacing:'0.5px' }}>{h}</th>
+                  <th key={h} style={{ padding:'10px 16px', textAlign:'left', fontSize:'12px', color:'#94a3b8', fontWeight:400 }}>{h}</th>
                 ))}
               </tr>
             </thead>

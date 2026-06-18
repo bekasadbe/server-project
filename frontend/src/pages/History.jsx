@@ -312,7 +312,7 @@ export default function History({ groups = [] }) {
           <thead>
             <tr style={{ background:'#f8fafc', borderBottom:'1px solid #e2e8f0' }}>
               {['Ism Familiya', ...(multiOrg?['Tashkilot']:[]), 'Keldi', lastColLabel, 'Kechikish', 'Holat'].map(h => (
-                <th key={h} style={{ padding:'11px 16px', textAlign:'left', fontSize:'11px', color:'#94a3b8', fontWeight:700, textTransform:'uppercase', letterSpacing:'0.5px' }}>{h}</th>
+                <th key={h} style={{ padding:'11px 16px', textAlign:'left', fontSize:'12px', color:'#94a3b8', fontWeight:400 }}>{h}</th>
               ))}
             </tr>
           </thead>

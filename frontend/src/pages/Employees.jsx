@@ -86,10 +86,10 @@ export default function Employees({ employees = [], groups = [], onUpdateEmploye
         <table style={{ width:'100%', borderCollapse:'collapse' }}>
           <thead>
             <tr style={{ background:'#f8fafc' }}>
-              <th style={{ padding:'11px 16px', textAlign:'left', fontSize:'11px', color:'#94a3b8', fontWeight:700, textTransform:'uppercase', letterSpacing:'0.5px' }}>Ism Familiya</th>
-              <th style={{ padding:'11px 16px', textAlign:'left', fontSize:'11px', color:'#94a3b8', fontWeight:700, textTransform:'uppercase', letterSpacing:'0.5px' }}>Lavozim</th>
-              <th style={{ padding:'11px 16px', textAlign:'left', fontSize:'11px', color:'#94a3b8', fontWeight:700, textTransform:'uppercase', letterSpacing:'0.5px' }}>Face ID</th>
-              {multiOrg && <th style={{ padding:'11px 16px', textAlign:'left', fontSize:'11px', color:'#94a3b8', fontWeight:700, textTransform:'uppercase', letterSpacing:'0.5px' }}>Tashkilot</th>}
+              <th style={{ padding:'11px 16px', textAlign:'left', fontSize:'12px', color:'#94a3b8', fontWeight:400 }}>Ism Familiya</th>
+              <th style={{ padding:'11px 16px', textAlign:'left', fontSize:'12px', color:'#94a3b8', fontWeight:400 }}>Lavozim</th>
+              <th style={{ padding:'11px 16px', textAlign:'left', fontSize:'12px', color:'#94a3b8', fontWeight:400 }}>Face ID</th>
+              {multiOrg && <th style={{ padding:'11px 16px', textAlign:'left', fontSize:'12px', color:'#94a3b8', fontWeight:400 }}>Tashkilot</th>}
               {onUpdateEmployee && <th style={{ padding:'11px 16px' }}></th>}
             </tr>
           </thead>

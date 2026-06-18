@@ -54,8 +54,7 @@ export default function LiveEvents({ groups = [] }) {
             <tr style={{ background:'#f8fafc', borderBottom:'1px solid #e2e8f0' }}>
               {['Vaqt','ID','Xodim','Tashkilot','Holat','Kamera'].map(h => (
                 <th key={h} style={{ padding:'7px 10px', textAlign:'left',
-                  fontSize:'10px', fontWeight:700, color:'#94a3b8',
-                  textTransform:'uppercase', letterSpacing:'0.5px', whiteSpace:'nowrap' }}>{h}</th>
+                  fontSize:'12px', color:'#94a3b8', fontWeight:400, whiteSpace:'nowrap' }}>{h}</th>
               ))}
             </tr>
           </thead>

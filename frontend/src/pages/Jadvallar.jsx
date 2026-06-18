@@ -226,7 +226,7 @@ export default function Jadvallar({ groups = [], employees = [] }) {
             <thead>
               <tr style={{ background: '#f8fafc', borderBottom: '2px solid #e2e8f0' }}>
                 <th style={{ padding: '12px 16px', textAlign: 'left', borderRight: '1px solid #e2e8f0' }}>
-                  <span style={{ fontSize: '11px', fontWeight: 700, color: '#94a3b8', letterSpacing: '0.5px' }}>ISM FAMILIYA</span>
+                  <span style={{ fontSize: '12px', fontWeight: 400, color: '#94a3b8' }}>Ism Familiya</span>
                 </th>
                 {days.map((d, i) => {
                   const today = isToday(d)
