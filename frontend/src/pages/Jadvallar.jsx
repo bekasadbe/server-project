@@ -117,12 +117,12 @@ export default function Jadvallar({ groups = [], employees = [] }) {
     const leave    = getLeaveForDay(emp.id, ds)
 
     const cellStyle = (borderColor, bg = '#fff') => ({
-      margin: '4px', padding: '9px 11px', borderRadius: '10px',
+      margin: '3px', padding: '6px 10px', borderRadius: '10px',
       background: bg, border: `2px solid ${borderColor}`,
-      minHeight: '58px', display: 'flex', flexDirection: 'column', justifyContent: 'center',
+      minHeight: '46px', display: 'flex', flexDirection: 'column', justifyContent: 'center',
     })
-    const plannedStyle = { fontSize: '13px', color: '#94a3b8', fontWeight: 400, marginBottom: '4px' }
-    const timeStyle    = { fontSize: '15px', fontWeight: 400 }
+    const plannedStyle = { fontSize: '13px', color: '#94a3b8', fontWeight: 400, marginBottom: '3px', textAlign: 'left' }
+    const timeStyle    = { fontSize: '15px', fontWeight: 400, textAlign: 'left' }
 
     // Ta'til / Kasallik
     if (leave) {
