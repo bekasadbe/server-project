@@ -103,7 +103,7 @@ export default function Dashboard({ employees = [], groups = [] }) {
       {/* Header */}
       <div style={{ display:'flex', justifyContent:'space-between', alignItems:'center', marginBottom:'24px' }}>
         <div>
-          <h1 style={{ margin:0, fontSize:'22px', fontWeight:700, color:'#0f172a' }}>Davomat</h1>
+          <h1 style={{ margin:0, fontSize:'22px', fontWeight:700, color:'#0f172a' }}>Bugungi Davomat</h1>
           <p style={{ margin:'4px 0 0', fontSize:'13px', color:'#94a3b8' }}>{todayStr}</p>
         </div>
         <div style={{ display:'flex', alignItems:'center', gap:'10px' }}>

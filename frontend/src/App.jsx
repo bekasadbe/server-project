@@ -8,6 +8,7 @@ import History from './pages/History'
 import Reports from './pages/Reports'
 import AdminPanel from './pages/AdminPanel'
 import Accounts from './pages/Accounts'
+import Jadvallar from './pages/Jadvallar'
 import Login from './pages/Login'
 import { getUser, logout } from './auth'
 
@@ -109,6 +110,7 @@ export default function App() {
     dashboard: <Dashboard  employees={visibleEmps} groups={visibleGrps} />,
     ...(user.role === 'admin' ? { live: <LiveEvents groups={groups} /> } : {}),
     history:   <History    groups={visibleGrps} />,
+    schedule:  <Jadvallar  groups={visibleGrps} employees={visibleEmps} />,
     employees: <Employees  employees={visibleEmps} groups={visibleGrps} onUpdateEmployee={updateEmployee} onDeleteEmployee={deleteEmployee} />,
     reports:   <Reports    groups={visibleGrps} />,
     ...(user.role === 'kadrlar' ? {

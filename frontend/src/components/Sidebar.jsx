@@ -1,10 +1,11 @@
-import { LayoutDashboard, Users, Clock, FileBarChart2, Settings, LogOut, Shield, ChevronRight, Radio, Settings2, Building2, KeyRound } from 'lucide-react'
+import { LayoutDashboard, Users, Clock, FileBarChart2, Settings, LogOut, Shield, ChevronRight, Radio, Settings2, Building2, KeyRound, CalendarDays } from 'lucide-react'
 
 
 const menu = [
   { key: 'dashboard',  label: 'Davomat',       icon: LayoutDashboard, roles: ['admin','kadrlar'] },
   { key: 'live',       label: 'Jonli lenta',   icon: Radio,           roles: ['admin'] },
   { key: 'history',    label: 'Hisobotlar',    icon: Clock,           roles: ['kadrlar'] },
+  { key: 'schedule',   label: 'Jadvallar',     icon: CalendarDays,    roles: ['kadrlar'] },
   { key: 'employees',  label: 'Xodimlar',      icon: Users,           roles: ['kadrlar'] },
   { key: 'reports',    label: 'Statistika',    icon: FileBarChart2,   roles: ['kadrlar'] },
   { key: 'settings',   label: 'Sozlamalar',    icon: Settings2,       roles: ['kadrlar'] },
