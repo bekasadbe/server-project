@@ -21,6 +21,7 @@ export default function Settings({ group, onUpdateGroup, onDirtyChange }) {
   const [workDays, setWorkDays]     = useState(
     (group?.work_days || '1,2,3,4,5,6').split(',').filter(Boolean)
   )
+  const [grace, setGrace] = useState(group?.grace_minutes ?? 0)
   const [dirty, setDirty] = useState(false)
   const [saved, setSaved] = useState(false)
   const [error, setError] = useState('')
@@ -43,6 +44,7 @@ export default function Settings({ group, onUpdateGroup, onDirtyChange }) {
       setWorkFinish(group.work_finish || '18:00')
       setWorkBegin(group.work_begin   || '06:00')
       setWorkDays((group.work_days || '1,2,3,4,5,6').split(',').filter(Boolean))
+      setGrace(group.grace_minutes ?? 0)
       setDirty(false)
       onDirtyChange?.(false)
     }
@@ -64,6 +66,7 @@ export default function Settings({ group, onUpdateGroup, onDirtyChange }) {
       login: login.trim(), password: pass.trim(),
       work_start: workStart, work_finish: workFinish,
       work_begin: workBegin, work_days: workDays.join(','),
+      grace_minutes: grace,
     })
     setError('')
     setDirty(false)
@@ -128,7 +131,7 @@ export default function Settings({ group, onUpdateGroup, onDirtyChange }) {
             Rasmiy ish kuni jadval. Boshlanish vaqtidan keyin kelgan xodim —{' '}
             <strong style={{ color: '#d97706' }}>Kech keldi</strong> deb hisoblanadi
           </p>
-          <div style={{ display: 'flex', alignItems: 'center', gap: '16px', flexWrap: 'wrap' }}>
+          <div style={{ display: 'flex', alignItems: 'center', gap: '16px', flexWrap: 'wrap', marginBottom: '20px' }}>
             <div>
               <div style={{ fontSize: '11px', color: '#94a3b8', fontWeight: 600, letterSpacing: '0.5px', marginBottom: '8px' }}>BOSHLANISH</div>
               <TimeBtn refEl={startRef} value={workStart} onChange={mark(setWorkStart)} color="#2563eb" bg="#eff6ff" border="#bfdbfe" />
@@ -138,6 +141,36 @@ export default function Settings({ group, onUpdateGroup, onDirtyChange }) {
               <div style={{ fontSize: '11px', color: '#94a3b8', fontWeight: 600, letterSpacing: '0.5px', marginBottom: '8px' }}>TUGASH</div>
               <TimeBtn refEl={finishRef} value={workFinish} onChange={mark(setWorkFinish)} color="#059669" bg="#f0fdf4" border="#bbf7d0" />
             </div>
+          </div>
+
+          <div style={{ borderTop: '1px solid #f1f5f9', paddingTop: '16px' }}>
+            <div style={{ fontSize: '13px', color: '#64748b', marginBottom: '10px' }}>
+              <strong style={{ color: '#0f172a' }}>Kechikish muhlati</strong> — boshlanishdan keyin shu daqiqagacha kelganlar <strong style={{ color: '#16a34a' }}>O'z vaqtida</strong> hisoblanadi
+            </div>
+            <div style={{ display: 'flex', gap: '8px', flexWrap: 'wrap' }}>
+              {[0, 5, 10, 15, 20, 30].map(min => (
+                <button key={min} onClick={() => { mark(setGrace)(min) }} style={{
+                  padding: '8px 14px', borderRadius: '9px',
+                  border: `2px solid ${grace === min ? '#2563eb' : '#e2e8f0'}`,
+                  background: grace === min ? '#2563eb' : '#f8fafc',
+                  color: grace === min ? '#fff' : '#64748b',
+                  fontSize: '13px', fontWeight: grace === min ? 700 : 500,
+                  cursor: 'pointer', transition: 'all 0.15s',
+                }}>
+                  {min === 0 ? "Yo'q" : `+${min} min`}
+                </button>
+              ))}
+            </div>
+            {grace > 0 && (
+              <div style={{ marginTop: '10px', fontSize: '12px', color: '#64748b', background: '#f8fafc', padding: '8px 12px', borderRadius: '8px', borderLeft: '3px solid #2563eb' }}>
+                {workStart} ga {grace} daqiqa qo'shiladi → <strong style={{ color: '#2563eb' }}>
+                  {(() => {
+                    const [h, m] = workStart.split(':').map(Number)
+                    const total = h * 60 + m + Number(grace)
+                    return `${String(Math.floor(total / 60)).padStart(2, '0')}:${String(total % 60).padStart(2, '0')}`
+                  })()} gacha</strong> kelganlar kech emas
+              </div>
+            )}
           </div>
         </Card>
 

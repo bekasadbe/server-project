@@ -72,6 +72,13 @@ export default function Reports({ groups = [] }) {
   const getWorkStart    = (gid) => groups.find(g => g.id === gid)?.work_start  || '09:00'
   const getWorkBegin    = (gid) => groups.find(g => g.id === gid)?.work_begin  || '06:00'
   const getWorkDays     = (gid) => (groups.find(g => g.id === gid)?.work_days  || '1,2,3,4,5,6').split(',').filter(Boolean)
+  const getGrace        = (gid) => groups.find(g => g.id === gid)?.grace_minutes ?? 0
+
+  const addMinutes = (t, min) => {
+    const [h, m] = t.split(':').map(Number)
+    const total = h * 60 + m + Number(min)
+    return `${String(Math.floor(total / 60)).padStart(2, '0')}:${String(total % 60).padStart(2, '0')}`
+  }
 
   const isWorkDay = (dateStr, gid) => {
     const d = new Date(dateStr)
@@ -128,12 +135,13 @@ export default function Reports({ groups = [] }) {
       rows.forEach(r => {
         if (!isWorkDay(date, r.group_id)) return
         if (!map[r.employee_id]) map[r.employee_id] = { name: r.name, group_id: r.group_id, ontime: 0, late: 0, absent: 0 }
-        const fi = r.first_in
-        const wb = getWorkBegin(r.group_id)
-        const ws = getWorkStart(r.group_id)
+        const fi  = r.first_in
+        const wb  = getWorkBegin(r.group_id)
+        const ws  = getWorkStart(r.group_id)
+        const lateThreshold = addMinutes(ws, getGrace(r.group_id))
         const eff = fi && fi >= wb ? fi : null
         if (!eff) map[r.employee_id].absent++
-        else if (eff > ws) map[r.employee_id].late++
+        else if (eff > lateThreshold) map[r.employee_id].late++
         else map[r.employee_id].ontime++
       })
     })

@@ -17,17 +17,19 @@ export default function History({ groups = [] }) {
   const isToday    = date === new Date().toISOString().slice(0, 10)
   const lastColLabel = isToday ? "Oxirgi o'tish" : 'Ketdi'
 
-  const getWorkStart = (group_id) => {
-    const g = groups.find(g => g.id === group_id)
-    return g?.work_start || '09:00'
+  const getGroup      = (gid) => groups.find(g => g.id === gid)
+  const getWorkStart  = (gid) => getGroup(gid)?.work_start    || '09:00'
+  const getWorkBegin  = (gid) => getGroup(gid)?.work_begin    || '06:00'
+  const getGrace      = (gid) => getGroup(gid)?.grace_minutes ?? 0
+
+  const addMinutes = (t, min) => {
+    const [h, m] = t.split(':').map(Number)
+    const total = h * 60 + m + Number(min)
+    return `${String(Math.floor(total / 60)).padStart(2, '0')}:${String(total % 60).padStart(2, '0')}`
   }
 
-  const getWorkBegin = (group_id) => {
-    const g = groups.find(g => g.id === group_id)
-    return g?.work_begin || '06:00'
-  }
+  const getLateThreshold = (gid) => addMinutes(getWorkStart(gid), getGrace(gid))
 
-  // first_in work_begin dan oldin bo'lsa — kechagi event, hisoblanmaydi
   const getEffectiveFirstIn = (first_in, group_id) => {
     if (!first_in) return null
     return first_in >= getWorkBegin(group_id) ? first_in : null
@@ -61,8 +63,8 @@ export default function History({ groups = [] }) {
   const getLate = (first_in, group_id) => {
     const eff = getEffectiveFirstIn(first_in, group_id)
     if (!eff) return null
-    const workStart = getWorkStart(group_id)
-    const [wh, wm] = workStart.split(':').map(Number)
+    const threshold = getLateThreshold(group_id)
+    const [wh, wm] = threshold.split(':').map(Number)
     const [h, m]   = eff.split(':').map(Number)
     const mins = (h - wh) * 60 + (m - wm)
     return mins > 0 ? mins : 0

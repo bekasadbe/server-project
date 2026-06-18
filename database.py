@@ -45,10 +45,11 @@ def init_db():
         ''')
         # Eski bazaga ustunlar qo'shish (agar yo'q bo'lsa)
         for col, default in [
-            ('work_start',  "'09:00'"),
-            ('work_begin',  "'06:00'"),
-            ('work_finish', "'18:00'"),
-            ('work_days',   "'1,2,3,4,5,6'"),
+            ('work_start',    "'09:00'"),
+            ('work_begin',    "'06:00'"),
+            ('work_finish',   "'18:00'"),
+            ('work_days',     "'1,2,3,4,5,6'"),
+            ('grace_minutes', '0'),
         ]:
             try:
                 conn.execute(f"ALTER TABLE groups ADD COLUMN {col} TEXT DEFAULT {default}")
@@ -261,11 +262,11 @@ def add_group(gid, name, work_start='09:00', work_begin='06:00', **kwargs):
         conn.commit()
 
 
-def update_group_settings(gid, work_start='09:00', work_begin='06:00', work_finish='18:00', work_days='1,2,3,4,5,6', **kwargs):
+def update_group_settings(gid, work_start='09:00', work_begin='06:00', work_finish='18:00', work_days='1,2,3,4,5,6', grace_minutes=0, **kwargs):
     with get_conn() as conn:
         conn.execute(
-            'UPDATE groups SET work_start=?, work_begin=?, work_finish=?, work_days=? WHERE id=?',
-            (work_start, work_begin, work_finish, work_days, gid)
+            'UPDATE groups SET work_start=?, work_begin=?, work_finish=?, work_days=?, grace_minutes=? WHERE id=?',
+            (work_start, work_begin, work_finish, work_days, int(grace_minutes), gid)
         )
         conn.commit()
 

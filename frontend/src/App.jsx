@@ -104,6 +104,7 @@ export default function App() {
         login: changes.login, password: changes.password,
         work_start: changes.work_start, work_begin: changes.work_begin,
         work_finish: changes.work_finish, work_days: changes.work_days,
+        grace_minutes: changes.grace_minutes ?? 0,
         linked_groups: changes.linked_groups || [],
       }),
     })

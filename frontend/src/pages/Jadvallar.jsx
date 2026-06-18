@@ -50,7 +50,14 @@ export default function Jadvallar({ groups = [], employees = [] }) {
   const getWorkFinish = (gid) => groups.find(g => g.id === gid)?.work_finish || '18:00'
   const getWorkBegin  = (gid) => groups.find(g => g.id === gid)?.work_begin  || '06:00'
   const getWorkDays   = (gid) => (groups.find(g => g.id === gid)?.work_days  || '1,2,3,4,5,6').split(',').filter(Boolean)
+  const getGrace      = (gid) => groups.find(g => g.id === gid)?.grace_minutes ?? 0
   const isDayOff      = (d, gid) => !getWorkDays(gid).includes(String(d.getDay()))
+
+  const addMinutes = (t, min) => {
+    const [h, m] = t.split(':').map(Number)
+    const total = h * 60 + m + Number(min)
+    return `${String(Math.floor(total / 60)).padStart(2, '0')}:${String(total % 60).padStart(2, '0')}`
+  }
 
   useEffect(() => {
     const load = async () => {
@@ -108,8 +115,9 @@ export default function Jadvallar({ groups = [], employees = [] }) {
     if (rec && (rec.first_in || rec.last_out)) {
       const fi = rec.first_in
       const lo = rec.last_out
+      const lateThreshold = addMinutes(ws, getGrace(emp.group_id))
       const eff = fi && fi >= wb ? fi : null
-      const late = eff && eff > ws
+      const late = eff && eff > lateThreshold
       const statusColor = !eff ? '#94a3b8' : late ? '#f59e0b' : '#16a34a'
 
       return (

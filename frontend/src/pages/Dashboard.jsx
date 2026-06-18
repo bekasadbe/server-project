@@ -48,23 +48,22 @@ export default function Dashboard({ employees = [], groups = [] }) {
     return () => clearInterval(t)
   }, [])
 
-  const getWorkStart = (group_id) => {
-    const g = groups.find(g => g.id === group_id)
-    return g?.work_start || '09:00'
+  const getGroup      = (gid) => groups.find(g => g.id === gid)
+  const getWorkStart  = (gid) => getGroup(gid)?.work_start    || '09:00'
+  const getWorkBegin  = (gid) => getGroup(gid)?.work_begin    || '06:00'
+  const getGrace      = (gid) => getGroup(gid)?.grace_minutes ?? 0
+
+  const addMinutes = (t, min) => {
+    const [h, m] = t.split(':').map(Number)
+    const total = h * 60 + m + Number(min)
+    return `${String(Math.floor(total / 60)).padStart(2, '0')}:${String(total % 60).padStart(2, '0')}`
   }
 
-  const getWorkBegin = (group_id) => {
-    const g = groups.find(g => g.id === group_id)
-    return g?.work_begin || '06:00'
-  }
-
-  // first_in "HH:MM", "HH:MM:SS" yoki "YYYY-MM-DDTHH:MM:SS" bo'lishi mumkin
   const toHHMM = (t) => {
     if (!t) return ''
     return t.length > 8 ? t.slice(11, 16) : t.slice(0, 5)
   }
 
-  // first_in ni work_begin dan oldin bo'lsa null qaytaradi
   const getEffectiveFirstIn = (row) => {
     if (!row.first_in) return null
     const timeStr = toHHMM(row.first_in)
@@ -74,7 +73,8 @@ export default function Dashboard({ employees = [], groups = [] }) {
   const getStatus = (row) => {
     const effectiveIn = getEffectiveFirstIn(row)
     if (!effectiveIn) return 'absent'
-    return toHHMM(effectiveIn) <= getWorkStart(row.group_id) ? 'ontime' : 'late'
+    const lateThreshold = addMinutes(getWorkStart(row.group_id), getGrace(row.group_id))
+    return toHHMM(effectiveIn) <= lateThreshold ? 'ontime' : 'late'
   }
 
   const visibleGroupIds = groups.map(g => g.id)
