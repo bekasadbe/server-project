@@ -10,7 +10,7 @@ export async function loginAsync(username, password) {
     })
     const data = await res.json()
     if (data.ok) {
-      const user = { username, role: data.role, name: data.name, groupId: data.groupId || null, loginAt: Date.now() }
+      const user = { username, role: data.role, name: data.name, groupId: data.groupId || null, linkedGroupIds: data.linkedGroupIds || [], loginAt: Date.now() }
       localStorage.setItem('user', JSON.stringify(user))
       return user
     }

@@ -159,11 +159,13 @@ def group_add():
         return jsonify({'error': 'id va name majburiy'}), 400
     plain_pass = data.get('password', '')
     hashed = hash_password(plain_pass) if plain_pass and not is_hashed(plain_pass) else plain_pass
+    linked = ','.join([g.strip() for g in data.get('linked_groups', []) if g.strip()])
     add_group(gid, name,
               login=data.get('login', ''),
               password=hashed,
               work_start=data.get('work_start', '09:00'),
-              work_begin=data.get('work_begin', '06:00'))
+              work_begin=data.get('work_begin', '06:00'),
+              linked_groups=linked)
     return jsonify({'ok': True})
 
 
@@ -175,12 +177,14 @@ def group_update(gid):
     plain_pass = data.get('password', '')
     # Agar yangi parol berilgan bo'lsa — hash qilamiz
     hashed = hash_password(plain_pass) if plain_pass and not is_hashed(plain_pass) else plain_pass
+    linked = ','.join([g.strip() for g in data.get('linked_groups', []) if g.strip()])
     update_group_settings(
         gid,
         login=data.get('login', ''),
         password=hashed,
         work_start=data.get('work_start', '09:00'),
         work_begin=data.get('work_begin', '06:00'),
+        linked_groups=linked,
     )
     return jsonify({'ok': True})
 
@@ -240,7 +244,8 @@ def auth_login():
             (username,)
         ).fetchone()
     if row and row['password'] and verify_password(password, row['password']):
-        return jsonify({'ok': True, 'role': 'kadrlar', 'name': row['name'], 'groupId': row['id'], 'username': row['login']})
+        linked = [g.strip() for g in (row['linked_groups'] or '').split(',') if g.strip()]
+        return jsonify({'ok': True, 'role': 'kadrlar', 'name': row['name'], 'groupId': row['id'], 'username': row['login'], 'linkedGroupIds': linked})
 
     return jsonify({'ok': False, 'error': "Login yoki parol noto'g'ri"}), 401
 

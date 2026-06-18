@@ -40,9 +40,11 @@ export default function App() {
 
   const handleLogout = () => { logout(); setUser(null) }
 
-  const userGroup   = user.role === 'kadrlar' ? user.groupId : null
-  const visibleEmps = userGroup ? employees.filter(e => e.group_id === userGroup) : employees
-  const visibleGrps = userGroup ? groups.filter(g => g.id === userGroup) : groups
+  const userGroup      = user.role === 'kadrlar' ? user.groupId : null
+  const linkedGroupIds = user.linkedGroupIds || []
+  const visibleGroupIds = userGroup ? [userGroup, ...linkedGroupIds] : null
+  const visibleEmps = visibleGroupIds ? employees.filter(e => visibleGroupIds.includes(e.group_id)) : employees
+  const visibleGrps = visibleGroupIds ? groups.filter(g => visibleGroupIds.includes(g.id)) : groups
 
   const addEmployee = async (emp) => {
     await apiFetch('/employees', {
@@ -98,6 +100,7 @@ export default function App() {
       body: JSON.stringify({
         login: changes.login, password: changes.password,
         work_start: changes.work_start, work_begin: changes.work_begin,
+        linked_groups: changes.linked_groups || [],
       }),
     })
     loadData()

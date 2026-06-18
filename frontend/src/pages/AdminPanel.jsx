@@ -35,6 +35,7 @@ export default function AdminPanel({ employees, groups, onAddEmployee, onDeleteE
   const [editWorkStart, setEditWorkStart] = useState('09:00')
   const [editPassShow, setEditPassShow] = useState(false)
   const [credError, setCredError]       = useState('')
+  const [editLinkedGroups, setEditLinkedGroups] = useState([])
 
   const currentGroup = groups.find(g => g.id === selectedGroup) || (groups.length > 0 ? groups[0] : null)
   const groupEmps    = employees.filter(e => e.group === selectedGroup)
@@ -84,7 +85,7 @@ export default function AdminPanel({ employees, groups, onAddEmployee, onDeleteE
   const handleSaveCred = () => {
     if (!editLogin.trim()) return setCredError('Login kiriting')
     if (!editPass.trim())  return setCredError('Parol kiriting')
-    onUpdateGroup(selectedGroup, { login: editLogin.trim(), password: editPass.trim(), work_start: editWorkStart })
+    onUpdateGroup(selectedGroup, { login: editLogin.trim(), password: editPass.trim(), work_start: editWorkStart, linked_groups: editLinkedGroups })
     setShowEditCred(false); setCredError('')
   }
 
@@ -177,7 +178,7 @@ export default function AdminPanel({ employees, groups, onAddEmployee, onDeleteE
               <div style={{ display: 'flex', gap: '6px' }}>
                 <button
                   title="Sozlamalar"
-                  onClick={() => { setEditLogin(currentGroup.login); setEditPass(currentGroup.password); setEditWorkStart(currentGroup.work_start || '09:00'); setShowEditCred(true) }}
+                  onClick={() => { setEditLogin(currentGroup.login); setEditPass(currentGroup.password); setEditWorkStart(currentGroup.work_start || '09:00'); setEditLinkedGroups((currentGroup.linked_groups||'').split(',').filter(Boolean)); setShowEditCred(true) }}
                   style={{ padding: '8px', background: '#f8fafc', border: '1px solid #e2e8f0', borderRadius: '8px', cursor: 'pointer', display: 'flex', color: '#64748b' }}>
                   <Settings2 size={16} />
                 </button>
@@ -411,6 +412,25 @@ export default function AdminPanel({ employees, groups, onAddEmployee, onDeleteE
                 <input type="time" value={editWorkStart}
                   onChange={e => setEditWorkStart(e.target.value)}
                   style={{ ...inputStyle, width: '160px' }} />
+              </div>
+              <div style={{ borderTop: '1px solid #f1f5f9', paddingTop: '14px' }}>
+                <label style={{ fontSize: '12px', color: '#64748b', display: 'block', marginBottom: '8px', fontWeight: 600 }}>
+                  Bog'liq tashkilotlar
+                  <span style={{ fontWeight: 400, color: '#94a3b8', marginLeft: '6px' }}>— bu login qaysi guruhlarni ham ko'ra olsin</span>
+                </label>
+                <div style={{ display: 'flex', flexDirection: 'column', gap: '6px' }}>
+                  {groups.filter(g => g.id !== selectedGroup).map(g => {
+                    const checked = editLinkedGroups.includes(g.id)
+                    return (
+                      <label key={g.id} style={{ display: 'flex', alignItems: 'center', gap: '8px', cursor: 'pointer', fontSize: '13px', color: '#374151' }}>
+                        <input type="checkbox" checked={checked}
+                          onChange={() => setEditLinkedGroups(prev => checked ? prev.filter(x => x !== g.id) : [...prev, g.id])}
+                          style={{ width: '15px', height: '15px', cursor: 'pointer' }} />
+                        {g.name}
+                      </label>
+                    )
+                  })}
+                </div>
               </div>
               {credError && (
                 <div style={{ padding: '8px 12px', background: '#fff1f2', border: '1px solid #fecdd3', borderRadius: '7px', color: '#e11d48', fontSize: '13px' }}>

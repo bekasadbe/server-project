@@ -35,20 +35,22 @@ def init_db():
     with get_conn() as conn:
         conn.execute('''
             CREATE TABLE IF NOT EXISTS groups (
-                id         TEXT PRIMARY KEY,
-                name       TEXT NOT NULL,
-                login      TEXT DEFAULT '',
-                password   TEXT DEFAULT '',
-                work_start TEXT DEFAULT '09:00',
-                work_begin TEXT DEFAULT '06:00'
+                id            TEXT PRIMARY KEY,
+                name          TEXT NOT NULL,
+                login         TEXT DEFAULT '',
+                password      TEXT DEFAULT '',
+                work_start    TEXT DEFAULT '09:00',
+                work_begin    TEXT DEFAULT '06:00',
+                linked_groups TEXT DEFAULT ''
             )
         ''')
         # Eski bazaga ustunlar qo'shish (agar yo'q bo'lsa)
         for col, default in [
-            ('login',      "''"),
-            ('password',   "''"),
-            ('work_start', "'09:00'"),
-            ('work_begin', "'06:00'"),
+            ('login',         "''"),
+            ('password',      "''"),
+            ('work_start',    "'09:00'"),
+            ('work_begin',    "'06:00'"),
+            ('linked_groups', "''"),
         ]:
             try:
                 conn.execute(f"ALTER TABLE groups ADD COLUMN {col} TEXT DEFAULT {default}")
@@ -225,20 +227,20 @@ def get_groups():
     return [dict(r) for r in rows]
 
 
-def add_group(gid, name, login='', password='', work_start='09:00', work_begin='06:00'):
+def add_group(gid, name, login='', password='', work_start='09:00', work_begin='06:00', linked_groups=''):
     with get_conn() as conn:
         conn.execute(
-            'INSERT OR REPLACE INTO groups (id, name, login, password, work_start, work_begin) VALUES (?, ?, ?, ?, ?, ?)',
-            (gid, name, login, password, work_start, work_begin)
+            'INSERT OR REPLACE INTO groups (id, name, login, password, work_start, work_begin, linked_groups) VALUES (?, ?, ?, ?, ?, ?, ?)',
+            (gid, name, login, password, work_start, work_begin, linked_groups)
         )
         conn.commit()
 
 
-def update_group_settings(gid, login, password, work_start='09:00', work_begin='06:00'):
+def update_group_settings(gid, login, password, work_start='09:00', work_begin='06:00', linked_groups=''):
     with get_conn() as conn:
         conn.execute(
-            'UPDATE groups SET login=?, password=?, work_start=?, work_begin=? WHERE id=?',
-            (login, password, work_start, work_begin, gid)
+            'UPDATE groups SET login=?, password=?, work_start=?, work_begin=?, linked_groups=? WHERE id=?',
+            (login, password, work_start, work_begin, linked_groups, gid)
         )
         conn.commit()
 
