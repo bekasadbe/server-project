@@ -115,10 +115,12 @@ export default function Jadvallar({ groups = [], employees = [] }) {
     const wf       = getWorkFinish(emp.group_id)
     const off      = isDayOff(day, emp.group_id)
     const leave    = getLeaveForDay(emp.id, ds)
+    const isWeekend = day.getDay() === 0 || day.getDay() === 6
 
     const cellStyle = (borderColor, bg = '#fff') => ({
       margin: '3px', padding: '6px 10px', borderRadius: '10px',
-      background: bg, border: `2px solid ${borderColor}`,
+      background: isWeekend && !leave && !(rec && (rec.first_in || rec.last_out)) ? '#f0f0f1' : bg,
+      border: `2px solid ${isWeekend && !leave && !(rec && (rec.first_in || rec.last_out)) ? '#e2e8f0' : borderColor}`,
       minHeight: '46px', display: 'flex', flexDirection: 'column', justifyContent: 'center',
     })
     const plannedStyle = { fontSize: '13px', color: '#94a3b8', fontWeight: 400, marginBottom: '3px', textAlign: 'left' }
