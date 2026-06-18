@@ -2,16 +2,16 @@ import { LayoutDashboard, Users, Clock, FileBarChart2, Settings, LogOut, Shield,
 
 
 const menu = [
-  { key: 'dashboard',  label: 'Davomat',           icon: LayoutDashboard, roles: ['admin','kadrlar','kuzatuvchi'] },
+  { key: 'dashboard',  label: 'Bugun',             icon: LayoutDashboard, roles: ['admin','kadrlar','kuzatuvchi'] },
   { key: 'live',       label: 'Jonli lenta',       icon: Radio,           roles: ['admin'] },
-  { key: 'history',    label: 'Hisobotlar',        icon: Clock,           roles: ['kadrlar','kuzatuvchi'] },
-  { key: 'schedule',   label: 'Jadvallar',         icon: CalendarDays,    roles: ['kadrlar','kuzatuvchi'] },
-  { key: 'employees',  label: 'Xodimlar',          icon: Users,           roles: ['kadrlar','kuzatuvchi'] },
+  { key: 'schedule',   label: 'Jadval',            icon: CalendarDays,    roles: ['kadrlar','kuzatuvchi'] },
+  { key: 'history',    label: 'Hisobot',           icon: Clock,           roles: ['kadrlar','kuzatuvchi'] },
   { key: 'reports',    label: 'Statistika',        icon: FileBarChart2,   roles: ['kadrlar','kuzatuvchi'] },
+  { key: 'employees',  label: 'Xodimlar',          icon: Users,           roles: ['kadrlar','kuzatuvchi'] },
+  { key: 'leaves',     label: "Kasallik & Ta'til", icon: Stethoscope,     roles: ['kadrlar'] },
   { key: 'settings',   label: 'Sozlamalar',        icon: Settings2,       roles: ['kadrlar'] },
   { key: 'admin',      label: 'Tashkilotlar',      icon: Building2,       roles: ['admin'] },
   { key: 'accounts',   label: 'Akkauntlar',        icon: KeyRound,        roles: ['admin'] },
-  { key: 'leaves',     label: "Kasallik & Ta'til", icon: Stethoscope,     roles: ['kadrlar'] },
 ]
 
 export default function Sidebar({ current, onChange, user, onLogout }) {
