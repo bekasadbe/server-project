@@ -405,15 +405,6 @@ export default function AdminPanel({ employees, groups, onAddEmployee, onDeleteE
                 </div>
               </div>
               <div style={{ borderTop: '1px solid #f1f5f9', paddingTop: '14px' }}>
-                <label style={{ fontSize: '12px', color: '#64748b', display: 'block', marginBottom: '5px', fontWeight: 600 }}>
-                  Ish boshlanish vaqti
-                  <span style={{ fontWeight: 400, color: '#94a3b8', marginLeft: '6px' }}>— shu vaqtdan keyin kelsa "Kech keldi"</span>
-                </label>
-                <input type="time" value={editWorkStart}
-                  onChange={e => setEditWorkStart(e.target.value)}
-                  style={{ ...inputStyle, width: '160px' }} />
-              </div>
-              <div style={{ borderTop: '1px solid #f1f5f9', paddingTop: '14px' }}>
                 <label style={{ fontSize: '12px', color: '#64748b', display: 'block', marginBottom: '8px', fontWeight: 600 }}>
                   Bog'liq tashkilotlar
                   <span style={{ fontWeight: 400, color: '#94a3b8', marginLeft: '6px' }}>— bu login qaysi guruhlarni ham ko'ra olsin</span>
