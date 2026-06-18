@@ -166,7 +166,25 @@ export default function Dashboard({ employees = [], groups = [] }) {
                         </span>
                       </td>
                     )}
-                    <td style={{ padding:'11px 16px', fontSize:'15px', color:getEffectiveFirstIn(row)?'#16a34a':'#cbd5e1', fontWeight:400 }}>{getEffectiveFirstIn(row) ? toHHMM(getEffectiveFirstIn(row)) : '—'}</td>
+                    <td style={{ padding:'11px 16px' }}>
+                      {(() => {
+                        const eff = getEffectiveFirstIn(row)
+                        const status = getStatus(row)
+                        if (!eff) return <span style={{ fontSize:'15px', color:'#cbd5e1', fontWeight:400 }}>—</span>
+                        const lateMin = (() => {
+                          const [wh, wm] = addMinutes(getWorkStart(row.group_id), getGrace(row.group_id)).split(':').map(Number)
+                          const [ah, am] = toHHMM(eff).split(':').map(Number)
+                          const diff = (ah * 60 + am) - (wh * 60 + wm)
+                          return diff > 0 ? diff : 0
+                        })()
+                        return (
+                          <div>
+                            <span style={{ fontSize:'15px', fontWeight:500, color: status === 'late' ? '#f97316' : '#16a34a' }}>{toHHMM(eff)}</span>
+                            {lateMin > 0 && <span style={{ fontSize:'11px', color:'#f97316', marginLeft:'5px' }}>+{lateMin} daq</span>}
+                          </div>
+                        )
+                      })()}
+                    </td>
                     <td style={{ padding:'11px 16px', fontSize:'15px', color:row.last_out?'#475569':'#cbd5e1', fontWeight:400 }}>{row.last_out ? toHHMM(row.last_out) : '—'}</td>
                     <td style={{ padding:'11px 16px' }}>
                       <span style={{ padding:'4px 10px', borderRadius:'20px', fontSize:'12px', fontWeight:600, background:s.bg, color:s.color }}>{s.label}</span>
