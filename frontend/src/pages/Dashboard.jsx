@@ -145,7 +145,7 @@ export default function Dashboard({ employees = [], groups = [] }) {
           <table style={{ width:'100%', borderCollapse:'collapse' }}>
             <thead>
               <tr style={{ background:'#f8fafc' }}>
-                {['Ism Familiya', ...(multiOrg?['Tashkilot']:[]), 'Keldi', 'Oxirgi o\'tish', 'Holat'].map(h => (
+                {['Ism Familiya', ...(multiOrg?['Tashkilot']:[]), 'Keldi', 'Kechikish', 'Oxirgi o\'tish', 'Holat'].map(h => (
                   <th key={h} style={{ padding:'10px 16px', textAlign:'left', fontSize:'11px', color:'#94a3b8', fontWeight:700, textTransform:'uppercase', letterSpacing:'0.5px' }}>{h}</th>
                 ))}
               </tr>
@@ -171,18 +171,18 @@ export default function Dashboard({ employees = [], groups = [] }) {
                         const eff = getEffectiveFirstIn(row)
                         const status = getStatus(row)
                         if (!eff) return <span style={{ fontSize:'15px', color:'#cbd5e1', fontWeight:400 }}>—</span>
-                        const lateMin = (() => {
-                          const [wh, wm] = addMinutes(getWorkStart(row.group_id), getGrace(row.group_id)).split(':').map(Number)
-                          const [ah, am] = toHHMM(eff).split(':').map(Number)
-                          const diff = (ah * 60 + am) - (wh * 60 + wm)
-                          return diff > 0 ? diff : 0
-                        })()
-                        return (
-                          <div>
-                            <span style={{ fontSize:'15px', fontWeight:500, color: status === 'late' ? '#f97316' : '#16a34a' }}>{toHHMM(eff)}</span>
-                            {lateMin > 0 && <span style={{ fontSize:'11px', color:'#f97316', marginLeft:'5px' }}>+{lateMin} daq</span>}
-                          </div>
-                        )
+                        return <span style={{ fontSize:'15px', fontWeight:500, color: status === 'late' ? '#f97316' : '#16a34a' }}>{toHHMM(eff)}</span>
+                      })()}
+                    </td>
+                    <td style={{ padding:'11px 16px' }}>
+                      {(() => {
+                        const eff = getEffectiveFirstIn(row)
+                        if (!eff) return <span style={{ fontSize:'13px', color:'#cbd5e1' }}>—</span>
+                        const [wh, wm] = addMinutes(getWorkStart(row.group_id), getGrace(row.group_id)).split(':').map(Number)
+                        const [ah, am] = toHHMM(eff).split(':').map(Number)
+                        const diff = (ah * 60 + am) - (wh * 60 + wm)
+                        if (diff <= 0) return <span style={{ fontSize:'13px', color:'#16a34a' }}>—</span>
+                        return <span style={{ fontSize:'13px', fontWeight:500, color:'#f97316' }}>+{diff} daq</span>
                       })()}
                     </td>
                     <td style={{ padding:'11px 16px', fontSize:'15px', color:row.last_out?'#475569':'#cbd5e1', fontWeight:400 }}>{row.last_out ? toHHMM(row.last_out) : '—'}</td>
@@ -193,7 +193,7 @@ export default function Dashboard({ employees = [], groups = [] }) {
                 )
               })}
               {sorted.length === 0 && (
-                <tr><td colSpan={multiOrg?5:4} style={{ padding:'40px', textAlign:'center', color:'#94a3b8' }}>Ma'lumot yo'q</td></tr>
+                <tr><td colSpan={multiOrg?6:5} style={{ padding:'40px', textAlign:'center', color:'#94a3b8' }}>Ma'lumot yo'q</td></tr>
               )}
             </tbody>
           </table>
