@@ -17,11 +17,10 @@ export default function History({ groups = [] }) {
   const isToday    = date === new Date().toISOString().slice(0, 10)
   const lastColLabel = isToday ? "Oxirgi o'tish" : 'Ketdi'
 
-  const getGroup      = (gid) => groups.find(g => g.id === gid)
-  const getWorkStart  = (gid) => getGroup(gid)?.work_start    || '09:00'
-  const getWorkFinish = (gid) => getGroup(gid)?.work_finish   || '18:00'
-  const getWorkBegin  = (gid) => getGroup(gid)?.work_begin    || '06:00'
-  const getGrace      = (gid) => getGroup(gid)?.grace_minutes ?? 0
+  const getGroup     = (gid) => groups.find(g => g.id === gid)
+  const getWorkStart = (gid) => getGroup(gid)?.work_start    || '09:00'
+  const getWorkBegin = (gid) => getGroup(gid)?.work_begin    || '06:00'
+  const getGrace     = (gid) => getGroup(gid)?.grace_minutes ?? 0
 
   const addMinutes = (t, min) => {
     const [h, m] = t.split(':').map(Number)
@@ -71,16 +70,14 @@ export default function History({ groups = [] }) {
     return mins > 0 ? mins : 0
   }
 
-  const isEarlyOut = (last_out, gid) => last_out && last_out < getWorkFinish(gid)
 
   const getStatus = (r) => {
     const eff = getEffectiveFirstIn(r.first_in, r.group_id)
-    const early = isEarlyOut(r.last_out, r.group_id)
-    if (!eff) return { label: 'Kelmadi',     color: '#dc2626', bg: '#fee2e2', early }
+    if (!eff) return { label: 'Kelmadi',     color: '#dc2626', bg: '#fee2e2' }
     const late = getLate(r.first_in, r.group_id)
     return late > 0
-      ? { label: 'Kech keldi',  color: '#d97706', bg: '#fef3c7', early }
-      : { label: "O'z vaqtida", color: '#16a34a', bg: '#dcfce7', early }
+      ? { label: 'Kech keldi',  color: '#d97706', bg: '#fef3c7' }
+      : { label: "O'z vaqtida", color: '#16a34a', bg: '#dcfce7' }
   }
 
   const buildTableData = () => {
@@ -89,7 +86,6 @@ export default function History({ groups = [] }) {
     const ontime  = filtered.filter(r => r.first_in && getLate(r.first_in, r.group_id) === 0).length
     const late    = filtered.filter(r => r.first_in && getLate(r.first_in, r.group_id) > 0).length
     const absent  = filtered.filter(r => !r.first_in).length
-    const early   = filtered.filter(r => isEarlyOut(r.last_out, r.group_id)).length
     const head    = multiOrg
       ? [['#', 'Ism Familiya', 'Tashkilot', 'Keldi', 'Kechikish', 'Holat']]
       : [['#', 'Ism Familiya', 'Keldi', 'Kechikish', 'Holat']]
@@ -105,7 +101,7 @@ export default function History({ groups = [] }) {
   }
 
   const handleDownloadPDF = () => {
-    const { dateFormatted, orgName, ontime, late, absent, early, head, body } = buildTableData()
+    const { dateFormatted, orgName, ontime, late, absent, head, body } = buildTableData()
     const doc = new jsPDF({ orientation: 'portrait', unit: 'mm', format: 'a4' })
     const pw  = doc.internal.pageSize.getWidth()
 

@@ -50,11 +50,8 @@ export default function Dashboard({ employees = [], groups = [] }) {
 
   const getGroup      = (gid) => groups.find(g => g.id === gid)
   const getWorkStart  = (gid) => getGroup(gid)?.work_start    || '09:00'
-  const getWorkFinish = (gid) => getGroup(gid)?.work_finish   || '18:00'
   const getWorkBegin  = (gid) => getGroup(gid)?.work_begin    || '06:00'
   const getGrace      = (gid) => getGroup(gid)?.grace_minutes ?? 0
-
-  const isEarlyOut = (row) => row.last_out && row.last_out < getWorkFinish(row.group_id)
 
   const addMinutes = (t, min) => {
     const [h, m] = t.split(':').map(Number)
@@ -95,10 +92,9 @@ export default function Dashboard({ employees = [], groups = [] }) {
     return (a.name || '').localeCompare(b.name || '')
   })
 
-  const ontime   = filtered.filter(r => getStatus(r) === 'ontime').length
-  const late     = filtered.filter(r => getStatus(r) === 'late').length
-  const absent   = filtered.filter(r => getStatus(r) === 'absent').length
-  const earlyOut = filtered.filter(r => isEarlyOut(r)).length
+  const ontime = filtered.filter(r => getStatus(r) === 'ontime').length
+  const late   = filtered.filter(r => getStatus(r) === 'late').length
+  const absent = filtered.filter(r => getStatus(r) === 'absent').length
 
   const groupName = (gid) => groups.find(g => g.id === gid)?.name || gid
 
