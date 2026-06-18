@@ -337,10 +337,10 @@ export default function History({ groups = [] }) {
                       </span>
                     </td>
                   )}
-                  <td style={{ padding:'11px 16px', fontFamily:'monospace', fontSize:'14px', color:getEffectiveFirstIn(r.first_in,r.group_id)?'#16a34a':'#cbd5e1', fontWeight:600 }}>{getEffectiveFirstIn(r.first_in,r.group_id) || '—'}</td>
-                  <td style={{ padding:'11px 16px', fontFamily:'monospace', fontSize:'14px', color:r.last_out?'#475569':'#cbd5e1' }}>{r.last_out || '—'}</td>
-                  <td style={{ padding:'11px 16px', fontSize:'13px', color: late_min > 0 ? '#d97706' : '#94a3b8' }}>
-                    {late_min > 0 ? `${late_min} daq.` : '—'}
+                  <td style={{ padding:'11px 16px', fontSize:'15px', color:getEffectiveFirstIn(r.first_in,r.group_id)?(late_min>0?'#f97316':'#16a34a'):'#cbd5e1', fontWeight:500 }}>{getEffectiveFirstIn(r.first_in,r.group_id) || '—'}</td>
+                  <td style={{ padding:'11px 16px', fontSize:'15px', color:r.last_out?'#475569':'#cbd5e1', fontWeight:400 }}>{r.last_out || '—'}</td>
+                  <td style={{ padding:'11px 16px', fontSize:'13px', color: late_min > 0 ? '#f97316' : '#94a3b8' }}>
+                    {late_min > 0 ? `+${late_min} daq` : '—'}
                   </td>
                   <td style={{ padding:'11px 16px' }}>
                     <span style={{ padding:'4px 10px', borderRadius:'20px', fontSize:'12px', fontWeight:600, background:st.bg, color:st.color }}>{st.label}</span>
