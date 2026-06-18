@@ -129,7 +129,7 @@ export default function Jadvallar({ groups = [], employees = [] }) {
           {isSick
             ? <Stethoscope size={15} color="#9333ea" />
             : <Palmtree size={15} color="#0891b2" />}
-          <span style={{ fontSize: '12px', fontWeight: 600, color: isSick ? '#9333ea' : '#0891b2' }}>
+          <span style={{ fontSize: '13px', fontWeight: 600, color: isSick ? '#9333ea' : '#0891b2', fontFamily: 'Arial, sans-serif' }}>
             {isSick ? 'Kasallik' : "Ta'til"}
           </span>
         </div>
@@ -144,7 +144,7 @@ export default function Jadvallar({ groups = [], employees = [] }) {
         display: 'flex', alignItems: 'center', justifyContent: 'center',
         minHeight: '52px',
       }}>
-        <span style={{ fontSize: '12px', color: '#cbd5e1', fontWeight: 500 }}>Dam olish</span>
+        <span style={{ fontSize: '13px', color: '#cbd5e1', fontWeight: 500, fontFamily: 'Arial, sans-serif' }}>Dam olish</span>
       </div>
     )
 
@@ -161,13 +161,13 @@ export default function Jadvallar({ groups = [], employees = [] }) {
 
       return (
         <div style={{
-          margin: '3px', padding: '8px 10px', borderRadius: '10px',
+          margin: '4px', padding: '8px 6px', borderRadius: '10px',
           background: '#f0fdf4', border: `1.5px solid ${late ? '#fde68a' : '#bbf7d0'}`,
         }}>
-          <div style={{ fontSize: '12px', color: '#94a3b8', textAlign: 'center', marginBottom: '4px', fontFamily: 'monospace', fontWeight: 500 }}>
+          <div style={{ fontSize: '13px', color: '#94a3b8', textAlign: 'center', marginBottom: '5px', fontFamily: 'Arial, sans-serif', fontWeight: 400 }}>
             {ws} – {wf}
           </div>
-          <div style={{ display: 'flex', justifyContent: 'center', gap: '3px', fontFamily: 'monospace', fontSize: '13px', fontWeight: 700 }}>
+          <div style={{ display: 'flex', justifyContent: 'center', gap: '2px', fontFamily: 'Arial, sans-serif', fontSize: '14px', fontWeight: 700 }}>
             <span style={{ color: inColor }}>{eff || '—:——'}</span>
             <span style={{ color: '#cbd5e1' }}>–</span>
             <span style={{ color: lo ? outColor : '#cbd5e1' }}>{lo || '—:——'}</span>
@@ -179,15 +179,15 @@ export default function Jadvallar({ groups = [], employees = [] }) {
     // Ma'lumot yo'q (ish kuni)
     return (
       <div style={{
-        margin: '3px', padding: '8px 10px', borderRadius: '10px',
+        margin: '4px', padding: '8px 6px', borderRadius: '10px',
         background: future ? '#fafafa' : '#fff',
         border: `1.5px solid ${todayDay ? '#fde68a' : '#e2e8f0'}`,
       }}>
-        <div style={{ fontSize: '12px', color: future ? '#e2e8f0' : '#cbd5e1', textAlign: 'center', fontFamily: 'monospace', fontWeight: 500 }}>
+        <div style={{ fontSize: '13px', color: future ? '#e2e8f0' : '#cbd5e1', textAlign: 'center', fontFamily: 'Arial, sans-serif', fontWeight: 400 }}>
           {ws} – {wf}
         </div>
-        <div style={{ fontSize: '12px', color: todayDay ? '#f59e0b' : (future ? '#e2e8f0' : '#cbd5e1'), textAlign: 'center', fontWeight: 600, marginTop: '3px' }}>
-          {todayDay ? 'hali yo\'q' : future ? '—' : 'kelmadi'}
+        <div style={{ fontSize: '13px', color: todayDay ? '#f59e0b' : (future ? '#e2e8f0' : '#cbd5e1'), textAlign: 'center', fontWeight: 600, marginTop: '4px', fontFamily: 'Arial, sans-serif' }}>
+          {todayDay ? "hali yo'q" : future ? '—' : 'kelmadi'}
         </div>
       </div>
     )
@@ -262,14 +262,14 @@ export default function Jadvallar({ groups = [], employees = [] }) {
                 <tr><td colSpan={8} style={{ padding: '48px', textAlign: 'center', color: '#94a3b8', fontSize: '13px' }}>Xodimlar topilmadi</td></tr>
               ) : filteredEmps.map((emp, ri) => (
                 <tr key={emp.id} style={{ borderBottom: ri < filteredEmps.length - 1 ? '1px solid #f1f5f9' : 'none', background: ri % 2 === 0 ? '#fff' : '#fafafa' }}>
-                  <td style={{ padding: '8px 16px', borderRight: '1px solid #e2e8f0', overflow: 'hidden' }}>
-                    <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
-                      <div style={{ width: 32, height: 32, borderRadius: '50%', background: nameColor(emp.name), display: 'flex', alignItems: 'center', justifyContent: 'center', color: '#fff', fontWeight: 700, fontSize: '11px', flexShrink: 0 }}>
+                  <td style={{ padding: '10px 16px', borderRight: '1px solid #e2e8f0', overflow: 'hidden' }}>
+                    <div style={{ display: 'flex', alignItems: 'center', gap: '10px' }}>
+                      <div style={{ width: 36, height: 36, borderRadius: '50%', background: nameColor(emp.name), display: 'flex', alignItems: 'center', justifyContent: 'center', color: '#fff', fontWeight: 700, fontSize: '13px', flexShrink: 0 }}>
                         {nameInitials(emp.name)}
                       </div>
                       <div style={{ minWidth: 0 }}>
-                        <div style={{ fontSize: '12px', fontWeight: 600, color: '#0f172a', overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>{emp.name}</div>
-                        {emp.lavozim && <div style={{ fontSize: '10px', color: '#94a3b8', marginTop: '1px', overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>{emp.lavozim}</div>}
+                        <div style={{ fontSize: '14px', fontWeight: 600, color: '#0f172a', overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>{emp.name}</div>
+                        {emp.lavozim && <div style={{ fontSize: '12px', color: '#94a3b8', marginTop: '2px', overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>{emp.lavozim}</div>}
                       </div>
                     </div>
                   </td>
