@@ -155,10 +155,9 @@ export default function Jadvallar({ groups = [], employees = [] }) {
       const earlyOut      = lo && lo < wf
       const inColor       = !eff ? '#94a3b8' : late ? '#f97316' : '#22c55e'
       const outColor      = earlyOut ? '#f97316' : '#22c55e'
-      const borderColor   = late ? '#f97316' : '#06b6d4'
 
       return (
-        <div style={cellStyle(borderColor, late ? '#fff8f0' : '#f0fdfa')}>
+        <div style={cellStyle('#06b6d4', '#f0fdfa')}>
           <div style={plannedStyle}>{ws} - {wf}</div>
           <div style={{ display: 'flex', gap: '3px', ...timeStyle }}>
             <span style={{ color: inColor }}>{eff || '—:——'}</span>
@@ -171,9 +170,9 @@ export default function Jadvallar({ groups = [], employees = [] }) {
 
     // Ma'lumot yo'q (ish kuni)
     return (
-      <div style={cellStyle(todayDay ? '#fbbf24' : future ? '#f1f5f9' : '#e2e8f0', '#fff')}>
+      <div style={cellStyle(todayDay ? '#fbbf24' : future ? '#f1f5f9' : '#f43f5e', todayDay ? '#fff' : future ? '#fff' : '#fff5f5')}>
         <div style={plannedStyle}>{ws} - {wf}</div>
-        <div style={{ ...timeStyle, fontSize: '13px', color: todayDay ? '#f59e0b' : future ? '#e2e8f0' : '#cbd5e1' }}>
+        <div style={{ ...timeStyle, fontSize: '13px', color: todayDay ? '#f59e0b' : future ? '#e2e8f0' : '#f43f5e' }}>
           {todayDay ? "hali yo'q" : future ? '—' : 'kelmadi'}
         </div>
       </div>
