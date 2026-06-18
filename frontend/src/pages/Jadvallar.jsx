@@ -228,8 +228,9 @@ export default function Jadvallar({ groups = [], employees = [] }) {
                 {days.map((d, i) => {
                   const today = isToday(d)
                   const isSun = d.getDay() === 0
+                  const isSat = d.getDay() === 6
                   return (
-                    <th key={i} style={{ padding: '10px 4px', textAlign: 'center', background: today ? '#eff6ff' : isSun ? '#fdf8f8' : '#f8fafc', borderLeft: '1px solid #e2e8f0', borderBottom: today ? '2px solid #2563eb' : 'none' }}>
+                    <th key={i} style={{ padding: '10px 4px', textAlign: 'center', background: today ? '#eff6ff' : (isSun || isSat) ? '#f0f0f1' : '#f8fafc', borderLeft: '1px solid #e2e8f0', borderBottom: today ? '2px solid #2563eb' : 'none' }}>
                       <div style={{ fontSize: '11px', fontWeight: 400, color: today ? '#2563eb' : isSun ? '#f97316' : '#64748b' }}>{DAY_LABELS[i]}</div>
                       <div style={{ fontSize: '16px', fontWeight: 400, color: today ? '#2563eb' : isSun ? '#f97316' : '#0f172a', marginTop: '1px' }}>{d.getDate()}</div>
                     </th>
@@ -258,8 +259,9 @@ export default function Jadvallar({ groups = [], employees = [] }) {
                   {days.map((d, di) => {
                     const today  = isToday(d)
                     const isSun  = d.getDay() === 0
+                    const isSat  = d.getDay() === 6
                     return (
-                      <td key={di} style={{ padding: '2px', textAlign: 'center', borderLeft: '1px solid #f1f5f9', background: today ? '#f8fbff' : isSun ? '#fdfaf7' : 'transparent', verticalAlign: 'middle' }}>
+                      <td key={di} style={{ padding: '2px', textAlign: 'center', borderLeft: '1px solid #f1f5f9', background: today ? '#f8fbff' : (isSun || isSat) ? '#f4f4f5' : 'transparent', verticalAlign: 'middle' }}>
                         <CellContent emp={emp} day={d} />
                       </td>
                     )
