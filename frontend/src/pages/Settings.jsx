@@ -1,5 +1,107 @@
-import { useState, useRef, useEffect } from 'react'
+import { useState, useRef, useEffect, useCallback } from 'react'
 import { Settings2, Eye, EyeOff, Clock, Key, Save, CalendarDays, AlertCircle } from 'lucide-react'
+
+const GRACE_VALUES = [0, 5, 10, 15, 20, 25, 30, 35, 40, 45, 50, 55, 60]
+const ITEM_H = 44
+
+function GracePicker({ value, onChange, workStart }) {
+  const listRef = useRef(null)
+  const idx = GRACE_VALUES.indexOf(Number(value))
+  const activeIdx = idx < 0 ? 0 : idx
+
+  useEffect(() => {
+    if (listRef.current) {
+      listRef.current.scrollTop = activeIdx * ITEM_H
+    }
+  }, [activeIdx])
+
+  const handleScroll = useCallback(() => {
+    if (!listRef.current) return
+    const i = Math.round(listRef.current.scrollTop / ITEM_H)
+    const clamped = Math.max(0, Math.min(GRACE_VALUES.length - 1, i))
+    if (GRACE_VALUES[clamped] !== Number(value)) {
+      onChange(GRACE_VALUES[clamped])
+    }
+  }, [value, onChange])
+
+  const addMin = (t, min) => {
+    const [h, m] = t.split(':').map(Number)
+    const total = h * 60 + m + min
+    return `${String(Math.floor(total / 60)).padStart(2, '0')}:${String(total % 60).padStart(2, '0')}`
+  }
+
+  const lateTime = addMin(workStart, Number(value))
+
+  return (
+    <div style={{ display: 'flex', alignItems: 'center', gap: '20px' }}>
+      {/* Scroll drum */}
+      <div style={{ position: 'relative', width: '110px', flexShrink: 0 }}>
+        {/* top fade */}
+        <div style={{ position: 'absolute', top: 0, left: 0, right: 0, height: '40px', background: 'linear-gradient(to bottom, #fff, transparent)', zIndex: 2, pointerEvents: 'none', borderRadius: '12px 12px 0 0' }} />
+        {/* active highlight */}
+        <div style={{ position: 'absolute', top: '50%', left: 0, right: 0, height: ITEM_H, transform: 'translateY(-50%)', background: '#eff6ff', border: '2px solid #bfdbfe', borderRadius: '10px', zIndex: 1 }} />
+        {/* bottom fade */}
+        <div style={{ position: 'absolute', bottom: 0, left: 0, right: 0, height: '40px', background: 'linear-gradient(to top, #fff, transparent)', zIndex: 2, pointerEvents: 'none', borderRadius: '0 0 12px 12px' }} />
+        <div
+          ref={listRef}
+          onScroll={handleScroll}
+          style={{
+            height: ITEM_H * 3,
+            overflowY: 'scroll',
+            scrollSnapType: 'y mandatory',
+            scrollbarWidth: 'none',
+            msOverflowStyle: 'none',
+            borderRadius: '12px',
+            border: '1px solid #e2e8f0',
+            background: '#fff',
+            position: 'relative',
+          }}
+        >
+          <style>{`.grace-scroll::-webkit-scrollbar{display:none}`}</style>
+          <div className="grace-scroll" style={{ paddingTop: ITEM_H, paddingBottom: ITEM_H }}>
+            {GRACE_VALUES.map((v, i) => (
+              <div key={v} onClick={() => { listRef.current.scrollTop = i * ITEM_H; onChange(v) }}
+                style={{
+                  height: ITEM_H, display: 'flex', alignItems: 'center', justifyContent: 'center',
+                  scrollSnapAlign: 'start', cursor: 'pointer', position: 'relative', zIndex: 3,
+                  fontSize: '16px', fontWeight: v === Number(value) ? 700 : 400,
+                  color: v === Number(value) ? '#2563eb' : '#94a3b8',
+                  transition: 'color 0.1s',
+                }}>
+                {v === 0 ? "Yo'q" : `${v} min`}
+              </div>
+            ))}
+          </div>
+        </div>
+      </div>
+
+      {/* Info */}
+      <div>
+        {Number(value) > 0 ? (
+          <>
+            <div style={{ fontSize: '13px', color: '#64748b', marginBottom: '6px' }}>
+              <strong style={{ color: '#0f172a' }}>{workStart}</strong> + {value} daqiqa
+            </div>
+            <div style={{ fontSize: '20px', fontWeight: 800, color: '#2563eb' }}>
+              {lateTime} gacha
+            </div>
+            <div style={{ fontSize: '12px', color: '#16a34a', marginTop: '4px', fontWeight: 600 }}>
+              ✓ O'z vaqtida hisoblanadi
+            </div>
+          </>
+        ) : (
+          <>
+            <div style={{ fontSize: '13px', color: '#64748b', marginBottom: '6px' }}>Muhdat yo'q</div>
+            <div style={{ fontSize: '20px', fontWeight: 800, color: '#2563eb' }}>{workStart} dan</div>
+            <div style={{ fontSize: '12px', color: '#d97706', marginTop: '4px', fontWeight: 600 }}>
+              Kech kelsa — kech keldi
+            </div>
+          </>
+        )}
+      </div>
+    </div>
+  )
+}
 
 const DAY_LABELS = [
   { val: '1', label: 'Du' },
@@ -127,10 +229,6 @@ export default function Settings({ group, onUpdateGroup, onDirtyChange }) {
 
         {/* 1. Ish vaqti */}
         <Card icon={<Clock size={17} color="#2563eb" />} title="Ish vaqti">
-          <p style={{ margin: '0 0 16px', fontSize: '13px', color: '#64748b' }}>
-            Rasmiy ish kuni jadval. Boshlanish vaqtidan keyin kelgan xodim —{' '}
-            <strong style={{ color: '#d97706' }}>Kech keldi</strong> deb hisoblanadi
-          </p>
           <div style={{ display: 'flex', alignItems: 'center', gap: '16px', flexWrap: 'wrap', marginBottom: '20px' }}>
             <div>
               <div style={{ fontSize: '11px', color: '#94a3b8', fontWeight: 600, letterSpacing: '0.5px', marginBottom: '8px' }}>BOSHLANISH</div>
@@ -144,33 +242,10 @@ export default function Settings({ group, onUpdateGroup, onDirtyChange }) {
           </div>
 
           <div style={{ borderTop: '1px solid #f1f5f9', paddingTop: '16px' }}>
-            <div style={{ fontSize: '13px', color: '#64748b', marginBottom: '10px' }}>
+            <div style={{ fontSize: '13px', color: '#64748b', marginBottom: '14px' }}>
               <strong style={{ color: '#0f172a' }}>Kechikish muhlati</strong> — boshlanishdan keyin shu daqiqagacha kelganlar <strong style={{ color: '#16a34a' }}>O'z vaqtida</strong> hisoblanadi
             </div>
-            <div style={{ display: 'flex', gap: '8px', flexWrap: 'wrap' }}>
-              {[0, 5, 10, 15, 20, 30].map(min => (
-                <button key={min} onClick={() => { mark(setGrace)(min) }} style={{
-                  padding: '8px 14px', borderRadius: '9px',
-                  border: `2px solid ${grace === min ? '#2563eb' : '#e2e8f0'}`,
-                  background: grace === min ? '#2563eb' : '#f8fafc',
-                  color: grace === min ? '#fff' : '#64748b',
-                  fontSize: '13px', fontWeight: grace === min ? 700 : 500,
-                  cursor: 'pointer', transition: 'all 0.15s',
-                }}>
-                  {min === 0 ? "Yo'q" : `+${min} min`}
-                </button>
-              ))}
-            </div>
-            {grace > 0 && (
-              <div style={{ marginTop: '10px', fontSize: '12px', color: '#64748b', background: '#f8fafc', padding: '8px 12px', borderRadius: '8px', borderLeft: '3px solid #2563eb' }}>
-                {workStart} ga {grace} daqiqa qo'shiladi → <strong style={{ color: '#2563eb' }}>
-                  {(() => {
-                    const [h, m] = workStart.split(':').map(Number)
-                    const total = h * 60 + m + Number(grace)
-                    return `${String(Math.floor(total / 60)).padStart(2, '0')}:${String(total % 60).padStart(2, '0')}`
-                  })()} gacha</strong> kelganlar kech emas
-              </div>
-            )}
+            <GracePicker value={grace} onChange={v => mark(setGrace)(v)} workStart={workStart} />
           </div>
         </Card>
 
