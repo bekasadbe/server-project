@@ -169,7 +169,8 @@ def account_add():
         return jsonify({'error': 'name, login, password majburiy'}), 400
     hashed = hash_password(plain) if not is_hashed(plain) else plain
     aid = 'acc_' + login.lower().replace(' ', '_')
-    add_account(aid, name, login, hashed, linked)
+    role = data.get('role', 'kadrlar')
+    add_account(aid, name, login, hashed, linked, role)
     return jsonify({'ok': True})
 
 
@@ -186,7 +187,8 @@ def account_update(aid):
         hashed = hash_password(plain) if not is_hashed(plain) else plain
     else:
         hashed = '[[keep]]'
-    update_account(aid, name, login, hashed, linked)
+    role = data.get('role', 'kadrlar')
+    update_account(aid, name, login, hashed, linked, role)
     return jsonify({'ok': True})
 
 
@@ -277,14 +279,14 @@ def auth_login():
     # Kadrlar — accounts jadvalidan tekshirish
     with get_conn() as conn:
         row = conn.execute(
-            "SELECT id, name, login, password, linked_groups FROM accounts WHERE login=?",
+            "SELECT id, name, login, password, linked_groups, role FROM accounts WHERE login=?",
             (username,)
         ).fetchone()
     if row and row['password'] and verify_password(password, row['password']):
         linked = [g.strip() for g in (row['linked_groups'] or '').split(',') if g.strip()]
-        # linked_groups dan birinchi real group_id ni groupId sifatida qaytaramiz
-        all_groups = linked if linked else [row['id']]
-        return jsonify({'ok': True, 'role': 'kadrlar', 'name': row['name'], 'groupId': all_groups[0], 'accountId': row['id'], 'username': row['login'], 'linkedGroupIds': linked})
+        acc_role = row['role'] if row['role'] else 'kadrlar'
+        all_groups = linked if linked else []
+        return jsonify({'ok': True, 'role': acc_role, 'name': row['name'], 'groupId': all_groups[0] if all_groups else None, 'accountId': row['id'], 'username': row['login'], 'linkedGroupIds': linked})
 
     return jsonify({'ok': False, 'error': "Login yoki parol noto'g'ri"}), 401
 

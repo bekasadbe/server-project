@@ -2,21 +2,22 @@ import { LayoutDashboard, Users, Clock, FileBarChart2, Settings, LogOut, Shield,
 
 
 const menu = [
-  { key: 'dashboard',  label: 'Davomat',       icon: LayoutDashboard, roles: ['admin','kadrlar'] },
+  { key: 'dashboard',  label: 'Davomat',       icon: LayoutDashboard, roles: ['admin','kadrlar','kuzatuvchi'] },
   { key: 'live',       label: 'Jonli lenta',   icon: Radio,           roles: ['admin'] },
-  { key: 'history',    label: 'Hisobotlar',    icon: Clock,           roles: ['kadrlar'] },
-  { key: 'schedule',   label: 'Jadvallar',     icon: CalendarDays,    roles: ['kadrlar'] },
-  { key: 'employees',  label: 'Xodimlar',      icon: Users,           roles: ['kadrlar'] },
-  { key: 'reports',    label: 'Statistika',    icon: FileBarChart2,   roles: ['kadrlar'] },
+  { key: 'history',    label: 'Hisobotlar',    icon: Clock,           roles: ['kadrlar','kuzatuvchi'] },
+  { key: 'schedule',   label: 'Jadvallar',     icon: CalendarDays,    roles: ['kadrlar','kuzatuvchi'] },
+  { key: 'employees',  label: 'Xodimlar',      icon: Users,           roles: ['kadrlar','kuzatuvchi'] },
+  { key: 'reports',    label: 'Statistika',    icon: FileBarChart2,   roles: ['kadrlar','kuzatuvchi'] },
   { key: 'settings',   label: 'Sozlamalar',    icon: Settings2,       roles: ['kadrlar'] },
   { key: 'admin',      label: 'Tashkilotlar',  icon: Building2,       roles: ['admin'] },
   { key: 'accounts',   label: 'Akkauntlar',    icon: KeyRound,        roles: ['admin'] },
 ]
 
 export default function Sidebar({ current, onChange, user, onLogout }) {
-  const roleColor = user?.role === 'admin' ? '#2563eb' : '#0891b2'
-  const roleLabel = user?.role === 'admin' ? 'Admin' : 'Kadrlar'
-  const roleBg    = user?.role === 'admin' ? '#eff6ff' : '#ecfeff'
+  const isViewer   = user?.role === 'kuzatuvchi'
+  const roleColor  = user?.role === 'admin' ? '#2563eb' : isViewer ? '#7c3aed' : '#0891b2'
+  const roleLabel  = user?.role === 'admin' ? 'Admin' : isViewer ? 'Kuzatuvchi' : 'Kadrlar'
+  const roleBg     = user?.role === 'admin' ? '#eff6ff' : isViewer ? '#f5f3ff' : '#ecfeff'
 
   return (
     <aside style={{

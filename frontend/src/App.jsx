@@ -42,7 +42,9 @@ export default function App() {
   const handleLogout = () => { logout(); setUser(null) }
 
   const linkedGroupIds  = user.linkedGroupIds || []
-  const visibleGroupIds = user.role === 'kadrlar' ? linkedGroupIds : null
+  const isViewer        = user.role === 'kuzatuvchi'
+  const isKadrlar       = user.role === 'kadrlar' || user.role === 'kuzatuvchi'
+  const visibleGroupIds = isKadrlar ? linkedGroupIds : null
   const visibleEmps = visibleGroupIds ? employees.filter(e => visibleGroupIds.includes(e.group_id)) : employees
   const visibleGrps = visibleGroupIds ? groups.filter(g => visibleGroupIds.includes(g.id)) : groups
 
@@ -111,9 +113,9 @@ export default function App() {
     ...(user.role === 'admin' ? { live: <LiveEvents groups={groups} /> } : {}),
     history:   <History    groups={visibleGrps} />,
     schedule:  <Jadvallar  groups={visibleGrps} employees={visibleEmps} />,
-    employees: <Employees  employees={visibleEmps} groups={visibleGrps} onUpdateEmployee={updateEmployee} onDeleteEmployee={deleteEmployee} />,
+    employees: <Employees  employees={visibleEmps} groups={visibleGrps} onUpdateEmployee={isViewer ? null : updateEmployee} onDeleteEmployee={isViewer ? null : deleteEmployee} readonly={isViewer} />,
     reports:   <Reports    groups={visibleGrps} />,
-    ...(user.role === 'kadrlar' ? {
+    ...(!isViewer && user.role !== 'admin' ? {
       settings: <Settings group={visibleGrps[0]} onUpdateGroup={updateGroup} />
     } : {}),
     ...(user.role === 'admin' ? {

@@ -10,6 +10,7 @@ export default function Accounts({ groups, accounts, onReload }) {
   const [editPass, setEditPass]     = useState('')
   const [editPassShow, setEditPassShow] = useState(false)
   const [editLinked, setEditLinked] = useState([])
+  const [editRole, setEditRole]     = useState('kadrlar')
   const [editError, setEditError]   = useState('')
 
   const [showAdd, setShowAdd]       = useState(false)
@@ -18,6 +19,7 @@ export default function Accounts({ groups, accounts, onReload }) {
   const [newPass, setNewPass]       = useState('')
   const [newPassShow, setNewPassShow] = useState(false)
   const [newLinked, setNewLinked]   = useState([])
+  const [newRole, setNewRole]       = useState('kadrlar')
   const [newError, setNewError]     = useState('')
 
   const [visiblePass, setVisiblePass] = useState(null)
@@ -48,6 +50,7 @@ export default function Accounts({ groups, accounts, onReload }) {
     setEditPass('')
     setEditPassShow(false)
     setEditLinked((acc.linked_groups || '').split(',').filter(Boolean))
+    setEditRole(acc.role || 'kadrlar')
     setEditError('')
     setShowEdit(true)
   }
@@ -61,6 +64,7 @@ export default function Accounts({ groups, accounts, onReload }) {
         login: editLogin.trim(),
         password: editPass.trim() || '[[keep]]',
         linked_groups: editLinked,
+        role: editRole,
       }),
     })
     setShowEdit(false)
@@ -79,9 +83,10 @@ export default function Accounts({ groups, accounts, onReload }) {
         login: newLogin.trim(),
         password: newPass.trim(),
         linked_groups: newLinked,
+        role: newRole,
       }),
     })
-    setNewName(''); setNewLogin(''); setNewPass(''); setNewLinked([]); setNewError('')
+    setNewName(''); setNewLogin(''); setNewPass(''); setNewLinked([]); setNewRole('kadrlar'); setNewError('')
     setShowAdd(false)
     onReload()
   }
@@ -139,6 +144,7 @@ export default function Accounts({ groups, accounts, onReload }) {
                 <th style={{ padding: '12px 18px', textAlign: 'left', fontWeight: 600, color: '#64748b', fontSize: '12px' }}>Akkaunt nomi</th>
                 <th style={{ padding: '12px 18px', textAlign: 'left', fontWeight: 600, color: '#64748b', fontSize: '12px' }}>Login</th>
                 <th style={{ padding: '12px 18px', textAlign: 'left', fontWeight: 600, color: '#64748b', fontSize: '12px' }}>Parol</th>
+                <th style={{ padding: '12px 18px', textAlign: 'left', fontWeight: 600, color: '#64748b', fontSize: '12px' }}>Rol</th>
                 <th style={{ padding: '12px 18px', textAlign: 'left', fontWeight: 600, color: '#64748b', fontSize: '12px' }}>Ko'radigan tashkilotlar</th>
                 <th style={{ padding: '12px 18px' }}></th>
               </tr>
@@ -167,6 +173,13 @@ export default function Accounts({ groups, accounts, onReload }) {
                         {visiblePass === acc.id ? <EyeOff size={13} /> : <Eye size={13} />}
                       </button>
                     </div>
+                  </td>
+                  <td style={{ padding: '14px 18px' }}>
+                    <span style={{ padding: '3px 10px', borderRadius: '20px', fontSize: '11px', fontWeight: 600,
+                      background: acc.role === 'kuzatuvchi' ? '#f5f3ff' : '#ecfeff',
+                      color: acc.role === 'kuzatuvchi' ? '#7c3aed' : '#0891b2' }}>
+                      {acc.role === 'kuzatuvchi' ? 'Kuzatuvchi' : 'Kadrlar'}
+                    </span>
                   </td>
                   <td style={{ padding: '14px 18px' }}>
                     <div style={{ display: 'flex', flexWrap: 'wrap', gap: '4px' }}>
@@ -231,6 +244,17 @@ export default function Accounts({ groups, accounts, onReload }) {
                 </label>
                 <LinkedCheckboxes selected={editLinked} setSelected={setEditLinked} />
               </div>
+              <div>
+                <label style={{ fontSize: '12px', color: '#64748b', display: 'block', marginBottom: '5px', fontWeight: 600 }}>Rol</label>
+                <div style={{ display: 'flex', gap: '8px' }}>
+                  {[['kadrlar','Kadrlar','#0891b2','#ecfeff'],['kuzatuvchi','Kuzatuvchi','#7c3aed','#f5f3ff']].map(([val, label, color, bg]) => (
+                    <button key={val} type="button" onClick={() => setEditRole(val)}
+                      style={{ flex: 1, padding: '8px', border: `2px solid ${editRole === val ? color : '#e2e8f0'}`, borderRadius: '8px', background: editRole === val ? bg : '#f8fafc', color: editRole === val ? color : '#64748b', fontSize: '13px', fontWeight: editRole === val ? 600 : 400, cursor: 'pointer', transition: 'all 0.15s' }}>
+                      {label}
+                    </button>
+                  ))}
+                </div>
+              </div>
               {editError && <div style={{ padding: '8px 12px', background: '#fff1f2', border: '1px solid #fecdd3', borderRadius: '7px', color: '#e11d48', fontSize: '13px' }}>{editError}</div>}
               <div style={{ display: 'flex', gap: '10px', marginTop: '4px' }}>
                 <button onClick={() => setShowEdit(false)} style={{ flex: 1, padding: '10px', background: '#f8fafc', border: '1px solid #e2e8f0', borderRadius: '9px', color: '#64748b', fontSize: '14px', cursor: 'pointer' }}>Bekor qilish</button>
@@ -272,6 +296,17 @@ export default function Accounts({ groups, accounts, onReload }) {
                   Ko'radigan tashkilotlar
                 </label>
                 <LinkedCheckboxes selected={newLinked} setSelected={setNewLinked} />
+              </div>
+              <div>
+                <label style={{ fontSize: '12px', color: '#64748b', display: 'block', marginBottom: '5px', fontWeight: 600 }}>Rol</label>
+                <div style={{ display: 'flex', gap: '8px' }}>
+                  {[['kadrlar','Kadrlar','#0891b2','#ecfeff'],['kuzatuvchi','Kuzatuvchi','#7c3aed','#f5f3ff']].map(([val, label, color, bg]) => (
+                    <button key={val} type="button" onClick={() => setNewRole(val)}
+                      style={{ flex: 1, padding: '8px', border: `2px solid ${newRole === val ? color : '#e2e8f0'}`, borderRadius: '8px', background: newRole === val ? bg : '#f8fafc', color: newRole === val ? color : '#64748b', fontSize: '13px', fontWeight: newRole === val ? 600 : 400, cursor: 'pointer', transition: 'all 0.15s' }}>
+                      {label}
+                    </button>
+                  ))}
+                </div>
               </div>
               {newError && <div style={{ padding: '8px 12px', background: '#fff1f2', border: '1px solid #fecdd3', borderRadius: '7px', color: '#e11d48', fontSize: '13px' }}>{newError}</div>}
               <div style={{ display: 'flex', gap: '10px', marginTop: '4px' }}>

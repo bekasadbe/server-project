@@ -1,7 +1,7 @@
 import { useState } from 'react'
 import { Users, Search, Building2, Pencil, Trash2 } from 'lucide-react'
 
-export default function Employees({ employees = [], groups = [], onUpdateEmployee, onDeleteEmployee }) {
+export default function Employees({ employees = [], groups = [], onUpdateEmployee, onDeleteEmployee, readonly = false }) {
   const [search, setSearch]       = useState('')
   const [orgFilter, setOrgFilter] = useState('all')
 
