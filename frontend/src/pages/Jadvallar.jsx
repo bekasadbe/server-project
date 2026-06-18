@@ -121,8 +121,8 @@ export default function Jadvallar({ groups = [], employees = [] }) {
       background: bg, border: `2px solid ${borderColor}`,
       minHeight: '58px', display: 'flex', flexDirection: 'column', justifyContent: 'center',
     })
-    const plannedStyle = { fontSize: '13px', color: '#94a3b8', fontFamily: 'Arial, sans-serif', fontWeight: 400, marginBottom: '5px' }
-    const timeStyle    = { fontSize: '15px', fontFamily: 'Arial, sans-serif', fontWeight: 700 }
+    const plannedStyle = { fontSize: '13px', color: '#94a3b8', fontWeight: 400, marginBottom: '4px' }
+    const timeStyle    = { fontSize: '15px', fontWeight: 400 }
 
     // Ta'til / Kasallik
     if (leave) {
@@ -153,12 +153,12 @@ export default function Jadvallar({ groups = [], employees = [] }) {
       const eff           = fi && fi >= wb ? fi : null
       const late          = eff && eff > lateThreshold
       const earlyOut      = lo && lo < wf
-      const inColor       = !eff ? '#94a3b8' : late ? '#f43f5e' : '#22c55e'
-      const outColor      = earlyOut ? '#f43f5e' : '#22c55e'
-      const borderColor   = late ? '#f43f5e' : '#06b6d4'
+      const inColor       = !eff ? '#94a3b8' : late ? '#f97316' : '#22c55e'
+      const outColor      = earlyOut ? '#f97316' : '#22c55e'
+      const borderColor   = late ? '#f97316' : '#06b6d4'
 
       return (
-        <div style={cellStyle(borderColor, late ? '#fff5f5' : '#f0fdfa')}>
+        <div style={cellStyle(borderColor, late ? '#fff8f0' : '#f0fdfa')}>
           <div style={plannedStyle}>{ws} - {wf}</div>
           <div style={{ display: 'flex', gap: '3px', ...timeStyle }}>
             <span style={{ color: inColor }}>{eff || '—:——'}</span>
@@ -173,7 +173,7 @@ export default function Jadvallar({ groups = [], employees = [] }) {
     return (
       <div style={cellStyle(todayDay ? '#fbbf24' : future ? '#f1f5f9' : '#e2e8f0', '#fff')}>
         <div style={plannedStyle}>{ws} - {wf}</div>
-        <div style={{ ...timeStyle, fontSize: '13px', color: todayDay ? '#f59e0b' : future ? '#e2e8f0' : '#cbd5e1', fontWeight: 600 }}>
+        <div style={{ ...timeStyle, fontSize: '13px', color: todayDay ? '#f59e0b' : future ? '#e2e8f0' : '#cbd5e1' }}>
           {todayDay ? "hali yo'q" : future ? '—' : 'kelmadi'}
         </div>
       </div>
@@ -234,9 +234,8 @@ export default function Jadvallar({ groups = [], employees = [] }) {
                   const isSun = d.getDay() === 0
                   return (
                     <th key={i} style={{ padding: '10px 4px', textAlign: 'center', background: today ? '#eff6ff' : isSun ? '#fdf8f8' : '#f8fafc', borderLeft: '1px solid #e2e8f0', borderBottom: today ? '2px solid #2563eb' : 'none' }}>
-                      <div style={{ fontSize: '11px', fontWeight: 700, color: today ? '#2563eb' : isSun ? '#f43f5e' : '#64748b' }}>{DAY_LABELS[i]}</div>
-                      <div style={{ fontSize: '16px', fontWeight: 800, color: today ? '#2563eb' : isSun ? '#f43f5e' : '#0f172a', marginTop: '1px' }}>{d.getDate()}</div>
-                      <div style={{ fontSize: '10px', color: today ? '#93c5fd' : '#94a3b8' }}>{MONTH_SHORT[d.getMonth()]}</div>
+                      <div style={{ fontSize: '11px', fontWeight: 400, color: today ? '#2563eb' : isSun ? '#f97316' : '#64748b' }}>{DAY_LABELS[i]}</div>
+                      <div style={{ fontSize: '16px', fontWeight: 400, color: today ? '#2563eb' : isSun ? '#f97316' : '#0f172a', marginTop: '1px' }}>{d.getDate()}</div>
                     </th>
                   )
                 })}
@@ -255,7 +254,7 @@ export default function Jadvallar({ groups = [], employees = [] }) {
                         {nameInitials(emp.name)}
                       </div>
                       <div style={{ minWidth: 0 }}>
-                        <div style={{ fontSize: '14px', fontWeight: 600, color: '#0f172a', overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>{emp.name}</div>
+                        <div style={{ fontSize: '14px', fontWeight: 400, color: '#0f172a', overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>{emp.name}</div>
                         {emp.lavozim && <div style={{ fontSize: '12px', color: '#94a3b8', marginTop: '2px', overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>{emp.lavozim}</div>}
                       </div>
                     </div>
@@ -264,7 +263,7 @@ export default function Jadvallar({ groups = [], employees = [] }) {
                     const today  = isToday(d)
                     const isSun  = d.getDay() === 0
                     return (
-                      <td key={di} style={{ padding: '2px', textAlign: 'center', borderLeft: '1px solid #f1f5f9', background: today ? '#f8fbff' : isSun ? '#fdf8f8' : 'transparent', verticalAlign: 'middle' }}>
+                      <td key={di} style={{ padding: '2px', textAlign: 'center', borderLeft: '1px solid #f1f5f9', background: today ? '#f8fbff' : isSun ? '#fdfaf7' : 'transparent', verticalAlign: 'middle' }}>
                         <CellContent emp={emp} day={d} />
                       </td>
                     )
@@ -280,7 +279,7 @@ export default function Jadvallar({ groups = [], employees = [] }) {
           {[
             { color: '#16a34a', label: "O'z vaqtida" },
             { color: '#f59e0b', label: 'Kech keldi' },
-            { color: '#f43f5e', label: 'Erta ketdi' },
+            { color: '#f97316', label: 'Kech / Erta ketdi' },
             { color: '#9333ea', label: 'Kasallik' },
             { color: '#0891b2', label: "Ta'til" },
             { color: '#cbd5e1', label: 'Kelmadi / Rejalashtirilgan' },
