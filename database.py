@@ -106,6 +106,17 @@ def init_db():
         except Exception:
             pass
 
+        conn.execute('''
+            CREATE TABLE IF NOT EXISTS leaves (
+                id          INTEGER PRIMARY KEY AUTOINCREMENT,
+                employee_id TEXT NOT NULL,
+                leave_type  TEXT NOT NULL,
+                start_date  TEXT NOT NULL,
+                end_date    TEXT NOT NULL,
+                note        TEXT DEFAULT ''
+            )
+        ''')
+
         # Default guruhlar
         conn.execute("INSERT OR IGNORE INTO groups (id, name, work_start, work_begin) VALUES ('inno',   'Inno Texnopark', '09:00', '06:00')")
         conn.execute("INSERT OR IGNORE INTO groups (id, name, work_start, work_begin) VALUES ('milliy', 'Milliy Offis',   '09:00', '06:00')")
@@ -334,6 +345,30 @@ def update_employee(emp_id, name, group_id, lavozim=''):
 def delete_employee(emp_id):
     with get_conn() as conn:
         conn.execute('DELETE FROM employees WHERE id = ?', (emp_id,))
+        conn.commit()
+
+
+def get_leaves(from_date, to_date):
+    with get_conn() as conn:
+        rows = conn.execute(
+            'SELECT * FROM leaves WHERE end_date >= ? AND start_date <= ? ORDER BY start_date',
+            (from_date, to_date)
+        ).fetchall()
+    return [dict(r) for r in rows]
+
+
+def add_leave(employee_id, leave_type, start_date, end_date, note=''):
+    with get_conn() as conn:
+        conn.execute(
+            'INSERT INTO leaves (employee_id, leave_type, start_date, end_date, note) VALUES (?,?,?,?,?)',
+            (employee_id, leave_type, start_date, end_date, note)
+        )
+        conn.commit()
+
+
+def delete_leave(lid):
+    with get_conn() as conn:
+        conn.execute('DELETE FROM leaves WHERE id=?', (lid,))
         conn.commit()
 
 

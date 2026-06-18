@@ -11,7 +11,8 @@ from database import (
     add_group, update_group_settings, delete_group,
     get_accounts, add_account, update_account, delete_account,
     save_event, get_direction,
-    hash_password, verify_password, is_hashed, get_conn
+    hash_password, verify_password, is_hashed, get_conn,
+    get_leaves, add_leave, delete_leave
 )
 from datetime import date, datetime, timezone, timedelta
 from collections import defaultdict
@@ -292,6 +293,39 @@ def auth_login():
         return jsonify({'ok': True, 'role': acc_role, 'name': row['name'], 'groupId': all_groups[0] if all_groups else None, 'accountId': row['id'], 'username': row['login'], 'linkedGroupIds': linked})
 
     return jsonify({'ok': False, 'error': "Login yoki parol noto'g'ri"}), 401
+
+
+@app.route('/leaves', methods=['GET'])
+def leaves_list():
+    if not check_token():
+        return jsonify({'error': 'Unauthorized'}), 401
+    from_date = request.args.get('from', now_uzb().strftime('%Y-%m-%d'))
+    to_date   = request.args.get('to',   from_date)
+    return jsonify({'leaves': get_leaves(from_date, to_date)})
+
+
+@app.route('/leaves', methods=['POST'])
+def leave_add():
+    if not check_token():
+        return jsonify({'error': 'Unauthorized'}), 401
+    data = request.json or {}
+    emp_id     = data.get('employee_id', '').strip()
+    leave_type = data.get('leave_type', '').strip()
+    start_date = data.get('start_date', '').strip()
+    end_date   = data.get('end_date', '').strip()
+    note       = data.get('note', '').strip()
+    if not emp_id or not leave_type or not start_date or not end_date:
+        return jsonify({'error': 'employee_id, leave_type, start_date, end_date majburiy'}), 400
+    add_leave(emp_id, leave_type, start_date, end_date, note)
+    return jsonify({'ok': True})
+
+
+@app.route('/leaves/<int:lid>', methods=['DELETE'])
+def leave_delete(lid):
+    if not check_token():
+        return jsonify({'error': 'Unauthorized'}), 401
+    delete_leave(lid)
+    return jsonify({'ok': True})
 
 
 @app.route('/ping', methods=['GET'])

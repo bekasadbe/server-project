@@ -9,6 +9,7 @@ import Reports from './pages/Reports'
 import AdminPanel from './pages/AdminPanel'
 import Accounts from './pages/Accounts'
 import Jadvallar from './pages/Jadvallar'
+import Leaves from './pages/Leaves'
 import Login from './pages/Login'
 import { getUser, logout } from './auth'
 
@@ -137,7 +138,8 @@ export default function App() {
         groups={groups}
         accounts={accounts}
         onReload={loadData}
-      />
+      />,
+      leaves: <Leaves employees={employees} groups={groups} />
     } : {})
   }
 
