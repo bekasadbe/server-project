@@ -120,7 +120,8 @@ export default function App() {
     employees: <Employees  employees={visibleEmps} groups={visibleGrps} onUpdateEmployee={isViewer ? null : updateEmployee} onDeleteEmployee={isViewer ? null : deleteEmployee} readonly={isViewer} />,
     reports:   <Reports    groups={visibleGrps} />,
     ...(!isViewer && user.role !== 'admin' ? {
-      settings: <Settings group={visibleGrps[0]} onUpdateGroup={updateGroup} onDirtyChange={setSettingsDirty} />
+      settings: <Settings group={visibleGrps[0]} onUpdateGroup={updateGroup} onDirtyChange={setSettingsDirty} />,
+      leaves: <Leaves employees={visibleEmps} groups={visibleGrps} />
     } : {}),
     ...(user.role === 'admin' ? {
       admin: <AdminPanel
@@ -138,8 +139,7 @@ export default function App() {
         groups={groups}
         accounts={accounts}
         onReload={loadData}
-      />,
-      leaves: <Leaves employees={employees} groups={groups} />
+      />
     } : {})
   }
 
