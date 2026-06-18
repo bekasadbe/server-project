@@ -38,13 +38,17 @@ def init_db():
                 id         TEXT PRIMARY KEY,
                 name       TEXT NOT NULL,
                 work_start TEXT DEFAULT '09:00',
-                work_begin TEXT DEFAULT '06:00'
+                work_begin TEXT DEFAULT '06:00',
+                work_finish TEXT DEFAULT '18:00',
+                work_days  TEXT DEFAULT '1,2,3,4,5,6'
             )
         ''')
         # Eski bazaga ustunlar qo'shish (agar yo'q bo'lsa)
         for col, default in [
-            ('work_start', "'09:00'"),
-            ('work_begin', "'06:00'"),
+            ('work_start',  "'09:00'"),
+            ('work_begin',  "'06:00'"),
+            ('work_finish', "'18:00'"),
+            ('work_days',   "'1,2,3,4,5,6'"),
         ]:
             try:
                 conn.execute(f"ALTER TABLE groups ADD COLUMN {col} TEXT DEFAULT {default}")
@@ -257,11 +261,11 @@ def add_group(gid, name, work_start='09:00', work_begin='06:00', **kwargs):
         conn.commit()
 
 
-def update_group_settings(gid, work_start='09:00', work_begin='06:00', **kwargs):
+def update_group_settings(gid, work_start='09:00', work_begin='06:00', work_finish='18:00', work_days='1,2,3,4,5,6', **kwargs):
     with get_conn() as conn:
         conn.execute(
-            'UPDATE groups SET work_start=?, work_begin=? WHERE id=?',
-            (work_start, work_begin, gid)
+            'UPDATE groups SET work_start=?, work_begin=?, work_finish=?, work_days=? WHERE id=?',
+            (work_start, work_begin, work_finish, work_days, gid)
         )
         conn.commit()
 

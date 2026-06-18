@@ -102,6 +102,7 @@ export default function App() {
       body: JSON.stringify({
         login: changes.login, password: changes.password,
         work_start: changes.work_start, work_begin: changes.work_begin,
+        work_finish: changes.work_finish, work_days: changes.work_days,
         linked_groups: changes.linked_groups || [],
       }),
     })

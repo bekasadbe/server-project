@@ -67,10 +67,17 @@ export default function Reports({ groups = [] }) {
   const [allDays, setAllDays] = useState([])
   const [loading, setLoading] = useState(true)
 
-  const multiOrg       = groups.length > 1
+  const multiOrg        = groups.length > 1
   const visibleGroupIds = groups.map(g => g.id)
-  const getWorkStart   = (gid) => groups.find(g => g.id === gid)?.work_start || '09:00'
-  const getWorkBegin   = (gid) => groups.find(g => g.id === gid)?.work_begin || '06:00'
+  const getWorkStart    = (gid) => groups.find(g => g.id === gid)?.work_start  || '09:00'
+  const getWorkBegin    = (gid) => groups.find(g => g.id === gid)?.work_begin  || '06:00'
+  const getWorkDays     = (gid) => (groups.find(g => g.id === gid)?.work_days  || '1,2,3,4,5,6').split(',').filter(Boolean)
+
+  const isWorkDay = (dateStr, gid) => {
+    const d = new Date(dateStr)
+    const dow = String(d.getDay()) // 0=yakshanba, 1=dushanba...
+    return getWorkDays(gid).includes(dow)
+  }
 
   const prevMonth = () => {
     if (monthIdx === 0) { setMonthIdx(11); setYear(y => y - 1) }
@@ -117,8 +124,9 @@ export default function Reports({ groups = [] }) {
     const days = filtered.filter(d => d.rows.length > 0).length || filtered.length
 
     const map = {}
-    filtered.forEach(({ rows }) => {
+    filtered.forEach(({ date, rows }) => {
       rows.forEach(r => {
+        if (!isWorkDay(date, r.group_id)) return
         if (!map[r.employee_id]) map[r.employee_id] = { name: r.name, group_id: r.group_id, ontime: 0, late: 0, absent: 0 }
         const fi = r.first_in
         const wb = getWorkBegin(r.group_id)

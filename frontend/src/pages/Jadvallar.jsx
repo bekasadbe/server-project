@@ -46,8 +46,11 @@ export default function Jadvallar({ groups = [], employees = [] }) {
   const visibleGroupIds = groups.map(g => g.id)
   const days = getWeekDays(monday)
 
-  const getWorkStart = (gid) => groups.find(g => g.id === gid)?.work_start || '09:00'
-  const getWorkBegin = (gid) => groups.find(g => g.id === gid)?.work_begin || '06:00'
+  const getWorkStart  = (gid) => groups.find(g => g.id === gid)?.work_start  || '09:00'
+  const getWorkFinish = (gid) => groups.find(g => g.id === gid)?.work_finish || '18:00'
+  const getWorkBegin  = (gid) => groups.find(g => g.id === gid)?.work_begin  || '06:00'
+  const getWorkDays   = (gid) => (groups.find(g => g.id === gid)?.work_days  || '1,2,3,4,5,6').split(',').filter(Boolean)
+  const isDayOff      = (d, gid) => !getWorkDays(gid).includes(String(d.getDay()))
 
   useEffect(() => {
     const load = async () => {
@@ -84,11 +87,22 @@ export default function Jadvallar({ groups = [], employees = [] }) {
 
   const CellContent = ({ emp, day }) => {
     const ds = toDateStr(day)
-    const future = isFuture(day)
+    const future   = isFuture(day)
     const todayDay = isToday(day)
-    const rec = dayData[ds]?.[emp.id]
-    const wb = getWorkBegin(emp.group_id)
-    const ws = getWorkStart(emp.group_id)
+    const rec      = dayData[ds]?.[emp.id]
+    const wb  = getWorkBegin(emp.group_id)
+    const ws  = getWorkStart(emp.group_id)
+    const wf  = getWorkFinish(emp.group_id)
+    const off = isDayOff(day, emp.group_id)
+
+    // Dam olish kuni
+    if (off) {
+      return (
+        <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', gap: '2px' }}>
+          <span style={{ fontSize: '11px', padding: '2px 8px', borderRadius: '8px', background: '#f1f5f9', color: '#94a3b8', fontWeight: 600 }}>Dam olish</span>
+        </div>
+      )
+    }
 
     // Ma'lumot bor
     if (rec && (rec.first_in || rec.last_out)) {
@@ -108,21 +122,21 @@ export default function Jadvallar({ groups = [], employees = [] }) {
           </span>
           {eff && (
             <span style={{ fontSize: '10px', padding: '1px 6px', borderRadius: '8px', background: late ? '#fef3c7' : '#dcfce7', color: late ? '#d97706' : '#16a34a', fontWeight: 600, marginTop: '1px' }}>
-              {late ? 'Kech' : 'O\'z vaqtida'}
+              {late ? 'Kech' : "O'z vaqtida"}
             </span>
           )}
         </div>
       )
     }
 
-    // Kelajak kun — sust rang bilan ish vaqtini ko'rsat
+    // Kelajak / bugun / o'tgan ish kuni — ma'lumot yo'q
     return (
       <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', gap: '2px' }}>
         <span style={{ fontSize: '13px', fontWeight: 500, color: future ? '#d1d5db' : '#94a3b8' }}>
           {ws}
         </span>
         <span style={{ fontSize: '12px', color: future ? '#e5e7eb' : '#cbd5e1' }}>
-          18:00
+          {wf}
         </span>
         {todayDay && (
           <span style={{ fontSize: '10px', padding: '1px 6px', borderRadius: '8px', background: '#fef3c7', color: '#d97706', fontWeight: 600, marginTop: '1px' }}>

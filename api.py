@@ -224,7 +224,9 @@ def group_update(gid):
     data = request.json or {}
     update_group_settings(gid,
         work_start=data.get('work_start', '09:00'),
-        work_begin=data.get('work_begin', '06:00'))
+        work_begin=data.get('work_begin', '06:00'),
+        work_finish=data.get('work_finish', '18:00'),
+        work_days=data.get('work_days', '1,2,3,4,5,6'))
     return jsonify({'ok': True})
 
 

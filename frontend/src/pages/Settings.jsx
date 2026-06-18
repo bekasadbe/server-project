@@ -1,31 +1,57 @@
 import { useState, useRef, useEffect } from 'react'
-import { Settings2, Eye, EyeOff, Clock, Key, Save } from 'lucide-react'
+import { Settings2, Eye, EyeOff, Clock, Key, Save, CalendarDays } from 'lucide-react'
+
+const DAY_LABELS = [
+  { val: '1', label: 'Du' },
+  { val: '2', label: 'Se' },
+  { val: '3', label: 'Cho' },
+  { val: '4', label: 'Pa' },
+  { val: '5', label: 'Ju' },
+  { val: '6', label: 'Sha' },
+  { val: '0', label: 'Yak' },
+]
 
 export default function Settings({ group, onUpdateGroup }) {
   const [login, setLogin]           = useState(group?.login || '')
   const [pass, setPass]             = useState(group?.password || '')
   const [showPass, setShowPass]     = useState(false)
-  const [workStart, setWorkStart]   = useState(group?.work_start || '09:00')
-  const [workBegin, setWorkBegin]   = useState(group?.work_begin || '06:00')
+  const [workStart, setWorkStart]   = useState(group?.work_start  || '09:00')
+  const [workFinish, setWorkFinish] = useState(group?.work_finish || '18:00')
+  const [workBegin, setWorkBegin]   = useState(group?.work_begin  || '06:00')
+  const [workDays, setWorkDays]     = useState(
+    (group?.work_days || '1,2,3,4,5,6').split(',').filter(Boolean)
+  )
 
-  // group prop o'zgarganda (API dan kelganda) state ni yangilash
   useEffect(() => {
     if (group) {
       setLogin(group.login || '')
       setPass(group.password || '')
-      setWorkStart(group.work_start || '09:00')
-      setWorkBegin(group.work_begin || '06:00')
+      setWorkStart(group.work_start   || '09:00')
+      setWorkFinish(group.work_finish || '18:00')
+      setWorkBegin(group.work_begin   || '06:00')
+      setWorkDays((group.work_days || '1,2,3,4,5,6').split(',').filter(Boolean))
     }
-  }, [group?.id, group?.login, group?.password, group?.work_start, group?.work_begin])
-  const timeRef  = useRef(null)
-  const beginRef = useRef(null)
-  const [saved, setSaved]           = useState(false)
-  const [error, setError]           = useState('')
+  }, [group?.id, group?.login, group?.password, group?.work_start, group?.work_finish, group?.work_begin, group?.work_days])
+
+  const timeRef   = useRef(null)
+  const finishRef = useRef(null)
+  const beginRef  = useRef(null)
+  const [saved, setSaved] = useState(false)
+  const [error, setError] = useState('')
+
+  const toggleDay = (val) => {
+    setWorkDays(prev => prev.includes(val) ? prev.filter(d => d !== val) : [...prev, val])
+  }
 
   const handleSave = () => {
     if (!login.trim()) return setError('Login kiriting')
     if (!pass.trim())  return setError('Parol kiriting')
-    onUpdateGroup(group.id, { login: login.trim(), password: pass.trim(), work_start: workStart, work_begin: workBegin })
+    if (workDays.length === 0) return setError('Kamida 1 ish kuni tanlang')
+    onUpdateGroup(group.id, {
+      login: login.trim(), password: pass.trim(),
+      work_start: workStart, work_finish: workFinish,
+      work_begin: workBegin, work_days: workDays.join(','),
+    })
     setError('')
     setSaved(true)
     setTimeout(() => setSaved(false), 2500)
@@ -38,6 +64,21 @@ export default function Settings({ group, onUpdateGroup }) {
     outline: 'none', boxSizing: 'border-box',
   }
 
+  const TimeBtn = ({ refEl, value, onChange, color, bg, border }) => (
+    <div style={{ position: 'relative', display: 'inline-flex', alignItems: 'center' }}>
+      <button onClick={() => refEl.current?.showPicker()} style={{
+        display: 'flex', alignItems: 'center', gap: '8px',
+        padding: '9px 18px', background: bg, border: `1px solid ${border}`,
+        borderRadius: '9px', color, fontSize: '16px', fontWeight: 700,
+        cursor: 'pointer', letterSpacing: '1px',
+      }}>
+        <Clock size={16} /> {value}
+      </button>
+      <input ref={refEl} type="time" value={value} onChange={e => onChange(e.target.value)}
+        style={{ position: 'absolute', opacity: 0, pointerEvents: 'none', width: '1px', height: '1px' }} />
+    </div>
+  )
+
   return (
     <div>
       <div style={{ marginBottom: '24px' }}>
@@ -47,51 +88,67 @@ export default function Settings({ group, onUpdateGroup }) {
         <p style={{ margin: '4px 0 0', fontSize: '13px', color: '#94a3b8' }}>{group?.name}</p>
       </div>
 
-      <div style={{ maxWidth: '480px', display: 'flex', flexDirection: 'column', gap: '16px' }}>
+      <div style={{ maxWidth: '520px', display: 'flex', flexDirection: 'column', gap: '16px' }}>
 
         {/* Kelish hisobi boshlanishi */}
         <div style={{ background: '#fff', borderRadius: '14px', border: '1px solid #e2e8f0', padding: '24px' }}>
-          <div style={{ display: 'flex', alignItems: 'center', gap: '8px', marginBottom: '16px' }}>
+          <div style={{ display: 'flex', alignItems: 'center', gap: '8px', marginBottom: '10px' }}>
             <Clock size={17} color="#7c3aed" />
             <span style={{ fontWeight: 700, fontSize: '15px', color: '#0f172a' }}>Kelish hisobi boshlanadi</span>
           </div>
           <p style={{ margin: '0 0 12px', fontSize: '13px', color: '#64748b' }}>
             Shu vaqtdan <strong>oldin</strong> kelgan eventlar hisoblanmaydi — kechasi kech ketganlar bugun keldi deb ko'rinmasin
           </p>
-          <div style={{ position: 'relative', display: 'inline-flex', alignItems: 'center' }}>
-            <button onClick={() => beginRef.current?.showPicker()} style={{
-              display: 'flex', alignItems: 'center', gap: '8px',
-              padding: '9px 18px', background: '#f5f3ff', border: '1px solid #ddd6fe',
-              borderRadius: '9px', color: '#7c3aed', fontSize: '16px', fontWeight: 700,
-              cursor: 'pointer', letterSpacing: '1px',
-            }}>
-              <Clock size={16} /> {workBegin}
-            </button>
-            <input ref={beginRef} type="time" value={workBegin} onChange={e => setWorkBegin(e.target.value)}
-              style={{ position: 'absolute', opacity: 0, pointerEvents: 'none', width: '1px', height: '1px' }} />
+          <TimeBtn refEl={beginRef} value={workBegin} onChange={setWorkBegin} color="#7c3aed" bg="#f5f3ff" border="#ddd6fe" />
+        </div>
+
+        {/* Ish vaqti: boshlanish + tugash */}
+        <div style={{ background: '#fff', borderRadius: '14px', border: '1px solid #e2e8f0', padding: '24px' }}>
+          <div style={{ display: 'flex', alignItems: 'center', gap: '8px', marginBottom: '10px' }}>
+            <Clock size={17} color="#2563eb" />
+            <span style={{ fontWeight: 700, fontSize: '15px', color: '#0f172a' }}>Ish vaqti</span>
+          </div>
+          <p style={{ margin: '0 0 16px', fontSize: '13px', color: '#64748b' }}>
+            Boshlanishdan keyin kelsa — <strong style={{ color: '#d97706' }}>Kech keldi</strong>
+          </p>
+          <div style={{ display: 'flex', alignItems: 'center', gap: '12px', flexWrap: 'wrap' }}>
+            <div>
+              <div style={{ fontSize: '11px', color: '#94a3b8', fontWeight: 600, marginBottom: '6px' }}>BOSHLANISH</div>
+              <TimeBtn refEl={timeRef} value={workStart} onChange={setWorkStart} color="#2563eb" bg="#eff6ff" border="#bfdbfe" />
+            </div>
+            <div style={{ fontSize: '18px', color: '#cbd5e1', marginTop: '18px' }}>→</div>
+            <div>
+              <div style={{ fontSize: '11px', color: '#94a3b8', fontWeight: 600, marginBottom: '6px' }}>TUGASH</div>
+              <TimeBtn refEl={finishRef} value={workFinish} onChange={setWorkFinish} color="#059669" bg="#f0fdf4" border="#bbf7d0" />
+            </div>
           </div>
         </div>
 
-        {/* Ish vaqti */}
+        {/* Ish kunlari */}
         <div style={{ background: '#fff', borderRadius: '14px', border: '1px solid #e2e8f0', padding: '24px' }}>
-          <div style={{ display: 'flex', alignItems: 'center', gap: '8px', marginBottom: '16px' }}>
-            <Clock size={17} color="#2563eb" />
-            <span style={{ fontWeight: 700, fontSize: '15px', color: '#0f172a' }}>Ish boshlanish vaqti</span>
+          <div style={{ display: 'flex', alignItems: 'center', gap: '8px', marginBottom: '10px' }}>
+            <CalendarDays size={17} color="#2563eb" />
+            <span style={{ fontWeight: 700, fontSize: '15px', color: '#0f172a' }}>Ish kunlari</span>
           </div>
-          <p style={{ margin: '0 0 12px', fontSize: '13px', color: '#64748b' }}>
-            Xodim shu vaqtdan keyin kelsa — <strong style={{ color: '#d97706' }}>Kech keldi</strong> deb hisoblanadi
+          <p style={{ margin: '0 0 16px', fontSize: '13px', color: '#64748b' }}>
+            Belgilangan kunlar ish kuni hisoblanadi — statistikada dam olish kunlari chiqarib tashlanadi
           </p>
-          <div style={{ position: 'relative', display: 'inline-flex', alignItems: 'center' }}>
-            <button onClick={() => timeRef.current?.showPicker()} style={{
-              display: 'flex', alignItems: 'center', gap: '8px',
-              padding: '9px 18px', background: '#eff6ff', border: '1px solid #bfdbfe',
-              borderRadius: '9px', color: '#2563eb', fontSize: '16px', fontWeight: 700,
-              cursor: 'pointer', letterSpacing: '1px',
-            }}>
-              <Clock size={16} /> {workStart}
-            </button>
-            <input ref={timeRef} type="time" value={workStart} onChange={e => setWorkStart(e.target.value)}
-              style={{ position: 'absolute', opacity: 0, pointerEvents: 'none', width: '1px', height: '1px' }} />
+          <div style={{ display: 'flex', gap: '8px', flexWrap: 'wrap' }}>
+            {DAY_LABELS.map(({ val, label }) => {
+              const active = workDays.includes(val)
+              return (
+                <button key={val} onClick={() => toggleDay(val)} style={{
+                  width: '48px', height: '48px', borderRadius: '12px',
+                  border: `2px solid ${active ? '#2563eb' : '#e2e8f0'}`,
+                  background: active ? '#2563eb' : '#f8fafc',
+                  color: active ? '#fff' : '#64748b',
+                  fontSize: '13px', fontWeight: active ? 700 : 500,
+                  cursor: 'pointer', transition: 'all 0.15s',
+                }}>
+                  {label}
+                </button>
+              )
+            })}
           </div>
         </div>
 
