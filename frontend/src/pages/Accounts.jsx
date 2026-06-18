@@ -1,9 +1,10 @@
 import { useState } from 'react'
 import { Plus, Pencil, Trash2, Eye, EyeOff, KeyRound } from 'lucide-react'
+import { apiFetch } from '../config'
 
-export default function Accounts({ groups, onUpdateGroup, onAddGroup, onDeleteGroup }) {
+export default function Accounts({ groups, accounts, onReload }) {
   const [showEdit, setShowEdit]     = useState(false)
-  const [editId, setEditId]         = useState(null)
+  const [editAcc, setEditAcc]       = useState(null)
   const [editName, setEditName]     = useState('')
   const [editLogin, setEditLogin]   = useState('')
   const [editPass, setEditPass]     = useState('')
@@ -35,54 +36,90 @@ export default function Accounts({ groups, onUpdateGroup, onAddGroup, onDeleteGr
   const modalStyle = {
     background: '#ffffff', borderRadius: '16px',
     border: '1px solid #e2e8f0', padding: '32px',
-    width: '100%', maxWidth: '420px',
+    width: '100%', maxWidth: '440px',
     boxShadow: '0 20px 60px #0f172a18',
+    maxHeight: '90vh', overflowY: 'auto',
   }
 
-  const openEdit = (g) => {
-    setEditId(g.id)
-    setEditName(g.name)
-    setEditLogin(g.login || '')
+  const openEdit = (acc) => {
+    setEditAcc(acc)
+    setEditName(acc.name)
+    setEditLogin(acc.login || '')
     setEditPass('')
     setEditPassShow(false)
-    setEditLinked((g.linked_groups || '').split(',').filter(Boolean))
+    setEditLinked((acc.linked_groups || '').split(',').filter(Boolean))
     setEditError('')
     setShowEdit(true)
   }
 
-  const handleSaveEdit = () => {
+  const handleSaveEdit = async () => {
     if (!editLogin.trim()) return setEditError('Login kiriting')
-    onUpdateGroup(editId, {
-      login: editLogin.trim(),
-      password: editPass.trim() || '[[keep]]',
-      work_start: groups.find(g => g.id === editId)?.work_start || '09:00',
-      work_begin: groups.find(g => g.id === editId)?.work_begin || '06:00',
-      linked_groups: editLinked,
+    await apiFetch(`/accounts/${editAcc.id}`, {
+      method: 'PUT',
+      body: JSON.stringify({
+        name: editName.trim(),
+        login: editLogin.trim(),
+        password: editPass.trim() || '[[keep]]',
+        linked_groups: editLinked,
+      }),
     })
     setShowEdit(false)
+    onReload()
   }
 
-  const handleAdd = () => {
-    if (!newName.trim())  return setNewError('Nom kiriting')
+  const handleAdd = async () => {
+    if (!newName.trim())  return setNewError('Akkaunt nomini kiriting')
     if (!newLogin.trim()) return setNewError('Login kiriting')
     if (!newPass.trim())  return setNewError('Parol kiriting')
-    if (groups.find(g => g.login === newLogin.trim())) return setNewError('Bu login allaqachon mavjud')
-    const id = 'acc_' + newLogin.trim().toLowerCase().replace(/\s+/g, '_')
-    onAddGroup({
-      id, name: newName.trim(),
-      login: newLogin.trim(), password: newPass.trim(),
-      work_start: '09:00', work_begin: '06:00',
-      linked_groups: newLinked,
+    if (accounts.find(a => a.login === newLogin.trim())) return setNewError('Bu login allaqachon mavjud')
+    await apiFetch('/accounts', {
+      method: 'POST',
+      body: JSON.stringify({
+        name: newName.trim(),
+        login: newLogin.trim(),
+        password: newPass.trim(),
+        linked_groups: newLinked,
+      }),
     })
-    setNewName(''); setNewLogin(''); setNewPass(''); setNewLinked([]); setNewError(''); setShowAdd(false)
+    setNewName(''); setNewLogin(''); setNewPass(''); setNewLinked([]); setNewError('')
+    setShowAdd(false)
+    onReload()
   }
+
+  const handleDelete = async (acc) => {
+    if (!window.confirm(`"${acc.name}" akkauntini o'chirasizmi?`)) return
+    await apiFetch(`/accounts/${acc.id}`, { method: 'DELETE' })
+    onReload()
+  }
+
+  const linkedNames = (acc) => {
+    const ids = (acc.linked_groups || '').split(',').filter(Boolean)
+    return ids.map(id => groups.find(g => g.id === id)?.name).filter(Boolean)
+  }
+
+  const LinkedCheckboxes = ({ selected, setSelected, excludeId }) => (
+    <div style={{ display: 'flex', flexDirection: 'column', gap: '6px' }}>
+      {groups.map(g => {
+        if (g.id === excludeId) return null
+        const checked = selected.includes(g.id)
+        return (
+          <label key={g.id} style={{ display: 'flex', alignItems: 'center', gap: '8px', cursor: 'pointer', fontSize: '13px', color: '#374151' }}>
+            <input type="checkbox" checked={checked}
+              onChange={() => setSelected(prev => checked ? prev.filter(x => x !== g.id) : [...prev, g.id])}
+              style={{ width: '15px', height: '15px', cursor: 'pointer' }} />
+            {g.name}
+          </label>
+        )
+      })}
+    </div>
+  )
 
   return (
     <div>
       <div style={{ marginBottom: '24px', display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
         <div>
           <h1 style={{ margin: 0, fontSize: '22px', fontWeight: 700, color: '#0f172a' }}>Akkauntlar</h1>
-          <p style={{ margin: '4px 0 0', fontSize: '13px', color: '#94a3b8' }}>Login, parol va kirish huquqlarini boshqarish</p>
+          <p style={{ margin: '4px 0 0', fontSize: '13px', color: '#94a3b8' }}>Login, parol va qaysi tashkilotlarni ko'rishini boshqarish</p>
         </div>
         <button onClick={() => { setNewName(''); setNewLogin(''); setNewPass(''); setNewLinked([]); setNewError(''); setShowAdd(true) }}
           style={{ display: 'flex', alignItems: 'center', gap: '6px', padding: '10px 16px', background: '#2563eb', border: 'none', borderRadius: '10px', color: 'white', fontSize: '14px', fontWeight: 600, cursor: 'pointer' }}>
@@ -91,86 +128,96 @@ export default function Accounts({ groups, onUpdateGroup, onAddGroup, onDeleteGr
       </div>
 
       <div style={{ background: '#fff', borderRadius: '14px', border: '1px solid #e2e8f0', overflow: 'hidden' }}>
-        <table style={{ width: '100%', borderCollapse: 'collapse', fontSize: '14px' }}>
-          <thead>
-            <tr style={{ background: '#f8fafc', borderBottom: '1px solid #e2e8f0' }}>
-              <th style={{ padding: '12px 18px', textAlign: 'left', fontWeight: 600, color: '#64748b', fontSize: '12px' }}>Akkaunt nomi</th>
-              <th style={{ padding: '12px 18px', textAlign: 'left', fontWeight: 600, color: '#64748b', fontSize: '12px' }}>Login</th>
-              <th style={{ padding: '12px 18px', textAlign: 'left', fontWeight: 600, color: '#64748b', fontSize: '12px' }}>Parol</th>
-              <th style={{ padding: '12px 18px', textAlign: 'left', fontWeight: 600, color: '#64748b', fontSize: '12px' }}>Ko'radigan tashkilotlar</th>
-              <th style={{ padding: '12px 18px', textAlign: 'right', fontWeight: 600, color: '#64748b', fontSize: '12px' }}></th>
-            </tr>
-          </thead>
-          <tbody>
-            {groups.map((g, i) => {
-              const linked = (g.linked_groups || '').split(',').filter(Boolean)
-              const linkedNames = [g.name, ...linked.map(id => groups.find(x => x.id === id)?.name).filter(Boolean)]
-              return (
-                <tr key={g.id} style={{ borderBottom: i < groups.length - 1 ? '1px solid #f1f5f9' : 'none' }}>
+        {accounts.length === 0 ? (
+          <div style={{ padding: '48px', textAlign: 'center', color: '#94a3b8', fontSize: '14px' }}>
+            Hali akkaunt yo'q. "Yangi akkaunt" tugmasini bosing.
+          </div>
+        ) : (
+          <table style={{ width: '100%', borderCollapse: 'collapse', fontSize: '14px' }}>
+            <thead>
+              <tr style={{ background: '#f8fafc', borderBottom: '1px solid #e2e8f0' }}>
+                <th style={{ padding: '12px 18px', textAlign: 'left', fontWeight: 600, color: '#64748b', fontSize: '12px' }}>Akkaunt nomi</th>
+                <th style={{ padding: '12px 18px', textAlign: 'left', fontWeight: 600, color: '#64748b', fontSize: '12px' }}>Login</th>
+                <th style={{ padding: '12px 18px', textAlign: 'left', fontWeight: 600, color: '#64748b', fontSize: '12px' }}>Parol</th>
+                <th style={{ padding: '12px 18px', textAlign: 'left', fontWeight: 600, color: '#64748b', fontSize: '12px' }}>Ko'radigan tashkilotlar</th>
+                <th style={{ padding: '12px 18px' }}></th>
+              </tr>
+            </thead>
+            <tbody>
+              {accounts.map((acc, i) => (
+                <tr key={acc.id} style={{ borderBottom: i < accounts.length - 1 ? '1px solid #f1f5f9' : 'none' }}>
                   <td style={{ padding: '14px 18px' }}>
                     <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
                       <div style={{ width: '32px', height: '32px', borderRadius: '8px', background: '#eff6ff', display: 'flex', alignItems: 'center', justifyContent: 'center', flexShrink: 0 }}>
                         <KeyRound size={14} color="#2563eb" />
                       </div>
-                      <span style={{ fontWeight: 600, color: '#0f172a' }}>{g.name}</span>
+                      <span style={{ fontWeight: 600, color: '#0f172a' }}>{acc.name}</span>
                     </div>
                   </td>
-                  <td style={{ padding: '14px 18px', color: '#374151', fontFamily: 'monospace' }}>{g.login || <span style={{ color: '#cbd5e1' }}>—</span>}</td>
+                  <td style={{ padding: '14px 18px', color: '#374151', fontFamily: 'monospace' }}>
+                    {acc.login || <span style={{ color: '#cbd5e1' }}>—</span>}
+                  </td>
                   <td style={{ padding: '14px 18px' }}>
                     <div style={{ display: 'flex', alignItems: 'center', gap: '6px' }}>
                       <span style={{ fontFamily: 'monospace', color: '#374151', fontSize: '13px' }}>
-                        {visiblePass === g.id ? (g.password || '—') : '••••••••'}
+                        {visiblePass === acc.id ? (acc.password || '—') : '••••••••'}
                       </span>
-                      <button onClick={() => setVisiblePass(visiblePass === g.id ? null : g.id)}
+                      <button onClick={() => setVisiblePass(visiblePass === acc.id ? null : acc.id)}
                         style={{ background: 'none', border: 'none', cursor: 'pointer', color: '#94a3b8', display: 'flex', padding: '2px' }}>
-                        {visiblePass === g.id ? <EyeOff size={13} /> : <Eye size={13} />}
+                        {visiblePass === acc.id ? <EyeOff size={13} /> : <Eye size={13} />}
                       </button>
                     </div>
                   </td>
                   <td style={{ padding: '14px 18px' }}>
                     <div style={{ display: 'flex', flexWrap: 'wrap', gap: '4px' }}>
-                      {linkedNames.map(name => (
-                        <span key={name} style={{ padding: '2px 8px', background: '#eff6ff', color: '#2563eb', borderRadius: '20px', fontSize: '11px', fontWeight: 600 }}>{name}</span>
-                      ))}
+                      {linkedNames(acc).length > 0
+                        ? linkedNames(acc).map(name => (
+                          <span key={name} style={{ padding: '2px 8px', background: '#eff6ff', color: '#2563eb', borderRadius: '20px', fontSize: '11px', fontWeight: 600 }}>{name}</span>
+                        ))
+                        : <span style={{ color: '#cbd5e1', fontSize: '12px' }}>Belgilanmagan</span>
+                      }
                     </div>
                   </td>
                   <td style={{ padding: '14px 18px', textAlign: 'right' }}>
                     <div style={{ display: 'flex', gap: '6px', justifyContent: 'flex-end' }}>
-                      <button onClick={() => openEdit(g)}
+                      <button onClick={() => openEdit(acc)}
                         style={{ padding: '7px', background: '#f8fafc', border: '1px solid #e2e8f0', borderRadius: '7px', cursor: 'pointer', display: 'flex', color: '#64748b' }}>
                         <Pencil size={14} />
                       </button>
-                      <button onClick={() => { if (window.confirm(`"${g.name}" akkauntini o'chirasizmi?`)) onDeleteGroup(g.id) }}
+                      <button onClick={() => handleDelete(acc)}
                         style={{ padding: '7px', background: '#fff1f2', border: '1px solid #fecdd3', borderRadius: '7px', cursor: 'pointer', display: 'flex', color: '#e11d48' }}>
                         <Trash2 size={14} />
                       </button>
                     </div>
                   </td>
                 </tr>
-              )
-            })}
-          </tbody>
-        </table>
+              ))}
+            </tbody>
+          </table>
+        )}
       </div>
 
       {/* EDIT MODAL */}
       {showEdit && (
         <div style={overlayStyle}>
           <div style={modalStyle}>
-            <h2 style={{ margin: '0 0 6px', fontSize: '18px', fontWeight: 700, color: '#0f172a' }}>Akkauntni tahrirlash</h2>
-            <p style={{ margin: '0 0 24px', fontSize: '13px', color: '#94a3b8' }}>{groups.find(g => g.id === editId)?.name}</p>
+            <h2 style={{ margin: '0 0 24px', fontSize: '18px', fontWeight: 700, color: '#0f172a' }}>Akkauntni tahrirlash</h2>
             <div style={{ display: 'flex', flexDirection: 'column', gap: '14px' }}>
+              <div>
+                <label style={{ fontSize: '12px', color: '#64748b', display: 'block', marginBottom: '5px', fontWeight: 600 }}>Akkaunt nomi</label>
+                <input value={editName} onChange={e => { setEditName(e.target.value); setEditError('') }} style={inputStyle} />
+              </div>
               <div>
                 <label style={{ fontSize: '12px', color: '#64748b', display: 'block', marginBottom: '5px', fontWeight: 600 }}>Login</label>
                 <input value={editLogin} onChange={e => { setEditLogin(e.target.value); setEditError('') }} style={inputStyle} />
               </div>
               <div>
                 <label style={{ fontSize: '12px', color: '#64748b', display: 'block', marginBottom: '5px', fontWeight: 600 }}>
-                  Yangi parol <span style={{ fontWeight: 400, color: '#94a3b8' }}>(bo'sh qoldirilsa o'zgarmaydi)</span>
+                  Yangi parol <span style={{ fontWeight: 400, color: '#94a3b8' }}>(bo'sh qolsa o'zgarmaydi)</span>
                 </label>
                 <div style={{ position: 'relative' }}>
-                  <input type={editPassShow ? 'text' : 'password'} value={editPass} placeholder="Yangi parol kiriting..."
-                    onChange={e => { setEditPass(e.target.value); setEditError('') }}
+                  <input type={editPassShow ? 'text' : 'password'} value={editPass} placeholder="Yangi parol..."
+                    onChange={e => setEditPass(e.target.value)}
                     style={{ ...inputStyle, paddingRight: '40px' }} />
                   <button type="button" onClick={() => setEditPassShow(!editPassShow)}
                     style={{ position: 'absolute', right: '10px', top: '50%', transform: 'translateY(-50%)', background: 'none', border: 'none', cursor: 'pointer', color: '#94a3b8', display: 'flex' }}>
@@ -182,19 +229,7 @@ export default function Accounts({ groups, onUpdateGroup, onAddGroup, onDeleteGr
                 <label style={{ fontSize: '12px', color: '#64748b', display: 'block', marginBottom: '8px', fontWeight: 600 }}>
                   Ko'radigan tashkilotlar
                 </label>
-                <div style={{ display: 'flex', flexDirection: 'column', gap: '6px' }}>
-                  {groups.filter(g => g.id !== editId).map(g => {
-                    const checked = editLinked.includes(g.id)
-                    return (
-                      <label key={g.id} style={{ display: 'flex', alignItems: 'center', gap: '8px', cursor: 'pointer', fontSize: '13px', color: '#374151' }}>
-                        <input type="checkbox" checked={checked}
-                          onChange={() => setEditLinked(prev => checked ? prev.filter(x => x !== g.id) : [...prev, g.id])}
-                          style={{ width: '15px', height: '15px', cursor: 'pointer' }} />
-                        {g.name}
-                      </label>
-                    )
-                  })}
-                </div>
+                <LinkedCheckboxes selected={editLinked} setSelected={setEditLinked} />
               </div>
               {editError && <div style={{ padding: '8px 12px', background: '#fff1f2', border: '1px solid #fecdd3', borderRadius: '7px', color: '#e11d48', fontSize: '13px' }}>{editError}</div>}
               <div style={{ display: 'flex', gap: '10px', marginTop: '4px' }}>
@@ -214,7 +249,7 @@ export default function Accounts({ groups, onUpdateGroup, onAddGroup, onDeleteGr
             <div style={{ display: 'flex', flexDirection: 'column', gap: '14px' }}>
               <div>
                 <label style={{ fontSize: '12px', color: '#64748b', display: 'block', marginBottom: '5px', fontWeight: 600 }}>Akkaunt nomi</label>
-                <input value={newName} onChange={e => { setNewName(e.target.value); setNewError('') }} placeholder="Masalan: Rahbar" style={inputStyle} />
+                <input value={newName} onChange={e => { setNewName(e.target.value); setNewError('') }} placeholder="Masalan: Rahbar, Markaz kadrlar" style={inputStyle} />
               </div>
               <div>
                 <label style={{ fontSize: '12px', color: '#64748b', display: 'block', marginBottom: '5px', fontWeight: 600 }}>Login</label>
@@ -233,20 +268,10 @@ export default function Accounts({ groups, onUpdateGroup, onAddGroup, onDeleteGr
                 </div>
               </div>
               <div style={{ borderTop: '1px solid #f1f5f9', paddingTop: '14px' }}>
-                <label style={{ fontSize: '12px', color: '#64748b', display: 'block', marginBottom: '8px', fontWeight: 600 }}>Ko'radigan tashkilotlar</label>
-                <div style={{ display: 'flex', flexDirection: 'column', gap: '6px' }}>
-                  {groups.map(g => {
-                    const checked = newLinked.includes(g.id)
-                    return (
-                      <label key={g.id} style={{ display: 'flex', alignItems: 'center', gap: '8px', cursor: 'pointer', fontSize: '13px', color: '#374151' }}>
-                        <input type="checkbox" checked={checked}
-                          onChange={() => setNewLinked(prev => checked ? prev.filter(x => x !== g.id) : [...prev, g.id])}
-                          style={{ width: '15px', height: '15px', cursor: 'pointer' }} />
-                        {g.name}
-                      </label>
-                    )
-                  })}
-                </div>
+                <label style={{ fontSize: '12px', color: '#64748b', display: 'block', marginBottom: '8px', fontWeight: 600 }}>
+                  Ko'radigan tashkilotlar
+                </label>
+                <LinkedCheckboxes selected={newLinked} setSelected={setNewLinked} />
               </div>
               {newError && <div style={{ padding: '8px 12px', background: '#fff1f2', border: '1px solid #fecdd3', borderRadius: '7px', color: '#e11d48', fontSize: '13px' }}>{newError}</div>}
               <div style={{ display: 'flex', gap: '10px', marginTop: '4px' }}>

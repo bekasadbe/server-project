@@ -19,6 +19,7 @@ export default function App() {
   const [page, setPage]           = useState('dashboard')
   const [employees, setEmployees] = useState([])
   const [groups, setGroups]       = useState([])
+  const [accounts, setAccounts]   = useState([])
 
   useEffect(() => { if (user) { loadData(); setPage('dashboard') } }, [user])
 
@@ -26,14 +27,12 @@ export default function App() {
     try {
       const data = await apiFetch('/employees')
       setEmployees((data.employees || []).map(e => ({ ...e, group: e.group_id })))
-      const merged = (data.groups || []).map(g => ({
+      setGroups((data.groups || []).map(g => ({
         ...g,
-        login:      g.login      || g.id,
-        password:   g.password   || '',
         work_start: g.work_start || '09:00',
         work_begin: g.work_begin || '06:00',
-      }))
-      setGroups(merged)
+      })))
+      setAccounts(data.accounts || [])
     } catch {}
   }
 
@@ -41,9 +40,8 @@ export default function App() {
 
   const handleLogout = () => { logout(); setUser(null) }
 
-  const userGroup      = user.role === 'kadrlar' ? user.groupId : null
-  const linkedGroupIds = user.linkedGroupIds || []
-  const visibleGroupIds = userGroup ? [userGroup, ...linkedGroupIds] : null
+  const linkedGroupIds  = user.linkedGroupIds || []
+  const visibleGroupIds = user.role === 'kadrlar' ? linkedGroupIds : null
   const visibleEmps = visibleGroupIds ? employees.filter(e => visibleGroupIds.includes(e.group_id)) : employees
   const visibleGrps = visibleGroupIds ? groups.filter(g => visibleGroupIds.includes(g.id)) : groups
 
@@ -130,9 +128,8 @@ export default function App() {
       />,
       accounts: <Accounts
         groups={groups}
-        onUpdateGroup={updateGroup}
-        onAddGroup={addGroup}
-        onDeleteGroup={deleteGroup}
+        accounts={accounts}
+        onReload={loadData}
       />
     } : {})
   }

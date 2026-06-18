@@ -35,27 +35,42 @@ def init_db():
     with get_conn() as conn:
         conn.execute('''
             CREATE TABLE IF NOT EXISTS groups (
-                id            TEXT PRIMARY KEY,
-                name          TEXT NOT NULL,
-                login         TEXT DEFAULT '',
-                password      TEXT DEFAULT '',
-                work_start    TEXT DEFAULT '09:00',
-                work_begin    TEXT DEFAULT '06:00',
-                linked_groups TEXT DEFAULT ''
+                id         TEXT PRIMARY KEY,
+                name       TEXT NOT NULL,
+                work_start TEXT DEFAULT '09:00',
+                work_begin TEXT DEFAULT '06:00'
             )
         ''')
         # Eski bazaga ustunlar qo'shish (agar yo'q bo'lsa)
         for col, default in [
-            ('login',         "''"),
-            ('password',      "''"),
-            ('work_start',    "'09:00'"),
-            ('work_begin',    "'06:00'"),
-            ('linked_groups', "''"),
+            ('work_start', "'09:00'"),
+            ('work_begin', "'06:00'"),
         ]:
             try:
                 conn.execute(f"ALTER TABLE groups ADD COLUMN {col} TEXT DEFAULT {default}")
             except Exception:
                 pass
+
+        conn.execute('''
+            CREATE TABLE IF NOT EXISTS accounts (
+                id            TEXT PRIMARY KEY,
+                name          TEXT NOT NULL,
+                login         TEXT UNIQUE DEFAULT '',
+                password      TEXT DEFAULT '',
+                linked_groups TEXT DEFAULT ''
+            )
+        ''')
+
+        # Eski groups jadvalidagi login/password ma'lumotlarini accounts ga ko'chirish
+        try:
+            old_groups = conn.execute("SELECT id, name, login, password, linked_groups FROM groups WHERE login != ''").fetchall()
+            for g in old_groups:
+                conn.execute(
+                    "INSERT OR IGNORE INTO accounts (id, name, login, password, linked_groups) VALUES (?, ?, ?, ?, ?)",
+                    (g['id'], g['name'], g['login'], g['password'], g.get('linked_groups', ''))
+                )
+        except Exception:
+            pass
         conn.execute('''
             CREATE TABLE IF NOT EXISTS employees (
                 id       TEXT PRIMARY KEY,
@@ -82,8 +97,9 @@ def init_db():
             pass
 
         # Default guruhlar
-        conn.execute("INSERT OR IGNORE INTO groups (id, name, login, password, work_start, work_begin) VALUES ('inno',   'Inno Texnopark', 'inno',   'Inno@2026#kdr',    '09:00', '06:00')")
-        conn.execute("INSERT OR IGNORE INTO groups (id, name, login, password, work_start, work_begin) VALUES ('milliy', 'Milliy Offis',   'milliy', 'Milliy@2026#kdr',  '09:00', '06:00')")
+        conn.execute("INSERT OR IGNORE INTO groups (id, name, work_start, work_begin) VALUES ('inno',   'Inno Texnopark', '09:00', '06:00')")
+        conn.execute("INSERT OR IGNORE INTO groups (id, name, work_start, work_begin) VALUES ('milliy', 'Milliy Offis',   '09:00', '06:00')")
+        conn.execute("INSERT OR IGNORE INTO groups (id, name, work_start, work_begin) VALUES ('markaz', 'Markaz',         '09:00', '06:00')")
 
         # Default xodimlar
         employees = [
@@ -227,21 +243,57 @@ def get_groups():
     return [dict(r) for r in rows]
 
 
-def add_group(gid, name, login='', password='', work_start='09:00', work_begin='06:00', linked_groups=''):
+def add_group(gid, name, work_start='09:00', work_begin='06:00', **kwargs):
     with get_conn() as conn:
         conn.execute(
-            'INSERT OR REPLACE INTO groups (id, name, login, password, work_start, work_begin, linked_groups) VALUES (?, ?, ?, ?, ?, ?, ?)',
-            (gid, name, login, password, work_start, work_begin, linked_groups)
+            'INSERT OR REPLACE INTO groups (id, name, work_start, work_begin) VALUES (?, ?, ?, ?)',
+            (gid, name, work_start, work_begin)
         )
         conn.commit()
 
 
-def update_group_settings(gid, login, password, work_start='09:00', work_begin='06:00', linked_groups=''):
+def update_group_settings(gid, work_start='09:00', work_begin='06:00', **kwargs):
     with get_conn() as conn:
         conn.execute(
-            'UPDATE groups SET login=?, password=?, work_start=?, work_begin=?, linked_groups=? WHERE id=?',
-            (login, password, work_start, work_begin, linked_groups, gid)
+            'UPDATE groups SET work_start=?, work_begin=? WHERE id=?',
+            (work_start, work_begin, gid)
         )
+        conn.commit()
+
+
+def get_accounts():
+    with get_conn() as conn:
+        rows = conn.execute('SELECT * FROM accounts ORDER BY name').fetchall()
+    return [dict(r) for r in rows]
+
+
+def add_account(aid, name, login, password, linked_groups=''):
+    with get_conn() as conn:
+        conn.execute(
+            'INSERT OR REPLACE INTO accounts (id, name, login, password, linked_groups) VALUES (?, ?, ?, ?, ?)',
+            (aid, name, login, password, linked_groups)
+        )
+        conn.commit()
+
+
+def update_account(aid, name, login, password, linked_groups=''):
+    with get_conn() as conn:
+        if password and password != '[[keep]]':
+            conn.execute(
+                'UPDATE accounts SET name=?, login=?, password=?, linked_groups=? WHERE id=?',
+                (name, login, password, linked_groups, aid)
+            )
+        else:
+            conn.execute(
+                'UPDATE accounts SET name=?, login=?, linked_groups=? WHERE id=?',
+                (name, login, linked_groups, aid)
+            )
+        conn.commit()
+
+
+def delete_account(aid):
+    with get_conn() as conn:
+        conn.execute('DELETE FROM accounts WHERE id=?', (aid,))
         conn.commit()
 
 

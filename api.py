@@ -9,6 +9,7 @@ from database import (
     get_employees, get_groups,
     add_employee, update_employee, delete_employee,
     add_group, update_group_settings, delete_group,
+    get_accounts, add_account, update_account, delete_account,
     save_event, get_direction,
     hash_password, verify_password, is_hashed, get_conn
 )
@@ -111,7 +112,7 @@ def live_events():
 def employees_list():
     if not check_token():
         return jsonify({'error': 'Unauthorized'}), 401
-    return jsonify({'employees': get_employees(), 'groups': get_groups()})
+    return jsonify({'employees': get_employees(), 'groups': get_groups(), 'accounts': get_accounts()})
 
 
 @app.route('/employees', methods=['POST'])
@@ -146,6 +147,57 @@ def employee_delete(emp_id):
     return jsonify({'ok': True})
 
 
+# ── AKKAUNTLAR ───────────────────────────────────────────
+
+@app.route('/accounts', methods=['GET'])
+def accounts_list():
+    if not check_token():
+        return jsonify({'error': 'Unauthorized'}), 401
+    return jsonify({'accounts': get_accounts()})
+
+
+@app.route('/accounts', methods=['POST'])
+def account_add():
+    if not check_token():
+        return jsonify({'error': 'Unauthorized'}), 401
+    data  = request.json or {}
+    name  = data.get('name', '').strip()
+    login = data.get('login', '').strip()
+    plain = data.get('password', '').strip()
+    linked = ','.join([g.strip() for g in data.get('linked_groups', []) if g.strip()])
+    if not name or not login or not plain:
+        return jsonify({'error': 'name, login, password majburiy'}), 400
+    hashed = hash_password(plain) if not is_hashed(plain) else plain
+    aid = 'acc_' + login.lower().replace(' ', '_')
+    add_account(aid, name, login, hashed, linked)
+    return jsonify({'ok': True})
+
+
+@app.route('/accounts/<aid>', methods=['PUT'])
+def account_update(aid):
+    if not check_token():
+        return jsonify({'error': 'Unauthorized'}), 401
+    data   = request.json or {}
+    name   = data.get('name', '').strip()
+    login  = data.get('login', '').strip()
+    plain  = data.get('password', '').strip()
+    linked = ','.join([g.strip() for g in data.get('linked_groups', []) if g.strip()])
+    if plain and plain != '[[keep]]':
+        hashed = hash_password(plain) if not is_hashed(plain) else plain
+    else:
+        hashed = '[[keep]]'
+    update_account(aid, name, login, hashed, linked)
+    return jsonify({'ok': True})
+
+
+@app.route('/accounts/<aid>', methods=['DELETE'])
+def account_delete(aid):
+    if not check_token():
+        return jsonify({'error': 'Unauthorized'}), 401
+    delete_account(aid)
+    return jsonify({'ok': True})
+
+
 # ── GURUHLAR ─────────────────────────────────────────────
 
 @app.route('/groups', methods=['POST'])
@@ -157,15 +209,9 @@ def group_add():
     name = data.get('name', '').strip()
     if not gid or not name:
         return jsonify({'error': 'id va name majburiy'}), 400
-    plain_pass = data.get('password', '')
-    hashed = hash_password(plain_pass) if plain_pass and not is_hashed(plain_pass) else plain_pass
-    linked = ','.join([g.strip() for g in data.get('linked_groups', []) if g.strip()])
     add_group(gid, name,
-              login=data.get('login', ''),
-              password=hashed,
               work_start=data.get('work_start', '09:00'),
-              work_begin=data.get('work_begin', '06:00'),
-              linked_groups=linked)
+              work_begin=data.get('work_begin', '06:00'))
     return jsonify({'ok': True})
 
 
@@ -174,23 +220,9 @@ def group_update(gid):
     if not check_token():
         return jsonify({'error': 'Unauthorized'}), 401
     data = request.json or {}
-    plain_pass = data.get('password', '')
-    if plain_pass == '[[keep]]':
-        # Parol o'zgarmaydi — bazadan olish
-        with get_conn() as _c:
-            _row = _c.execute("SELECT password FROM groups WHERE id=?", (gid,)).fetchone()
-            hashed = _row['password'] if _row else ''
-    else:
-        hashed = hash_password(plain_pass) if plain_pass and not is_hashed(plain_pass) else plain_pass
-    linked = ','.join([g.strip() for g in data.get('linked_groups', []) if g.strip()])
-    update_group_settings(
-        gid,
-        login=data.get('login', ''),
-        password=hashed,
+    update_group_settings(gid,
         work_start=data.get('work_start', '09:00'),
-        work_begin=data.get('work_begin', '06:00'),
-        linked_groups=linked,
-    )
+        work_begin=data.get('work_begin', '06:00'))
     return jsonify({'ok': True})
 
 
@@ -242,15 +274,17 @@ def auth_login():
         if ok:
             return jsonify({'ok': True, 'role': 'admin', 'name': 'Administrator', 'groupId': None})
 
-    # Kadrlar — bazadan tekshirish (bcrypt)
+    # Kadrlar — accounts jadvalidan tekshirish
     with get_conn() as conn:
         row = conn.execute(
-            "SELECT id, name, login, password FROM groups WHERE login=?",
+            "SELECT id, name, login, password, linked_groups FROM accounts WHERE login=?",
             (username,)
         ).fetchone()
     if row and row['password'] and verify_password(password, row['password']):
         linked = [g.strip() for g in (row['linked_groups'] or '').split(',') if g.strip()]
-        return jsonify({'ok': True, 'role': 'kadrlar', 'name': row['name'], 'groupId': row['id'], 'username': row['login'], 'linkedGroupIds': linked})
+        # linked_groups dan birinchi real group_id ni groupId sifatida qaytaramiz
+        all_groups = linked if linked else [row['id']]
+        return jsonify({'ok': True, 'role': 'kadrlar', 'name': row['name'], 'groupId': all_groups[0], 'accountId': row['id'], 'username': row['login'], 'linkedGroupIds': linked})
 
     return jsonify({'ok': False, 'error': "Login yoki parol noto'g'ri"}), 401
 
