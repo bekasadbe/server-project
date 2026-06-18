@@ -181,10 +181,7 @@ export default function Jadvallar({ groups = [], employees = [] }) {
   }
 
   const nameInitials = (name) => (name || '?').split(' ').map(w => w[0]).slice(0, 2).join('').toUpperCase()
-  const nameColor = (name) => {
-    const colors = ['#2563eb','#7c3aed','#059669','#d97706','#dc2626','#0891b2']
-    return colors[(name || '').length % colors.length]
-  }
+  const nameColor = () => '#0891b2'
 
   return (
     <div>
