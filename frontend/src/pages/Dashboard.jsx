@@ -16,7 +16,7 @@ function StatCard({ icon: Icon, label, value, color, bg }) {
         <Icon size={22} color={color} />
       </div>
       <div>
-        <div style={{ fontSize:'28px', fontWeight:700, color:'#0f172a' }}>{value}</div>
+        <div style={{ fontSize:'28px', fontWeight:400, color:'#0f172a' }}>{value}</div>
         <div style={{ fontSize:'13px', color:'#64748b', marginTop:'2px' }}>{label}</div>
       </div>
     </div>
@@ -166,8 +166,8 @@ export default function Dashboard({ employees = [], groups = [] }) {
                         </span>
                       </td>
                     )}
-                    <td style={{ padding:'11px 16px', fontSize:'14px', color:getEffectiveFirstIn(row)?'#16a34a':'#cbd5e1', fontWeight:600, fontFamily:'monospace' }}>{getEffectiveFirstIn(row) ? toHHMM(getEffectiveFirstIn(row)) : '—'}</td>
-                    <td style={{ padding:'11px 16px', fontSize:'14px', color:row.last_out?'#475569':'#cbd5e1', fontFamily:'monospace' }}>{row.last_out ? toHHMM(row.last_out) : '—'}</td>
+                    <td style={{ padding:'11px 16px', fontSize:'15px', color:getEffectiveFirstIn(row)?'#16a34a':'#cbd5e1', fontWeight:400 }}>{getEffectiveFirstIn(row) ? toHHMM(getEffectiveFirstIn(row)) : '—'}</td>
+                    <td style={{ padding:'11px 16px', fontSize:'15px', color:row.last_out?'#475569':'#cbd5e1', fontWeight:400 }}>{row.last_out ? toHHMM(row.last_out) : '—'}</td>
                     <td style={{ padding:'11px 16px' }}>
                       <span style={{ padding:'4px 10px', borderRadius:'20px', fontSize:'12px', fontWeight:600, background:s.bg, color:s.color }}>{s.label}</span>
                     </td>
