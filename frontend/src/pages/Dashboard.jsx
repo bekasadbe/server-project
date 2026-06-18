@@ -155,21 +155,21 @@ export default function Dashboard({ employees = [], groups = [] }) {
                 const s = statusInfo[getStatus(row)]
                 return (
                   <tr key={row.employee_id} style={{ borderTop:'1px solid #f1f5f9' }}>
-                    <td style={{ padding:'11px 16px' }}>
-                      <div style={{ fontSize:'14px', fontWeight:400, color:'#0f172a' }}>{row.name}</div>
-                      {row.lavozim && <div style={{ fontSize:'12px', fontWeight:400, color:'#94a3b8', marginTop:'2px' }}>{row.lavozim}</div>}
+                    <td style={{ padding:'11px 16px', fontSize:'14px', color:'#0f172a', fontWeight:500 }}>
+                      <div>{row.name}</div>
+                      {row.lavozim && <div style={{ fontSize:'11px', color:'#94a3b8' }}>{row.lavozim}</div>}
                     </td>
                     {multiOrg && (
-                      <td style={{ padding:'11px 16px', fontSize:'13px', fontWeight:400, color:'#64748b' }}>
+                      <td style={{ padding:'11px 16px', fontSize:'13px', color:'#64748b' }}>
                         <span style={{ display:'inline-flex', alignItems:'center', gap:'4px' }}>
                           <Building2 size={12}/> {groupName(row.group_id)}
                         </span>
                       </td>
                     )}
-                    <td style={{ padding:'11px 16px', fontSize:'15px', fontWeight:400, color:getEffectiveFirstIn(row)?'#22c55e':'#cbd5e1' }}>{getEffectiveFirstIn(row) ? toHHMM(getEffectiveFirstIn(row)) : '—'}</td>
-                    <td style={{ padding:'11px 16px', fontSize:'15px', fontWeight:400, color:row.last_out?'#475569':'#cbd5e1' }}>{row.last_out ? toHHMM(row.last_out) : '—'}</td>
+                    <td style={{ padding:'11px 16px', fontSize:'14px', color:getEffectiveFirstIn(row)?'#16a34a':'#cbd5e1', fontWeight:600, fontFamily:'monospace' }}>{getEffectiveFirstIn(row) ? toHHMM(getEffectiveFirstIn(row)) : '—'}</td>
+                    <td style={{ padding:'11px 16px', fontSize:'14px', color:row.last_out?'#475569':'#cbd5e1', fontFamily:'monospace' }}>{row.last_out ? toHHMM(row.last_out) : '—'}</td>
                     <td style={{ padding:'11px 16px' }}>
-                      <span style={{ padding:'4px 10px', borderRadius:'20px', fontSize:'12px', fontWeight:400, background:s.bg, color:s.color }}>{s.label}</span>
+                      <span style={{ padding:'4px 10px', borderRadius:'20px', fontSize:'12px', fontWeight:600, background:s.bg, color:s.color }}>{s.label}</span>
                     </td>
                   </tr>
                 )
