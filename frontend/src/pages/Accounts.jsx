@@ -57,18 +57,22 @@ export default function Accounts({ groups, accounts, onReload }) {
 
   const handleSaveEdit = async () => {
     if (!editLogin.trim()) return setEditError('Login kiriting')
-    await apiFetch(`/accounts/${editAcc.id}`, {
-      method: 'PUT',
-      body: JSON.stringify({
-        name: editName.trim(),
-        login: editLogin.trim(),
-        password: editPass.trim() || '[[keep]]',
-        linked_groups: editLinked,
-        role: editRole,
-      }),
-    })
-    setShowEdit(false)
-    onReload()
+    try {
+      await apiFetch(`/accounts/${editAcc.id}`, {
+        method: 'PUT',
+        body: JSON.stringify({
+          name: editName.trim(),
+          login: editLogin.trim(),
+          password: editPass.trim() || '[[keep]]',
+          linked_groups: editLinked,
+          role: editRole,
+        }),
+      })
+      setShowEdit(false)
+      onReload()
+    } catch (e) {
+      setEditError('Saqlashda xato: ' + (e?.message || String(e)))
+    }
   }
 
   const handleAdd = async () => {
