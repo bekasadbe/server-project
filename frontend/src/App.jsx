@@ -18,9 +18,10 @@ import { apiFetch } from './config'
 export default function App() {
   const [user, setUser]           = useState(getUser)
   const [page, setPage]           = useState('dashboard')
-  const [employees, setEmployees] = useState([])
-  const [groups, setGroups]       = useState([])
-  const [accounts, setAccounts]   = useState([])
+  const [employees, setEmployees]       = useState([])
+  const [groups, setGroups]             = useState([])
+  const [accounts, setAccounts]         = useState([])
+  const [settingsDirty, setSettingsDirty] = useState(false)
 
   useEffect(() => { if (user) { loadData(); setPage('dashboard') } }, [user])
 
@@ -117,7 +118,7 @@ export default function App() {
     employees: <Employees  employees={visibleEmps} groups={visibleGrps} onUpdateEmployee={isViewer ? null : updateEmployee} onDeleteEmployee={isViewer ? null : deleteEmployee} readonly={isViewer} />,
     reports:   <Reports    groups={visibleGrps} />,
     ...(!isViewer && user.role !== 'admin' ? {
-      settings: <Settings group={visibleGrps[0]} onUpdateGroup={updateGroup} />
+      settings: <Settings group={visibleGrps[0]} onUpdateGroup={updateGroup} onDirtyChange={setSettingsDirty} />
     } : {}),
     ...(user.role === 'admin' ? {
       admin: <AdminPanel
@@ -141,7 +142,13 @@ export default function App() {
 
   return (
     <div style={{ display:'flex', height:'100vh', background:'#f8fafc', color:'#0f172a', overflow:'hidden' }}>
-      <Sidebar current={page} onChange={setPage} user={user} onLogout={handleLogout} />
+      <Sidebar current={page} onChange={(p) => {
+        if (page === 'settings' && settingsDirty) {
+          if (!window.confirm("Saqlanmagan o'zgarishlar bor. Chiqib ketasizmi?")) return
+        }
+        setSettingsDirty(false)
+        setPage(p)
+      }} user={user} onLogout={handleLogout} />
       <main style={{ flex:1, overflowY:'auto', padding:'28px 32px', background:'#f8fafc' }}>
         {pages[page] ?? pages['dashboard']}
       </main>

@@ -11,7 +11,7 @@ const DAY_LABELS = [
   { val: '0', label: 'Yak' },
 ]
 
-export default function Settings({ group, onUpdateGroup }) {
+export default function Settings({ group, onUpdateGroup, onDirtyChange }) {
   const [login, setLogin]           = useState(group?.login || '')
   const [pass, setPass]             = useState(group?.password || '')
   const [showPass, setShowPass]     = useState(false)
@@ -21,6 +21,13 @@ export default function Settings({ group, onUpdateGroup }) {
   const [workDays, setWorkDays]     = useState(
     (group?.work_days || '1,2,3,4,5,6').split(',').filter(Boolean)
   )
+  const [dirty, setDirty] = useState(false)
+
+  const markDirty = (setter) => (val) => {
+    setter(val)
+    setDirty(true)
+    onDirtyChange?.(true)
+  }
 
   useEffect(() => {
     if (group) {
@@ -30,6 +37,8 @@ export default function Settings({ group, onUpdateGroup }) {
       setWorkFinish(group.work_finish || '18:00')
       setWorkBegin(group.work_begin   || '06:00')
       setWorkDays((group.work_days || '1,2,3,4,5,6').split(',').filter(Boolean))
+      setDirty(false)
+      onDirtyChange?.(false)
     }
   }, [group?.id, group?.login, group?.password, group?.work_start, group?.work_finish, group?.work_begin, group?.work_days])
 
@@ -40,7 +49,11 @@ export default function Settings({ group, onUpdateGroup }) {
   const [error, setError] = useState('')
 
   const toggleDay = (val) => {
-    setWorkDays(prev => prev.includes(val) ? prev.filter(d => d !== val) : [...prev, val])
+    setWorkDays(prev => {
+      const next = prev.includes(val) ? prev.filter(d => d !== val) : [...prev, val]
+      setDirty(true); onDirtyChange?.(true)
+      return next
+    })
   }
 
   const handleSave = () => {
@@ -53,6 +66,8 @@ export default function Settings({ group, onUpdateGroup }) {
       work_begin: workBegin, work_days: workDays.join(','),
     })
     setError('')
+    setDirty(false)
+    onDirtyChange?.(false)
     setSaved(true)
     setTimeout(() => setSaved(false), 2500)
   }
@@ -63,6 +78,12 @@ export default function Settings({ group, onUpdateGroup }) {
     borderRadius: '8px', color: '#0f172a', fontSize: '14px',
     outline: 'none', boxSizing: 'border-box',
   }
+
+  const setLoginD    = markDirty(setLogin)
+  const setPassD     = markDirty(setPass)
+  const setBeginD    = markDirty(setWorkBegin)
+  const setStartD    = markDirty(setWorkStart)
+  const setFinishD   = markDirty(setWorkFinish)
 
   const TimeBtn = ({ refEl, value, onChange, color, bg, border }) => (
     <div style={{ position: 'relative', display: 'inline-flex', alignItems: 'center' }}>
@@ -88,7 +109,7 @@ export default function Settings({ group, onUpdateGroup }) {
         <p style={{ margin: '4px 0 0', fontSize: '13px', color: '#94a3b8' }}>{group?.name}</p>
       </div>
 
-      <div style={{ maxWidth: '520px', display: 'flex', flexDirection: 'column', gap: '16px' }}>
+      <div style={{ maxWidth: '560px', display: 'flex', flexDirection: 'column', gap: '16px' }}>
 
         {/* Kelish hisobi boshlanishi */}
         <div style={{ background: '#fff', borderRadius: '14px', border: '1px solid #e2e8f0', padding: '24px' }}>
@@ -99,7 +120,7 @@ export default function Settings({ group, onUpdateGroup }) {
           <p style={{ margin: '0 0 12px', fontSize: '13px', color: '#64748b' }}>
             Shu vaqtdan <strong>oldin</strong> kelgan eventlar hisoblanmaydi — kechasi kech ketganlar bugun keldi deb ko'rinmasin
           </p>
-          <TimeBtn refEl={beginRef} value={workBegin} onChange={setWorkBegin} color="#7c3aed" bg="#f5f3ff" border="#ddd6fe" />
+          <TimeBtn refEl={beginRef} value={workBegin} onChange={setBeginD} color="#7c3aed" bg="#f5f3ff" border="#ddd6fe" />
         </div>
 
         {/* Ish vaqti: boshlanish + tugash */}
@@ -114,12 +135,12 @@ export default function Settings({ group, onUpdateGroup }) {
           <div style={{ display: 'flex', alignItems: 'center', gap: '12px', flexWrap: 'wrap' }}>
             <div>
               <div style={{ fontSize: '11px', color: '#94a3b8', fontWeight: 600, marginBottom: '6px' }}>BOSHLANISH</div>
-              <TimeBtn refEl={timeRef} value={workStart} onChange={setWorkStart} color="#2563eb" bg="#eff6ff" border="#bfdbfe" />
+              <TimeBtn refEl={timeRef} value={workStart} onChange={setStartD} color="#2563eb" bg="#eff6ff" border="#bfdbfe" />
             </div>
             <div style={{ fontSize: '18px', color: '#cbd5e1', marginTop: '18px' }}>→</div>
             <div>
               <div style={{ fontSize: '11px', color: '#94a3b8', fontWeight: 600, marginBottom: '6px' }}>TUGASH</div>
-              <TimeBtn refEl={finishRef} value={workFinish} onChange={setWorkFinish} color="#059669" bg="#f0fdf4" border="#bbf7d0" />
+              <TimeBtn refEl={finishRef} value={workFinish} onChange={setFinishD} color="#059669" bg="#f0fdf4" border="#bbf7d0" />
             </div>
           </div>
         </div>
@@ -161,13 +182,13 @@ export default function Settings({ group, onUpdateGroup }) {
           <div style={{ display: 'flex', flexDirection: 'column', gap: '12px' }}>
             <div>
               <label style={{ fontSize: '12px', color: '#64748b', display: 'block', marginBottom: '5px', fontWeight: 600 }}>Login</label>
-              <input value={login} onChange={e => { setLogin(e.target.value); setError('') }} style={inputStyle} />
+              <input value={login} onChange={e => { setLoginD(e.target.value); setError('') }} style={inputStyle} />
             </div>
             <div>
               <label style={{ fontSize: '12px', color: '#64748b', display: 'block', marginBottom: '5px', fontWeight: 600 }}>Parol</label>
               <div style={{ position: 'relative' }}>
                 <input type={showPass ? 'text' : 'password'} value={pass}
-                  onChange={e => { setPass(e.target.value); setError('') }}
+                  onChange={e => { setPassD(e.target.value); setError('') }}
                   style={{ ...inputStyle, paddingRight: '40px' }} />
                 <button type="button" onClick={() => setShowPass(!showPass)}
                   style={{ position: 'absolute', right: '10px', top: '50%', transform: 'translateY(-50%)', background: 'none', border: 'none', cursor: 'pointer', color: '#94a3b8', display: 'flex' }}>
@@ -192,11 +213,12 @@ export default function Settings({ group, onUpdateGroup }) {
 
         <button onClick={handleSave} style={{
           display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '8px',
-          padding: '12px', background: '#2563eb', border: 'none', borderRadius: '10px',
+          padding: '12px', background: dirty ? '#16a34a' : '#2563eb', border: 'none', borderRadius: '10px',
           color: 'white', fontSize: '15px', fontWeight: 600, cursor: 'pointer',
-          boxShadow: '0 2px 8px #2563eb30',
+          boxShadow: dirty ? '0 2px 8px #16a34a40' : '0 2px 8px #2563eb30',
+          transition: 'all 0.2s',
         }}>
-          <Save size={17} /> Saqlash
+          <Save size={17} /> {dirty ? "O'zgarishlarni saqlash" : 'Saqlash'}
         </button>
       </div>
     </div>
