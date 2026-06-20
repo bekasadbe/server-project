@@ -356,7 +356,7 @@ export default function Reports({ groups = [] }) {
           {/* Ko'p ishlagan */}
           {renderSection({
             title: "Eng ko'p ishlagan",
-            subtitle: "Jami ishlagan soat · kamida 3 kun",
+            subtitle: "Oy davomida jami ishlagan vaqt (kamida 3 kun kelganlar)",
             icon: Timer, iconCls: 'text-brand-600', iconBg: 'bg-brand-50 border border-brand-100',
             badge: 'bg-brand-50 text-brand-600',
             list: workedList,
@@ -368,7 +368,7 @@ export default function Reports({ groups = [] }) {
           {/* Erta keluvchilar */}
           {renderSection({
             title: 'Eng erta keluvchilar',
-            subtitle: "O'rtacha kelish vaqti · kamida 3 kun",
+            subtitle: "Oy davomida o'rtacha kelish vaqti (kamida 3 kun kelganlar)",
             icon: Sunrise, iconCls: 'text-amber-500', iconBg: 'bg-amber-50 border border-amber-100',
             badge: 'bg-amber-50 text-amber-600',
             list: earlyList,
