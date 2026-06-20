@@ -196,6 +196,51 @@ export default function Reports({ groups = [] }) {
   // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [allDays, orgFilter])
 
+  // Reytinglar uchun ohirgi 7 ish kunidan hisoblash
+  const rankingMap = useMemo(() => {
+    const last7 = allDays.slice(-7)
+    const filtered = last7.map(({date,rows}) => ({
+      date,
+      rows: rows.filter(r => visibleGroupIds.includes(r.group_id) && (orgFilter==='all'||r.group_id===orgFilter))
+    }))
+    const map = {}
+    filtered.forEach(({date,rows}) => {
+      rows.forEach(r => {
+        if (!isWorkDay(date,r.group_id)) return
+        if (!map[r.employee_id]) map[r.employee_id] = {
+          name:r.name, group_id:r.group_id,
+          ontime:0, late:0, absent:0,
+          inTimes:[], workedMins:0, presentDays:0
+        }
+        const wb  = getWorkBegin(r.group_id)
+        const ws  = getWorkStart(r.group_id)
+        const wf  = getWorkFinish(r.group_id)
+        const lt  = addMinutes(ws, getGrace(r.group_id))
+        const eff = r.first_in && r.first_in>=wb ? r.first_in : null
+        if (!eff)        map[r.employee_id].absent++
+        else if (eff>lt) map[r.employee_id].late++
+        else             map[r.employee_id].ontime++
+        if (eff) {
+          const min = timeToMin(eff)
+          if (min!=null) { map[r.employee_id].inTimes.push(min); map[r.employee_id].presentDays++ }
+          if (r.last_out) {
+            const worked = timeToMin(r.last_out) - min
+            if (worked>0) map[r.employee_id].workedMins += worked
+          }
+        }
+      })
+    })
+    Object.values(map).forEach(e => {
+      e.avgInMin = e.inTimes.length>0
+        ? Math.round(e.inTimes.reduce((s,v)=>s+v,0)/e.inTimes.length)
+        : null
+    })
+    return map
+  // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [allDays, orgFilter])
+
+  const rankList = Object.values(rankingMap)
+
   const empList       = Object.values(empMap)
   const totalEmps     = empList.length
   const totalOntime   = empList.reduce((s,e)=>s+e.ontime,   0)
@@ -215,16 +260,16 @@ export default function Reports({ groups = [] }) {
     avgEarly:  totalEmps ? (totalEarlyOut/totalEmps).toFixed(1):0,
   }
 
-  // 1. Erta keluvchilar
-  const earlyList = [...empList]
-    .filter(e=>e.avgInMin!=null && e.presentDays>=3)
-    .sort((a,b)=>a.avgInMin-b.avgInMin)
+  // 1. Ko'p ishlagan (ohirgi 7 ish kuni)
+  const workedList = [...rankList]
+    .filter(e=>e.workedMins>0)
+    .sort((a,b)=>b.workedMins-a.workedMins)
     .slice(0,10)
 
-  // 2. Ko'p ishlagan
-  const workedList = [...empList]
-    .filter(e=>e.workedMins>0 && e.presentDays>=3)
-    .sort((a,b)=>b.workedMins-a.workedMins)
+  // 2. Erta keluvchilar (ohirgi 7 ish kuni)
+  const earlyList = [...rankList]
+    .filter(e=>e.avgInMin!=null && e.presentDays>=2)
+    .sort((a,b)=>a.avgInMin-b.avgInMin)
     .slice(0,10)
 
   const renderSection = ({ title, subtitle, icon: Icon, iconCls, iconBg, list, badge, barColors, valNode, valFn }) => {
@@ -356,7 +401,7 @@ export default function Reports({ groups = [] }) {
           {/* Ko'p ishlagan */}
           {renderSection({
             title: "Eng ko'p ishlagan",
-            subtitle: "Oy davomida jami ishlagan vaqt (kamida 3 kun kelganlar)",
+            subtitle: "Ohirgi 7 ish kuni bo'yicha jami ishlagan vaqt",
             icon: Timer, iconCls: 'text-brand-600', iconBg: 'bg-brand-50 border border-brand-100',
             badge: 'bg-brand-50 text-brand-600',
             list: workedList,
@@ -368,7 +413,7 @@ export default function Reports({ groups = [] }) {
           {/* Erta keluvchilar */}
           {renderSection({
             title: 'Eng erta keluvchilar',
-            subtitle: "Oy davomida o'rtacha kelish vaqti (kamida 3 kun kelganlar)",
+            subtitle: "Ohirgi 7 ish kuni bo'yicha o'rtacha kelish vaqti",
             icon: Sunrise, iconCls: 'text-amber-500', iconBg: 'bg-amber-50 border border-amber-100',
             badge: 'bg-amber-50 text-amber-600',
             list: earlyList,
