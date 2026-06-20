@@ -16,6 +16,18 @@ export default function History({ groups = [] }) {
   const isToday         = date === new Date().toISOString().slice(0, 10)
   const lastColLabel    = isToday ? "Oxirgi o'tish" : 'Ketdi'
 
+  const calcWorked = (first_in, last_out, group_id) => {
+    const eff = getEffectiveFirstIn(first_in, group_id)
+    if (!eff || !last_out) return null
+    const [h1, m1] = eff.split(':').map(Number)
+    const [h2, m2] = last_out.split(':').map(Number)
+    const mins = (h2 - h1) * 60 + (m2 - m1)
+    if (mins <= 0) return null
+    const h = Math.floor(mins / 60)
+    const m = mins % 60
+    return `${h}s ${m}d`
+  }
+
   const getGroup     = (gid) => groups.find(g => g.id === gid)
   const getWorkStart = (gid) => getGroup(gid)?.work_start    || '09:00'
   const getWorkBegin = (gid) => getGroup(gid)?.work_begin    || '06:00'
@@ -168,16 +180,16 @@ export default function History({ groups = [] }) {
         <table className="w-full border-collapse">
           <thead>
             <tr className="bg-slate-50">
-              {['Ism Familiya', ...(multiOrg ? ['Tashkilot'] : []), 'Keldi', lastColLabel, 'Kechikish', 'Holat'].map(h => (
+              {['Ism Familiya', ...(multiOrg ? ['Tashkilot'] : []), 'Keldi', lastColLabel, 'Kechikish', ...(!isToday ? ['Ishladi'] : []), 'Holat'].map(h => (
                 <th key={h} className="px-4 py-2.5 text-left text-[12px] text-slate-400 font-normal">{h}</th>
               ))}
             </tr>
           </thead>
           <tbody>
             {loading ? (
-              <tr><td colSpan={multiOrg?6:5} className="py-12 text-center text-slate-400 text-sm">Yuklanmoqda…</td></tr>
+              <tr><td colSpan={multiOrg?7:6} className="py-12 text-center text-slate-400 text-sm">Yuklanmoqda…</td></tr>
             ) : filtered.length === 0 ? (
-              <tr><td colSpan={multiOrg?6:5} className="py-12 text-center text-slate-400 text-sm">Ma'lumot yo'q</td></tr>
+              <tr><td colSpan={multiOrg?7:6} className="py-12 text-center text-slate-400 text-sm">Ma'lumot yo'q</td></tr>
             ) : filtered.map(r => {
               const eff      = getEffectiveFirstIn(r.first_in, r.group_id)
               const lateMin  = getLate(r.first_in, r.group_id)
@@ -209,6 +221,16 @@ export default function History({ groups = [] }) {
                       {isLate ? `+${lateMin} daq` : '—'}
                     </span>
                   </td>
+                  {!isToday && (
+                    <td className="px-4 py-2.5">
+                      {(() => {
+                        const worked = calcWorked(r.first_in, r.last_out, r.group_id)
+                        return worked
+                          ? <span className="text-[13px] font-semibold text-brand-600">{worked}</span>
+                          : <span className="text-slate-300 text-[13px]">—</span>
+                      })()}
+                    </td>
+                  )}
                   <td className="px-4 py-2.5">
                     <span className={`inline-flex px-2.5 py-1 rounded-full text-[12px] font-semibold ${st.tw}`}>{st.label}</span>
                   </td>
