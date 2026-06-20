@@ -2,6 +2,42 @@ import { useState } from 'react'
 import { Plus, Pencil, Trash2, Eye, EyeOff, KeyRound } from 'lucide-react'
 import { apiFetch } from '../config'
 
+const inputCls = "w-full px-3 py-2.5 bg-white border border-slate-200 rounded-xl text-slate-800 text-[14px] outline-none focus:border-brand-400 transition-colors"
+const labelCls = "text-[12px] text-slate-500 font-semibold block mb-1.5"
+
+function LinkedCheckboxes({ selected, setSelected, groups, excludeId }) {
+  return (
+    <div className="flex flex-col gap-1.5">
+      {groups.map(g => {
+        if (g.id === excludeId) return null
+        const checked = selected.includes(g.id)
+        return (
+          <label key={g.id} className="flex items-center gap-2 cursor-pointer text-[13px] text-slate-700">
+            <input type="checkbox" checked={checked}
+              onChange={() => setSelected(prev => checked ? prev.filter(x => x !== g.id) : [...prev, g.id])}
+              className="w-4 h-4 cursor-pointer accent-brand-600"/>
+            {g.name}
+          </label>
+        )
+      })}
+    </div>
+  )
+}
+
+function RoleButtons({ value, onChange }) {
+  return (
+    <div className="flex gap-2">
+      {[['kadrlar','Kadrlar','#0891b2','#ecfeff'],['kuzatuvchi','Kuzatuvchi','#7c3aed','#f5f3ff']].map(([val, label, color, bg]) => (
+        <button key={val} type="button" onClick={() => onChange(val)}
+          className="flex-1 py-2 rounded-xl border-2 text-[13px] cursor-pointer transition-all"
+          style={{ borderColor: value === val ? color : '#e2e8f0', background: value === val ? bg : '#f8fafc', color: value === val ? color : '#64748b', fontWeight: value === val ? 600 : 400 }}>
+          {label}
+        </button>
+      ))}
+    </div>
+  )
+}
+
 export default function Accounts({ groups, accounts, onReload }) {
   const [showEdit, setShowEdit]     = useState(false)
   const [editAcc, setEditAcc]       = useState(null)
@@ -13,66 +49,28 @@ export default function Accounts({ groups, accounts, onReload }) {
   const [editRole, setEditRole]     = useState('kadrlar')
   const [editError, setEditError]   = useState('')
 
-  const [showAdd, setShowAdd]       = useState(false)
-  const [newName, setNewName]       = useState('')
-  const [newLogin, setNewLogin]     = useState('')
-  const [newPass, setNewPass]       = useState('')
+  const [showAdd, setShowAdd]     = useState(false)
+  const [newName, setNewName]     = useState('')
+  const [newLogin, setNewLogin]   = useState('')
+  const [newPass, setNewPass]     = useState('')
   const [newPassShow, setNewPassShow] = useState(false)
-  const [newLinked, setNewLinked]   = useState([])
-  const [newRole, setNewRole]       = useState('kadrlar')
-  const [newError, setNewError]     = useState('')
-
+  const [newLinked, setNewLinked] = useState([])
+  const [newRole, setNewRole]     = useState('kadrlar')
+  const [newError, setNewError]   = useState('')
   const [visiblePass, setVisiblePass] = useState(null)
 
-  const inputStyle = {
-    width: '100%', padding: '10px 12px',
-    background: '#ffffff', border: '1px solid #e2e8f0',
-    borderRadius: '8px', color: '#0f172a', fontSize: '14px',
-    outline: 'none', boxSizing: 'border-box',
-  }
-  const overlayStyle = {
-    position: 'fixed', inset: 0, background: 'rgba(15,23,42,0.35)',
-    display: 'flex', alignItems: 'center', justifyContent: 'center', zIndex: 1000,
-    backdropFilter: 'blur(2px)',
-  }
-  const modalStyle = {
-    background: '#ffffff', borderRadius: '16px',
-    border: '1px solid #e2e8f0', padding: '32px',
-    width: '100%', maxWidth: '440px',
-    boxShadow: '0 20px 60px #0f172a18',
-    maxHeight: '90vh', overflowY: 'auto',
-  }
-
   const openEdit = (acc) => {
-    setEditAcc(acc)
-    setEditName(acc.name)
-    setEditLogin(acc.login || '')
-    setEditPass('')
-    setEditPassShow(false)
-    setEditLinked((acc.linked_groups || '').split(',').filter(Boolean))
-    setEditRole(acc.role || 'kadrlar')
-    setEditError('')
-    setShowEdit(true)
+    setEditAcc(acc); setEditName(acc.name); setEditLogin(acc.login || ''); setEditPass('')
+    setEditPassShow(false); setEditLinked((acc.linked_groups || '').split(',').filter(Boolean))
+    setEditRole(acc.role || 'kadrlar'); setEditError(''); setShowEdit(true)
   }
 
   const handleSaveEdit = async () => {
     if (!editLogin.trim()) return setEditError('Login kiriting')
     try {
-      await apiFetch(`/accounts/${editAcc.id}`, {
-        method: 'PUT',
-        body: JSON.stringify({
-          name: editName.trim(),
-          login: editLogin.trim(),
-          password: editPass.trim() || '[[keep]]',
-          linked_groups: editLinked,
-          role: editRole,
-        }),
-      })
-      setShowEdit(false)
-      onReload()
-    } catch (e) {
-      setEditError('Saqlashda xato: ' + (e?.message || String(e)))
-    }
+      await apiFetch(`/accounts/${editAcc.id}`, { method: 'PUT', body: JSON.stringify({ name: editName.trim(), login: editLogin.trim(), password: editPass.trim() || '[[keep]]', linked_groups: editLinked, role: editRole }) })
+      setShowEdit(false); onReload()
+    } catch (e) { setEditError('Saqlashda xato: ' + (e?.message || String(e))) }
   }
 
   const handleAdd = async () => {
@@ -80,131 +78,82 @@ export default function Accounts({ groups, accounts, onReload }) {
     if (!newLogin.trim()) return setNewError('Login kiriting')
     if (!newPass.trim())  return setNewError('Parol kiriting')
     if (accounts.find(a => a.login === newLogin.trim())) return setNewError('Bu login allaqachon mavjud')
-    await apiFetch('/accounts', {
-      method: 'POST',
-      body: JSON.stringify({
-        name: newName.trim(),
-        login: newLogin.trim(),
-        password: newPass.trim(),
-        linked_groups: newLinked,
-        role: newRole,
-      }),
-    })
+    await apiFetch('/accounts', { method: 'POST', body: JSON.stringify({ name: newName.trim(), login: newLogin.trim(), password: newPass.trim(), linked_groups: newLinked, role: newRole }) })
     setNewName(''); setNewLogin(''); setNewPass(''); setNewLinked([]); setNewRole('kadrlar'); setNewError('')
-    setShowAdd(false)
-    onReload()
+    setShowAdd(false); onReload()
   }
 
   const handleDelete = async (acc) => {
     if (!window.confirm(`"${acc.name}" akkauntini o'chirasizmi?`)) return
-    await apiFetch(`/accounts/${acc.id}`, { method: 'DELETE' })
-    onReload()
+    await apiFetch(`/accounts/${acc.id}`, { method: 'DELETE' }); onReload()
   }
 
-  const linkedNames = (acc) => {
-    const ids = (acc.linked_groups || '').split(',').filter(Boolean)
-    return ids.map(id => groups.find(g => g.id === id)?.name).filter(Boolean)
-  }
-
-  const LinkedCheckboxes = ({ selected, setSelected, excludeId }) => (
-    <div style={{ display: 'flex', flexDirection: 'column', gap: '6px' }}>
-      {groups.map(g => {
-        if (g.id === excludeId) return null
-        const checked = selected.includes(g.id)
-        return (
-          <label key={g.id} style={{ display: 'flex', alignItems: 'center', gap: '8px', cursor: 'pointer', fontSize: '13px', color: '#374151' }}>
-            <input type="checkbox" checked={checked}
-              onChange={() => setSelected(prev => checked ? prev.filter(x => x !== g.id) : [...prev, g.id])}
-              style={{ width: '15px', height: '15px', cursor: 'pointer' }} />
-            {g.name}
-          </label>
-        )
-      })}
-    </div>
-  )
+  const linkedNames = (acc) => (acc.linked_groups || '').split(',').filter(Boolean).map(id => groups.find(g => g.id === id)?.name).filter(Boolean)
 
   return (
     <div>
-      <div style={{ marginBottom: '24px', display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
+      {/* Header */}
+      <div className="flex items-center justify-between mb-6">
         <div>
-          <h1 style={{ margin: 0, fontSize: '22px', fontWeight: 700, color: '#0f172a' }}>Akkauntlar</h1>
-          <p style={{ margin: '4px 0 0', fontSize: '13px', color: '#94a3b8' }}>Login, parol va qaysi tashkilotlarni ko'rishini boshqarish</p>
+          <h1 className="text-[22px] font-bold text-slate-900 m-0">Akkauntlar</h1>
+          <p className="text-[13px] text-slate-400 mt-1 mb-0">Login, parol va qaysi tashkilotlarni ko'rishini boshqarish</p>
         </div>
         <button onClick={() => { setNewName(''); setNewLogin(''); setNewPass(''); setNewLinked([]); setNewError(''); setShowAdd(true) }}
-          style={{ display: 'flex', alignItems: 'center', gap: '6px', padding: '10px 16px', background: '#2563eb', border: 'none', borderRadius: '10px', color: 'white', fontSize: '14px', fontWeight: 600, cursor: 'pointer' }}>
-          <Plus size={15} /> Yangi akkaunt
+          className="flex items-center gap-1.5 px-4 py-2.5 bg-brand-600 border-none rounded-xl text-white text-[14px] font-semibold cursor-pointer hover:bg-brand-700 transition-colors">
+          <Plus size={15}/> Yangi akkaunt
         </button>
       </div>
 
-      <div style={{ background: '#fff', borderRadius: '14px', border: '1px solid #e2e8f0', overflow: 'hidden' }}>
+      <div className="bg-white rounded-2xl border border-slate-100 shadow-card overflow-hidden">
         {accounts.length === 0 ? (
-          <div style={{ padding: '48px', textAlign: 'center', color: '#94a3b8', fontSize: '14px' }}>
-            Hali akkaunt yo'q. "Yangi akkaunt" tugmasini bosing.
-          </div>
+          <div className="py-12 text-center text-slate-400 text-[14px]">Hali akkaunt yo'q. "Yangi akkaunt" tugmasini bosing.</div>
         ) : (
-          <table style={{ width: '100%', borderCollapse: 'collapse', fontSize: '14px' }}>
+          <table className="w-full border-collapse">
             <thead>
-              <tr style={{ background: '#f8fafc', borderBottom: '1px solid #e2e8f0' }}>
-                <th style={{ padding: '12px 18px', textAlign: 'left', fontWeight: 600, color: '#64748b', fontSize: '12px' }}>Akkaunt nomi</th>
-                <th style={{ padding: '12px 18px', textAlign: 'left', fontWeight: 600, color: '#64748b', fontSize: '12px' }}>Login</th>
-                <th style={{ padding: '12px 18px', textAlign: 'left', fontWeight: 600, color: '#64748b', fontSize: '12px' }}>Parol</th>
-                <th style={{ padding: '12px 18px', textAlign: 'left', fontWeight: 600, color: '#64748b', fontSize: '12px' }}>Rol</th>
-                <th style={{ padding: '12px 18px', textAlign: 'left', fontWeight: 600, color: '#64748b', fontSize: '12px' }}>Ko'radigan tashkilotlar</th>
-                <th style={{ padding: '12px 18px' }}></th>
+              <tr className="bg-slate-50">
+                {['Akkaunt nomi', 'Login', 'Parol', 'Rol', "Ko'radigan tashkilotlar", ''].map(h => (
+                  <th key={h} className="px-4 py-2.5 text-left text-[12px] text-slate-400 font-normal">{h}</th>
+                ))}
               </tr>
             </thead>
             <tbody>
               {accounts.map((acc, i) => (
-                <tr key={acc.id} style={{ borderBottom: i < accounts.length - 1 ? '1px solid #f1f5f9' : 'none' }}>
-                  <td style={{ padding: '14px 18px' }}>
-                    <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
-                      <div style={{ width: '32px', height: '32px', borderRadius: '8px', background: '#eff6ff', display: 'flex', alignItems: 'center', justifyContent: 'center', flexShrink: 0 }}>
-                        <KeyRound size={14} color="#2563eb" />
+                <tr key={acc.id} className={`border-t border-slate-50 hover:bg-slate-50/50 transition-colors`}>
+                  <td className="px-4 py-3">
+                    <div className="flex items-center gap-2">
+                      <div className="w-8 h-8 rounded-xl bg-brand-50 flex items-center justify-center shrink-0">
+                        <KeyRound size={14} className="text-brand-600"/>
                       </div>
-                      <span style={{ fontWeight: 600, color: '#0f172a' }}>{acc.name}</span>
+                      <span className="font-semibold text-[14px] text-slate-800">{acc.name}</span>
                     </div>
                   </td>
-                  <td style={{ padding: '14px 18px', color: '#374151', fontFamily: 'monospace' }}>
-                    {acc.login || <span style={{ color: '#cbd5e1' }}>—</span>}
-                  </td>
-                  <td style={{ padding: '14px 18px' }}>
-                    <div style={{ display: 'flex', alignItems: 'center', gap: '6px' }}>
-                      <span style={{ fontFamily: 'monospace', color: '#374151', fontSize: '13px' }}>
-                        {visiblePass === acc.id ? (acc.password || '—') : '••••••••'}
-                      </span>
+                  <td className="px-4 py-3 text-[13px] text-slate-600 font-mono">{acc.login || <span className="text-slate-300">—</span>}</td>
+                  <td className="px-4 py-3">
+                    <div className="flex items-center gap-1.5">
+                      <span className="font-mono text-slate-600 text-[13px]">{visiblePass === acc.id ? (acc.password || '—') : '••••••••'}</span>
                       <button onClick={() => setVisiblePass(visiblePass === acc.id ? null : acc.id)}
-                        style={{ background: 'none', border: 'none', cursor: 'pointer', color: '#94a3b8', display: 'flex', padding: '2px' }}>
-                        {visiblePass === acc.id ? <EyeOff size={13} /> : <Eye size={13} />}
+                        className="bg-transparent border-none cursor-pointer text-slate-400 hover:text-slate-600 flex p-0.5">
+                        {visiblePass === acc.id ? <EyeOff size={13}/> : <Eye size={13}/>}
                       </button>
                     </div>
                   </td>
-                  <td style={{ padding: '14px 18px' }}>
-                    <span style={{ padding: '3px 10px', borderRadius: '20px', fontSize: '11px', fontWeight: 600,
-                      background: acc.role === 'kuzatuvchi' ? '#f5f3ff' : '#ecfeff',
-                      color: acc.role === 'kuzatuvchi' ? '#7c3aed' : '#0891b2' }}>
+                  <td className="px-4 py-3">
+                    <span className={`text-[11px] px-2.5 py-1 rounded-full font-semibold ${acc.role === 'kuzatuvchi' ? 'bg-purple-50 text-purple-600' : 'bg-cyan-50 text-cyan-600'}`}>
                       {acc.role === 'kuzatuvchi' ? 'Kuzatuvchi' : 'Kadrlar'}
                     </span>
                   </td>
-                  <td style={{ padding: '14px 18px' }}>
-                    <div style={{ display: 'flex', flexWrap: 'wrap', gap: '4px' }}>
+                  <td className="px-4 py-3">
+                    <div className="flex flex-wrap gap-1">
                       {linkedNames(acc).length > 0
-                        ? linkedNames(acc).map(name => (
-                          <span key={name} style={{ padding: '2px 8px', background: '#eff6ff', color: '#2563eb', borderRadius: '20px', fontSize: '11px', fontWeight: 600 }}>{name}</span>
-                        ))
-                        : <span style={{ color: '#cbd5e1', fontSize: '12px' }}>Belgilanmagan</span>
+                        ? linkedNames(acc).map(name => <span key={name} className="text-[11px] px-2 py-0.5 bg-brand-50 text-brand-600 rounded-full font-semibold">{name}</span>)
+                        : <span className="text-slate-300 text-[12px]">Belgilanmagan</span>
                       }
                     </div>
                   </td>
-                  <td style={{ padding: '14px 18px', textAlign: 'right' }}>
-                    <div style={{ display: 'flex', gap: '6px', justifyContent: 'flex-end' }}>
-                      <button onClick={() => openEdit(acc)}
-                        style={{ padding: '7px', background: '#f8fafc', border: '1px solid #e2e8f0', borderRadius: '7px', cursor: 'pointer', display: 'flex', color: '#64748b' }}>
-                        <Pencil size={14} />
-                      </button>
-                      <button onClick={() => handleDelete(acc)}
-                        style={{ padding: '7px', background: '#fff1f2', border: '1px solid #fecdd3', borderRadius: '7px', cursor: 'pointer', display: 'flex', color: '#e11d48' }}>
-                        <Trash2 size={14} />
-                      </button>
+                  <td className="px-4 py-3">
+                    <div className="flex gap-1.5 justify-end">
+                      <button onClick={() => openEdit(acc)} className="p-1.5 bg-slate-50 border border-slate-200 rounded-lg cursor-pointer text-slate-500 hover:bg-slate-100 transition-colors"><Pencil size={14}/></button>
+                      <button onClick={() => handleDelete(acc)} className="p-1.5 bg-rose-50 border border-rose-200 rounded-lg cursor-pointer text-rose-500 hover:bg-rose-100 transition-colors"><Trash2 size={14}/></button>
                     </div>
                   </td>
                 </tr>
@@ -214,108 +163,62 @@ export default function Accounts({ groups, accounts, onReload }) {
         )}
       </div>
 
-      {/* EDIT MODAL */}
+      {/* Edit modal */}
       {showEdit && (
-        <div style={overlayStyle}>
-          <div style={modalStyle}>
-            <h2 style={{ margin: '0 0 24px', fontSize: '18px', fontWeight: 700, color: '#0f172a' }}>Akkauntni tahrirlash</h2>
-            <div style={{ display: 'flex', flexDirection: 'column', gap: '14px' }}>
+        <div className="fixed inset-0 bg-slate-900/40 backdrop-blur-sm flex items-center justify-center z-50"
+          onClick={e => e.target === e.currentTarget && setShowEdit(false)}>
+          <div className="bg-white rounded-2xl border border-slate-200 p-8 w-full max-w-sm shadow-card-md max-h-[90vh] overflow-y-auto">
+            <h2 className="text-[18px] font-bold text-slate-900 m-0 mb-6">Akkauntni tahrirlash</h2>
+            <div className="flex flex-col gap-3.5">
+              <div><label className={labelCls}>Akkaunt nomi</label><input value={editName} onChange={e => { setEditName(e.target.value); setEditError('') }} className={inputCls}/></div>
+              <div><label className={labelCls}>Login</label><input value={editLogin} onChange={e => { setEditLogin(e.target.value); setEditError('') }} className={inputCls}/></div>
               <div>
-                <label style={{ fontSize: '12px', color: '#64748b', display: 'block', marginBottom: '5px', fontWeight: 600 }}>Akkaunt nomi</label>
-                <input value={editName} onChange={e => { setEditName(e.target.value); setEditError('') }} style={inputStyle} />
-              </div>
-              <div>
-                <label style={{ fontSize: '12px', color: '#64748b', display: 'block', marginBottom: '5px', fontWeight: 600 }}>Login</label>
-                <input value={editLogin} onChange={e => { setEditLogin(e.target.value); setEditError('') }} style={inputStyle} />
-              </div>
-              <div>
-                <label style={{ fontSize: '12px', color: '#64748b', display: 'block', marginBottom: '5px', fontWeight: 600 }}>
-                  Yangi parol <span style={{ fontWeight: 400, color: '#94a3b8' }}>(bo'sh qolsa o'zgarmaydi)</span>
-                </label>
-                <div style={{ position: 'relative' }}>
-                  <input type={editPassShow ? 'text' : 'password'} value={editPass} placeholder="Yangi parol..."
-                    onChange={e => setEditPass(e.target.value)}
-                    style={{ ...inputStyle, paddingRight: '40px' }} />
-                  <button type="button" onClick={() => setEditPassShow(!editPassShow)}
-                    style={{ position: 'absolute', right: '10px', top: '50%', transform: 'translateY(-50%)', background: 'none', border: 'none', cursor: 'pointer', color: '#94a3b8', display: 'flex' }}>
-                    {editPassShow ? <EyeOff size={15} /> : <Eye size={15} />}
-                  </button>
+                <label className={labelCls}>Yangi parol <span className="font-normal text-slate-400">(bo'sh qolsa o'zgarmaydi)</span></label>
+                <div className="relative">
+                  <input type={editPassShow ? 'text' : 'password'} value={editPass} placeholder="Yangi parol..." onChange={e => setEditPass(e.target.value)} className={`${inputCls} pr-10`}/>
+                  <button type="button" onClick={() => setEditPassShow(!editPassShow)} className="absolute right-2.5 top-1/2 -translate-y-1/2 bg-transparent border-none cursor-pointer text-slate-400 flex">{editPassShow ? <EyeOff size={15}/> : <Eye size={15}/>}</button>
                 </div>
               </div>
-              <div style={{ borderTop: '1px solid #f1f5f9', paddingTop: '14px' }}>
-                <label style={{ fontSize: '12px', color: '#64748b', display: 'block', marginBottom: '8px', fontWeight: 600 }}>
-                  Ko'radigan tashkilotlar
-                </label>
-                <LinkedCheckboxes selected={editLinked} setSelected={setEditLinked} />
+              <div className="border-t border-slate-100 pt-4">
+                <label className={labelCls}>Ko'radigan tashkilotlar</label>
+                <LinkedCheckboxes selected={editLinked} setSelected={setEditLinked} groups={groups}/>
               </div>
-              <div>
-                <label style={{ fontSize: '12px', color: '#64748b', display: 'block', marginBottom: '5px', fontWeight: 600 }}>Rol</label>
-                <div style={{ display: 'flex', gap: '8px' }}>
-                  {[['kadrlar','Kadrlar','#0891b2','#ecfeff'],['kuzatuvchi','Kuzatuvchi','#7c3aed','#f5f3ff']].map(([val, label, color, bg]) => (
-                    <button key={val} type="button" onClick={() => setEditRole(val)}
-                      style={{ flex: 1, padding: '8px', border: `2px solid ${editRole === val ? color : '#e2e8f0'}`, borderRadius: '8px', background: editRole === val ? bg : '#f8fafc', color: editRole === val ? color : '#64748b', fontSize: '13px', fontWeight: editRole === val ? 600 : 400, cursor: 'pointer', transition: 'all 0.15s' }}>
-                      {label}
-                    </button>
-                  ))}
-                </div>
-              </div>
-              {editError && <div style={{ padding: '8px 12px', background: '#fff1f2', border: '1px solid #fecdd3', borderRadius: '7px', color: '#e11d48', fontSize: '13px' }}>{editError}</div>}
-              <div style={{ display: 'flex', gap: '10px', marginTop: '4px' }}>
-                <button onClick={() => setShowEdit(false)} style={{ flex: 1, padding: '10px', background: '#f8fafc', border: '1px solid #e2e8f0', borderRadius: '9px', color: '#64748b', fontSize: '14px', cursor: 'pointer' }}>Bekor qilish</button>
-                <button onClick={handleSaveEdit} style={{ flex: 1, padding: '10px', background: '#2563eb', border: 'none', borderRadius: '9px', color: 'white', fontSize: '14px', fontWeight: 600, cursor: 'pointer' }}>Saqlash</button>
+              <div><label className={labelCls}>Rol</label><RoleButtons value={editRole} onChange={setEditRole}/></div>
+              {editError && <div className="px-3 py-2 bg-rose-50 border border-rose-200 rounded-xl text-rose-600 text-[13px]">{editError}</div>}
+              <div className="flex gap-2 mt-1">
+                <button onClick={() => setShowEdit(false)} className="flex-1 py-2.5 bg-slate-50 border border-slate-200 rounded-xl text-slate-600 text-[14px] cursor-pointer hover:bg-slate-100 transition-colors">Bekor</button>
+                <button onClick={handleSaveEdit} className="flex-1 py-2.5 bg-brand-600 border-none rounded-xl text-white text-[14px] font-semibold cursor-pointer hover:bg-brand-700 transition-colors">Saqlash</button>
               </div>
             </div>
           </div>
         </div>
       )}
 
-      {/* ADD MODAL */}
+      {/* Add modal */}
       {showAdd && (
-        <div style={overlayStyle}>
-          <div style={modalStyle}>
-            <h2 style={{ margin: '0 0 24px', fontSize: '18px', fontWeight: 700, color: '#0f172a' }}>Yangi akkaunt</h2>
-            <div style={{ display: 'flex', flexDirection: 'column', gap: '14px' }}>
+        <div className="fixed inset-0 bg-slate-900/40 backdrop-blur-sm flex items-center justify-center z-50"
+          onClick={e => e.target === e.currentTarget && setShowAdd(false)}>
+          <div className="bg-white rounded-2xl border border-slate-200 p-8 w-full max-w-sm shadow-card-md max-h-[90vh] overflow-y-auto">
+            <h2 className="text-[18px] font-bold text-slate-900 m-0 mb-6">Yangi akkaunt</h2>
+            <div className="flex flex-col gap-3.5">
+              <div><label className={labelCls}>Akkaunt nomi</label><input value={newName} onChange={e => { setNewName(e.target.value); setNewError('') }} placeholder="Masalan: Rahbar, Markaz kadrlar" className={inputCls}/></div>
+              <div><label className={labelCls}>Login</label><input value={newLogin} onChange={e => { setNewLogin(e.target.value); setNewError('') }} className={inputCls}/></div>
               <div>
-                <label style={{ fontSize: '12px', color: '#64748b', display: 'block', marginBottom: '5px', fontWeight: 600 }}>Akkaunt nomi</label>
-                <input value={newName} onChange={e => { setNewName(e.target.value); setNewError('') }} placeholder="Masalan: Rahbar, Markaz kadrlar" style={inputStyle} />
-              </div>
-              <div>
-                <label style={{ fontSize: '12px', color: '#64748b', display: 'block', marginBottom: '5px', fontWeight: 600 }}>Login</label>
-                <input value={newLogin} onChange={e => { setNewLogin(e.target.value); setNewError('') }} style={inputStyle} />
-              </div>
-              <div>
-                <label style={{ fontSize: '12px', color: '#64748b', display: 'block', marginBottom: '5px', fontWeight: 600 }}>Parol</label>
-                <div style={{ position: 'relative' }}>
-                  <input type={newPassShow ? 'text' : 'password'} value={newPass}
-                    onChange={e => { setNewPass(e.target.value); setNewError('') }}
-                    style={{ ...inputStyle, paddingRight: '40px' }} />
-                  <button type="button" onClick={() => setNewPassShow(!newPassShow)}
-                    style={{ position: 'absolute', right: '10px', top: '50%', transform: 'translateY(-50%)', background: 'none', border: 'none', cursor: 'pointer', color: '#94a3b8', display: 'flex' }}>
-                    {newPassShow ? <EyeOff size={15} /> : <Eye size={15} />}
-                  </button>
+                <label className={labelCls}>Parol</label>
+                <div className="relative">
+                  <input type={newPassShow ? 'text' : 'password'} value={newPass} onChange={e => { setNewPass(e.target.value); setNewError('') }} className={`${inputCls} pr-10`}/>
+                  <button type="button" onClick={() => setNewPassShow(!newPassShow)} className="absolute right-2.5 top-1/2 -translate-y-1/2 bg-transparent border-none cursor-pointer text-slate-400 flex">{newPassShow ? <EyeOff size={15}/> : <Eye size={15}/>}</button>
                 </div>
               </div>
-              <div style={{ borderTop: '1px solid #f1f5f9', paddingTop: '14px' }}>
-                <label style={{ fontSize: '12px', color: '#64748b', display: 'block', marginBottom: '8px', fontWeight: 600 }}>
-                  Ko'radigan tashkilotlar
-                </label>
-                <LinkedCheckboxes selected={newLinked} setSelected={setNewLinked} />
+              <div className="border-t border-slate-100 pt-4">
+                <label className={labelCls}>Ko'radigan tashkilotlar</label>
+                <LinkedCheckboxes selected={newLinked} setSelected={setNewLinked} groups={groups}/>
               </div>
-              <div>
-                <label style={{ fontSize: '12px', color: '#64748b', display: 'block', marginBottom: '5px', fontWeight: 600 }}>Rol</label>
-                <div style={{ display: 'flex', gap: '8px' }}>
-                  {[['kadrlar','Kadrlar','#0891b2','#ecfeff'],['kuzatuvchi','Kuzatuvchi','#7c3aed','#f5f3ff']].map(([val, label, color, bg]) => (
-                    <button key={val} type="button" onClick={() => setNewRole(val)}
-                      style={{ flex: 1, padding: '8px', border: `2px solid ${newRole === val ? color : '#e2e8f0'}`, borderRadius: '8px', background: newRole === val ? bg : '#f8fafc', color: newRole === val ? color : '#64748b', fontSize: '13px', fontWeight: newRole === val ? 600 : 400, cursor: 'pointer', transition: 'all 0.15s' }}>
-                      {label}
-                    </button>
-                  ))}
-                </div>
-              </div>
-              {newError && <div style={{ padding: '8px 12px', background: '#fff1f2', border: '1px solid #fecdd3', borderRadius: '7px', color: '#e11d48', fontSize: '13px' }}>{newError}</div>}
-              <div style={{ display: 'flex', gap: '10px', marginTop: '4px' }}>
-                <button onClick={() => setShowAdd(false)} style={{ flex: 1, padding: '10px', background: '#f8fafc', border: '1px solid #e2e8f0', borderRadius: '9px', color: '#64748b', fontSize: '14px', cursor: 'pointer' }}>Bekor qilish</button>
-                <button onClick={handleAdd} style={{ flex: 1, padding: '10px', background: '#2563eb', border: 'none', borderRadius: '9px', color: 'white', fontSize: '14px', fontWeight: 600, cursor: 'pointer' }}>Yaratish</button>
+              <div><label className={labelCls}>Rol</label><RoleButtons value={newRole} onChange={setNewRole}/></div>
+              {newError && <div className="px-3 py-2 bg-rose-50 border border-rose-200 rounded-xl text-rose-600 text-[13px]">{newError}</div>}
+              <div className="flex gap-2 mt-1">
+                <button onClick={() => setShowAdd(false)} className="flex-1 py-2.5 bg-slate-50 border border-slate-200 rounded-xl text-slate-600 text-[14px] cursor-pointer hover:bg-slate-100 transition-colors">Bekor</button>
+                <button onClick={handleAdd} className="flex-1 py-2.5 bg-brand-600 border-none rounded-xl text-white text-[14px] font-semibold cursor-pointer hover:bg-brand-700 transition-colors">Yaratish</button>
               </div>
             </div>
           </div>

@@ -4,21 +4,18 @@ import { Users, Search, Building2, Pencil, Trash2 } from 'lucide-react'
 export default function Employees({ employees = [], groups = [], onUpdateEmployee, onDeleteEmployee, readonly = false }) {
   const [search, setSearch]       = useState('')
   const [orgFilter, setOrgFilter] = useState('all')
-
-  const [showEdit, setShowEdit]       = useState(false)
-  const [editEmp, setEditEmp]         = useState(null)
-  const [editName, setEditName]       = useState('')
+  const [showEdit, setShowEdit]   = useState(false)
+  const [editEmp, setEditEmp]     = useState(null)
+  const [editName, setEditName]   = useState('')
   const [editLavozim, setEditLavozim] = useState('')
-  const [editError, setEditError]     = useState('')
-  const [saved, setSaved]             = useState(false)
+  const [editError, setEditError] = useState('')
+  const [saved, setSaved]         = useState(false)
+
+  const multiOrg = groups.length > 1
 
   const openEdit = (emp) => {
-    setEditEmp(emp)
-    setEditName(emp.name)
-    setEditLavozim(emp.lavozim || '')
-    setEditError('')
-    setSaved(false)
-    setShowEdit(true)
+    setEditEmp(emp); setEditName(emp.name); setEditLavozim(emp.lavozim || '')
+    setEditError(''); setSaved(false); setShowEdit(true)
   }
 
   const handleSave = () => {
@@ -27,15 +24,6 @@ export default function Employees({ employees = [], groups = [], onUpdateEmploye
     setSaved(true)
     setTimeout(() => setShowEdit(false), 800)
   }
-
-  const inputStyle = {
-    width: '100%', padding: '10px 12px',
-    background: '#fff', border: '1px solid #e2e8f0',
-    borderRadius: '8px', color: '#0f172a', fontSize: '14px',
-    outline: 'none', boxSizing: 'border-box',
-  }
-
-  const multiOrg = groups.length > 1
 
   const filtered = employees.filter(e => {
     const matchName = e.name.toLowerCase().includes(search.toLowerCase()) || e.id.includes(search)
@@ -47,83 +35,71 @@ export default function Employees({ employees = [], groups = [], onUpdateEmploye
 
   return (
     <div>
-      <div style={{ display:'flex', justifyContent:'space-between', alignItems:'center', marginBottom:'24px' }}>
+      {/* Header */}
+      <div className="flex items-center justify-between mb-6">
         <div>
-          <h1 style={{ margin:0, fontSize:'22px', fontWeight:700, color:'#0f172a', display:'flex', alignItems:'center', gap:'10px' }}>
-            <Users size={22} color="#2563eb"/> Xodimlar
+          <h1 className="flex items-center gap-2.5 text-[22px] font-bold text-slate-900 m-0">
+            <Users size={22} className="text-brand-600"/> Xodimlar
           </h1>
-          <p style={{ margin:'4px 0 0', fontSize:'13px', color:'#94a3b8' }}>Jami {employees.length} ta xodim</p>
+          <p className="text-[13px] text-slate-400 mt-1 mb-0">Jami {employees.length} ta xodim</p>
         </div>
       </div>
 
       {/* Filters */}
-      <div style={{ display:'flex', gap:'10px', marginBottom:'20px', flexWrap:'wrap' }}>
-        <div style={{ position:'relative', flex:1, minWidth:'200px' }}>
-          <Search size={15} color="#94a3b8" style={{ position:'absolute', left:'12px', top:'50%', transform:'translateY(-50%)' }}/>
-          <input placeholder="Ism yoki ID bo'yicha qidirish..."
-            value={search} onChange={e => setSearch(e.target.value)}
-            style={{ width:'100%', padding:'9px 12px 9px 36px', background:'#ffffff', border:'1px solid #e2e8f0', borderRadius:'9px', color:'#0f172a', fontSize:'14px', outline:'none', boxSizing:'border-box' }}/>
+      <div className="flex gap-2.5 mb-5 flex-wrap">
+        <div className="relative flex-1 min-w-[200px]">
+          <Search size={15} className="absolute left-3 top-1/2 -translate-y-1/2 text-slate-400"/>
+          <input placeholder="Ism yoki ID bo'yicha qidirish..." value={search} onChange={e => setSearch(e.target.value)}
+            className="w-full py-2 pl-9 pr-3 bg-white border border-slate-200 rounded-xl text-slate-800 text-[14px] outline-none focus:border-brand-400 transition-colors"/>
         </div>
         {multiOrg && (
-          <>
-            <button onClick={() => setOrgFilter('all')} style={{ padding:'9px 16px', borderRadius:'8px', border:'1px solid', borderColor:orgFilter==='all'?'#2563eb':'#e2e8f0', background:orgFilter==='all'?'#eff6ff':'#ffffff', color:orgFilter==='all'?'#2563eb':'#64748b', fontSize:'13px', cursor:'pointer', fontWeight:orgFilter==='all'?600:400 }}>
-              Hammasi ({employees.length})
-            </button>
-            {groups.map(g => {
-              const cnt = employees.filter(e => e.group === g.id).length
-              return (
-                <button key={g.id} onClick={() => setOrgFilter(g.id)} style={{ padding:'9px 16px', borderRadius:'8px', border:'1px solid', borderColor:orgFilter===g.id?'#2563eb':'#e2e8f0', background:orgFilter===g.id?'#eff6ff':'#ffffff', color:orgFilter===g.id?'#2563eb':'#64748b', fontSize:'13px', cursor:'pointer', fontWeight:orgFilter===g.id?600:400 }}>
-                  {g.name} ({cnt})
-                </button>
-              )
-            })}
-          </>
+          <div className="flex gap-1.5">
+            {[{ id: 'all', name: `Hammasi (${employees.length})` }, ...groups.map(g => ({ id: g.id, name: `${g.name} (${employees.filter(e => e.group === g.id).length})` }))].map(g => (
+              <button key={g.id} onClick={() => setOrgFilter(g.id)}
+                className={`px-3.5 py-2 rounded-xl border text-[13px] cursor-pointer transition-colors ${orgFilter === g.id ? 'bg-brand-50 border-brand-600 text-brand-600 font-semibold' : 'bg-white border-slate-200 text-slate-500 hover:border-slate-300'}`}>
+                {g.name}
+              </button>
+            ))}
+          </div>
         )}
       </div>
 
       {/* Table */}
-      <div style={{ background:'#fff', borderRadius:'14px', border:'1px solid #e2e8f0', overflow:'hidden', boxShadow:'0 1px 3px #0f172a08' }}>
-        <table style={{ width:'100%', borderCollapse:'collapse' }}>
+      <div className="bg-white rounded-2xl border border-slate-100 shadow-card overflow-hidden">
+        <table className="w-full border-collapse">
           <thead>
-            <tr style={{ background:'#f8fafc' }}>
-              <th style={{ padding:'11px 16px', textAlign:'left', fontSize:'12px', color:'#94a3b8', fontWeight:400 }}>Ism Familiya</th>
-              <th style={{ padding:'11px 16px', textAlign:'left', fontSize:'12px', color:'#94a3b8', fontWeight:400 }}>Lavozim</th>
-              <th style={{ padding:'11px 16px', textAlign:'left', fontSize:'12px', color:'#94a3b8', fontWeight:400 }}>Face ID</th>
-              {multiOrg && <th style={{ padding:'11px 16px', textAlign:'left', fontSize:'12px', color:'#94a3b8', fontWeight:400 }}>Tashkilot</th>}
-              {onUpdateEmployee && <th style={{ padding:'11px 16px' }}></th>}
+            <tr className="bg-slate-50">
+              <th className="px-4 py-2.5 text-left text-[12px] text-slate-400 font-normal">Ism Familiya</th>
+              <th className="px-4 py-2.5 text-left text-[12px] text-slate-400 font-normal">Lavozim</th>
+              <th className="px-4 py-2.5 text-left text-[12px] text-slate-400 font-normal">Face ID</th>
+              {multiOrg && <th className="px-4 py-2.5 text-left text-[12px] text-slate-400 font-normal">Tashkilot</th>}
+              {onUpdateEmployee && <th className="px-4 py-2.5"></th>}
             </tr>
           </thead>
           <tbody>
-            {filtered.map((emp, i) => (
-              <tr key={emp.id} style={{ borderTop:'1px solid #f1f5f9', background: i%2===0 ? '#fff' : '#fafafa' }}>
-                <td style={{ padding:'11px 16px' }}>
-                  <div style={{ display:'flex', alignItems:'center', gap:'10px' }}>
-                    <div style={{ width:'32px', height:'32px', borderRadius:'50%', background:'linear-gradient(135deg,#2563eb,#7c3aed)', display:'flex', alignItems:'center', justifyContent:'center', fontSize:'13px', fontWeight:700, color:'white', flexShrink:0 }}>
+            {filtered.map(emp => (
+              <tr key={emp.id} className="border-t border-slate-50 hover:bg-slate-50/50 transition-colors">
+                <td className="px-4 py-2.5">
+                  <div className="flex items-center gap-2.5">
+                    <div className="w-8 h-8 rounded-full bg-gradient-to-br from-brand-600 to-purple-600 flex items-center justify-center text-[13px] font-bold text-white shrink-0">
                       {emp.name[0]}
                     </div>
-                    <span style={{ fontSize:'14px', fontWeight:500, color:'#0f172a' }}>{emp.name}</span>
+                    <span className="text-[14px] font-medium text-slate-800">{emp.name}</span>
                   </div>
                 </td>
-                <td style={{ padding:'11px 16px', fontSize:'13px', color: emp.lavozim ? '#475569' : '#cbd5e1', fontStyle: emp.lavozim ? 'normal' : 'italic' }}>
+                <td className={`px-4 py-2.5 text-[13px] ${emp.lavozim ? 'text-slate-500' : 'text-slate-300 italic'}`}>
                   {emp.lavozim || '—'}
                 </td>
-                <td style={{ padding:'11px 16px', fontSize:'13px', color:'#64748b', fontFamily:'monospace' }}>
-                  #{emp.id}
-                </td>
+                <td className="px-4 py-2.5 text-[13px] text-slate-400 font-mono">#{emp.id}</td>
                 {multiOrg && (
-                  <td style={{ padding:'11px 16px', fontSize:'13px', color:'#64748b' }}>
-                    <span style={{ display:'inline-flex', alignItems:'center', gap:'4px' }}>
-                      <Building2 size={12}/> {groupName(emp.group)}
-                    </span>
+                  <td className="px-4 py-2.5 text-[13px] text-slate-500">
+                    <span className="flex items-center gap-1"><Building2 size={12}/> {groupName(emp.group)}</span>
                   </td>
                 )}
                 {onUpdateEmployee && (
-                  <td style={{ padding:'11px 16px', textAlign:'right' }}>
-                    <button onClick={() => openEdit(emp)} style={{
-                      background:'#2563eb', border:'none', borderRadius:'7px',
-                      color:'white', padding:'6px 14px', cursor:'pointer',
-                      fontSize:'12px', fontWeight:600, display:'inline-flex', alignItems:'center', gap:'5px',
-                    }}>
+                  <td className="px-4 py-2.5 text-right">
+                    <button onClick={() => openEdit(emp)}
+                      className="inline-flex items-center gap-1.5 px-3 py-1.5 bg-brand-600 rounded-lg text-white text-[12px] font-semibold cursor-pointer hover:bg-brand-700 transition-colors border-none">
                       <Pencil size={12}/> Tahrirlash
                     </button>
                   </td>
@@ -131,51 +107,47 @@ export default function Employees({ employees = [], groups = [], onUpdateEmploye
               </tr>
             ))}
             {filtered.length === 0 && (
-              <tr><td colSpan={multiOrg?4:3} style={{ padding:'40px', textAlign:'center', color:'#94a3b8' }}>Xodim topilmadi</td></tr>
+              <tr><td colSpan={multiOrg ? 5 : 4} className="py-10 text-center text-sm text-slate-400">Xodim topilmadi</td></tr>
             )}
           </tbody>
         </table>
       </div>
 
-      {/* TAHRIRLASH MODAL */}
+      {/* Edit Modal */}
       {showEdit && editEmp && (
-        <div style={{ position:'fixed', inset:0, background:'rgba(15,23,42,0.35)', display:'flex', alignItems:'center', justifyContent:'center', zIndex:1000, backdropFilter:'blur(2px)' }}>
-          <div style={{ background:'#fff', borderRadius:'16px', border:'1px solid #e2e8f0', padding:'32px', width:'100%', maxWidth:'400px', boxShadow:'0 20px 60px #0f172a18' }}>
-            <h2 style={{ margin:'0 0 4px', fontSize:'18px', fontWeight:700, color:'#0f172a' }}>Xodimni tahrirlash</h2>
-            <p style={{ margin:'0 0 24px', fontSize:'13px', color:'#94a3b8' }}>Face ID: #{editEmp.id}</p>
-            <div style={{ display:'flex', flexDirection:'column', gap:'14px' }}>
+        <div className="fixed inset-0 bg-slate-900/40 backdrop-blur-sm flex items-center justify-center z-50"
+          onClick={e => e.target === e.currentTarget && setShowEdit(false)}>
+          <div className="bg-white rounded-2xl border border-slate-200 p-8 w-full max-w-sm shadow-card-md">
+            <h2 className="text-[18px] font-bold text-slate-900 m-0 mb-1">Xodimni tahrirlash</h2>
+            <p className="text-[13px] text-slate-400 mb-6">Face ID: #{editEmp.id}</p>
+            <div className="flex flex-col gap-3.5">
               <div>
-                <label style={{ fontSize:'12px', color:'#64748b', display:'block', marginBottom:'5px', fontWeight:600 }}>Ism Familiya</label>
-                <input value={editName} onChange={e => { setEditName(e.target.value); setEditError('') }} style={inputStyle} />
+                <label className="text-[12px] text-slate-500 font-semibold block mb-1.5">Ism Familiya</label>
+                <input value={editName} onChange={e => { setEditName(e.target.value); setEditError('') }}
+                  className="w-full px-3 py-2.5 bg-white border border-slate-200 rounded-xl text-slate-800 text-[14px] outline-none focus:border-brand-400 transition-colors"/>
               </div>
               <div>
-                <label style={{ fontSize:'12px', color:'#64748b', display:'block', marginBottom:'5px', fontWeight:600 }}>Lavozim</label>
+                <label className="text-[12px] text-slate-500 font-semibold block mb-1.5">Lavozim</label>
                 <input value={editLavozim} onChange={e => setEditLavozim(e.target.value)}
-                  placeholder="Masalan: Dasturchi, Hisobchi..." style={inputStyle} />
+                  placeholder="Masalan: Dasturchi, Hisobchi..."
+                  className="w-full px-3 py-2.5 bg-white border border-slate-200 rounded-xl text-slate-800 text-[14px] outline-none focus:border-brand-400 transition-colors"/>
               </div>
-              {editError && (
-                <div style={{ padding:'8px 12px', background:'#fff1f2', border:'1px solid #fecdd3', borderRadius:'7px', color:'#e11d48', fontSize:'13px' }}>⚠️ {editError}</div>
-              )}
-              {saved && (
-                <div style={{ padding:'8px 12px', background:'#dcfce7', border:'1px solid #bbf7d0', borderRadius:'7px', color:'#16a34a', fontSize:'13px', fontWeight:600 }}>✅ Saqlandi!</div>
-              )}
-              <div style={{ display:'flex', gap:'10px', marginTop:'4px' }}>
+              {editError && <div className="px-3 py-2 bg-rose-50 border border-rose-200 rounded-xl text-rose-600 text-[13px]">⚠️ {editError}</div>}
+              {saved    && <div className="px-3 py-2 bg-green-50 border border-green-200 rounded-xl text-green-700 text-[13px] font-semibold">✅ Saqlandi!</div>}
+              <div className="flex gap-2 mt-1">
                 {onDeleteEmployee && (
                   <button onClick={() => {
-                    if (window.confirm(`"${editName}" xodimini o'chirasizmi?\n\nBu amalni qaytarib bo'lmaydi!`)) {
-                      onDeleteEmployee(editEmp.id)
-                      setShowEdit(false)
-                    }
-                  }} style={{ padding:'10px 14px', background:'#fff1f2', border:'1px solid #fecdd3', borderRadius:'9px', color:'#e11d48', fontSize:'14px', cursor:'pointer', display:'flex', alignItems:'center', gap:'5px' }}>
+                    if (window.confirm(`"${editName}" xodimini o'chirasizmi?\n\nBu amalni qaytarib bo'lmaydi!`)) { onDeleteEmployee(editEmp.id); setShowEdit(false) }
+                  }} className="flex items-center gap-1.5 px-3.5 py-2.5 bg-rose-50 border border-rose-200 rounded-xl text-rose-600 text-[14px] cursor-pointer hover:bg-rose-100 transition-colors">
                     <Trash2 size={14}/> O'chirish
                   </button>
                 )}
                 <button onClick={() => setShowEdit(false)}
-                  style={{ flex:1, padding:'10px', background:'#f8fafc', border:'1px solid #e2e8f0', borderRadius:'9px', color:'#64748b', fontSize:'14px', cursor:'pointer' }}>
-                  Bekor qilish
+                  className="flex-1 py-2.5 bg-slate-50 border border-slate-200 rounded-xl text-slate-600 text-[14px] cursor-pointer hover:bg-slate-100 transition-colors">
+                  Bekor
                 </button>
                 <button onClick={handleSave}
-                  style={{ flex:1, padding:'10px', background:'#2563eb', border:'none', borderRadius:'9px', color:'white', fontSize:'14px', fontWeight:600, cursor:'pointer', boxShadow:'0 2px 8px #2563eb30' }}>
+                  className="flex-1 py-2.5 bg-brand-600 border-none rounded-xl text-white text-[14px] font-semibold cursor-pointer hover:bg-brand-700 transition-colors">
                   Saqlash
                 </button>
               </div>

@@ -2,7 +2,6 @@ import { useState, useEffect, useRef } from 'react'
 import { Clock, Search, Building2, Download, Calendar, Printer } from 'lucide-react'
 import jsPDF from 'jspdf'
 import autoTable from 'jspdf-autotable'
-
 import { API_URL, TOKEN } from '../config'
 
 export default function History({ groups = [] }) {
@@ -11,11 +10,11 @@ export default function History({ groups = [] }) {
   const [search, setSearch]   = useState('')
   const [date, setDate]       = useState(new Date().toISOString().slice(0, 10))
 
-  const dateRef    = useRef(null)
-  const multiOrg   = groups.length > 1
+  const dateRef         = useRef(null)
+  const multiOrg        = groups.length > 1
   const visibleGroupIds = groups.map(g => g.id)
-  const isToday    = date === new Date().toISOString().slice(0, 10)
-  const lastColLabel = isToday ? "Oxirgi o'tish" : 'Ketdi'
+  const isToday         = date === new Date().toISOString().slice(0, 10)
+  const lastColLabel    = isToday ? "Oxirgi o'tish" : 'Ketdi'
 
   const getGroup     = (gid) => groups.find(g => g.id === gid)
   const getWorkStart = (gid) => getGroup(gid)?.work_start    || '09:00'
@@ -24,12 +23,11 @@ export default function History({ groups = [] }) {
 
   const addMinutes = (t, min) => {
     const [h, m] = t.split(':').map(Number)
-    const total = h * 60 + m + Number(min)
+    const total  = h * 60 + m + Number(min)
     return `${String(Math.floor(total / 60)).padStart(2, '0')}:${String(total % 60).padStart(2, '0')}`
   }
 
-  const getLateThreshold = (gid) => addMinutes(getWorkStart(gid), getGrace(gid))
-
+  const getLateThreshold    = (gid) => addMinutes(getWorkStart(gid), getGrace(gid))
   const getEffectiveFirstIn = (first_in, group_id) => {
     if (!first_in) return null
     return first_in >= getWorkBegin(group_id) ? first_in : null
@@ -49,297 +47,170 @@ export default function History({ groups = [] }) {
 
   const groupName = (gid) => groups.find(g => g.id === gid)?.name || gid
 
+  const getLate = (first_in, group_id) => {
+    const eff = getEffectiveFirstIn(first_in, group_id)
+    if (!eff) return null
+    const [wh, wm] = getLateThreshold(group_id).split(':').map(Number)
+    const [h,  m]  = eff.split(':').map(Number)
+    const mins     = (h - wh) * 60 + (m - wm)
+    return mins > 0 ? mins : 0
+  }
+
+  const getStatus = (r) => {
+    const eff = getEffectiveFirstIn(r.first_in, r.group_id)
+    if (!eff)              return { label: 'Kelmadi',     tw: 'bg-red-100 text-red-600'    }
+    return getLate(r.first_in, r.group_id) > 0
+      ? { label: 'Kech keldi',  tw: 'bg-amber-100 text-amber-700' }
+      : { label: "O'z vaqtida", tw: 'bg-green-100 text-green-700' }
+  }
+
   const filtered = rows
     .filter(r => !search || (r.name || '').toLowerCase().includes(search.toLowerCase()) || r.employee_id.includes(search))
     .sort((a, b) => {
       const ea = getEffectiveFirstIn(a.first_in, a.group_id)
       const eb = getEffectiveFirstIn(b.first_in, b.group_id)
-      if (ea && eb) return ea.localeCompare(eb)   // ikkalasi kelgan — vaqt bo'yicha
-      if (ea) return -1                            // a kelgan, b kelmagan — a oldin
-      if (eb) return 1                             // b kelgan, a kelmagan — b oldin
-      return (a.name || '').localeCompare(b.name || '') // ikkalasi kelmagan — ism bo'yicha
+      if (ea && eb) return ea.localeCompare(eb)
+      if (ea) return -1
+      if (eb) return 1
+      return (a.name || '').localeCompare(b.name || '')
     })
-
-  const getLate = (first_in, group_id) => {
-    const eff = getEffectiveFirstIn(first_in, group_id)
-    if (!eff) return null
-    const threshold = getLateThreshold(group_id)
-    const [wh, wm] = threshold.split(':').map(Number)
-    const [h, m]   = eff.split(':').map(Number)
-    const mins = (h - wh) * 60 + (m - wm)
-    return mins > 0 ? mins : 0
-  }
-
-
-  const getStatus = (r) => {
-    const eff = getEffectiveFirstIn(r.first_in, r.group_id)
-    if (!eff) return { label: 'Kelmadi',     color: '#dc2626', bg: '#fee2e2' }
-    const late = getLate(r.first_in, r.group_id)
-    return late > 0
-      ? { label: 'Kech keldi',  color: '#d97706', bg: '#fef3c7' }
-      : { label: "O'z vaqtida", color: '#16a34a', bg: '#dcfce7' }
-  }
 
   const buildTableData = () => {
     const dateFormatted = date.split('-').reverse().join('.')
-    const orgName = multiOrg ? 'Barcha tashkilotlar' : (groups[0]?.name || '')
-    const ontime  = filtered.filter(r => r.first_in && getLate(r.first_in, r.group_id) === 0).length
-    const late    = filtered.filter(r => r.first_in && getLate(r.first_in, r.group_id) > 0).length
-    const absent  = filtered.filter(r => !r.first_in).length
-    const head    = multiOrg
+    const orgName  = multiOrg ? 'Barcha tashkilotlar' : (groups[0]?.name || '')
+    const ontime   = filtered.filter(r => r.first_in && getLate(r.first_in, r.group_id) === 0).length
+    const late     = filtered.filter(r => r.first_in && getLate(r.first_in, r.group_id)  > 0).length
+    const absent   = filtered.filter(r => !r.first_in).length
+    const head     = multiOrg
       ? [['#', 'Ism Familiya', 'Tashkilot', 'Keldi', 'Kechikish', 'Holat']]
       : [['#', 'Ism Familiya', 'Keldi', 'Kechikish', 'Holat']]
     const body = filtered.map((r, i) => {
       const eff = getEffectiveFirstIn(r.first_in, r.group_id)
       const lm  = getLate(r.first_in, r.group_id)
       const st  = getStatus(r)
-      const row = [i+1, r.name || '—', ...(multiOrg ? [groupName(r.group_id)] : []),
-        eff || '—', lm > 0 ? `${lm} daq.` : '—', st.label]
-      return row
+      return [i + 1, r.name || '—', ...(multiOrg ? [groupName(r.group_id)] : []), eff || '—', lm > 0 ? `${lm} daq.` : '—', st.label]
     })
     return { dateFormatted, orgName, ontime, late, absent, head, body }
   }
 
-  const handleDownloadPDF = () => {
+  const buildPDF = () => {
     const { dateFormatted, orgName, ontime, late, absent, head, body } = buildTableData()
     const doc = new jsPDF({ orientation: 'portrait', unit: 'mm', format: 'a4' })
     const pw  = doc.internal.pageSize.getWidth()
-
-    // ── BREND (o'ng yuqori burchak) ───────────────────────
     const bw = 38, bh = 14, bx = pw - 52, by = 8
-    doc.setFillColor(239, 246, 255)
-    doc.roundedRect(bx, by, bw, bh, 2.5, 2.5, 'F')
-    doc.setDrawColor(37, 99, 235)
-    doc.setLineWidth(0.45)
-    doc.circle(bx + 6, by + 6, 3, 'S')
-    doc.setLineWidth(0.55)
-    doc.line(bx + 4.5, by + 6,   bx + 5.6, by + 7.2)
-    doc.line(bx + 5.6, by + 7.2, bx + 7.8, by + 4.9)
-    doc.setFont('helvetica', 'bold')
-    doc.setFontSize(9)
-    doc.setTextColor(37, 99, 235)
-    doc.text('Davomatlar.uz', bx + 13, by + 6)
-    doc.setFont('helvetica', 'normal')
-    doc.setFontSize(8)
-    doc.setTextColor(148, 163, 184)
-    doc.text('Boshqaruv tizimi', bx + 13, by + 11)
-    doc.setTextColor(0)
-    doc.link(bx, by, bw, bh, { url: 'https://davomatlar.uz' })
-
-    // ── SARLAVHA ──────────────────────────────────────────
-    doc.setFont('helvetica', 'bold')
-    doc.setFontSize(16)
-    doc.setTextColor(15, 23, 42)
-    doc.text(`Davomat hisoboti — ${dateFormatted}`, 14, 18)
-    doc.setFont('helvetica', 'normal')
-    doc.setFontSize(10)
-    doc.setTextColor(100, 116, 139)
-    doc.text(orgName, 14, 25)
-
-    // ── STATISTIKA QUTILARI ───────────────────────────────
-    const stats = [
-      { label: 'Jami',        val: filtered.length, c: [37,99,235]   },
-      { label: "O'z vaqtida", val: ontime,           c: [22,163,74]   },
-      { label: 'Kech keldi',  val: late,             c: [217,119,6]   },
-      { label: 'Kelmadi',     val: absent,           c: [220,38,38]   },
-    ]
-    const boxH = 18, boxW = 42, boxY = 30
-    stats.forEach((s, i) => {
-      const x = 14 + i * (boxW + 2)
-      doc.setFillColor(248, 250, 252)
-      doc.roundedRect(x, boxY, boxW, boxH, 2, 2, 'F')
-      doc.setFont('helvetica', 'bold')
-      doc.setFontSize(14)
-      doc.setTextColor(...s.c)
-      doc.text(String(s.val), x + boxW / 2, boxY + 9, { align: 'center' })
-      doc.setFont('helvetica', 'normal')
-      doc.setFontSize(7)
-      doc.setTextColor(100, 116, 139)
-      doc.text(s.label, x + boxW / 2, boxY + 15, { align: 'center' })
-    })
-
-    doc.setTextColor(0)
-    autoTable(doc, {
-      head, body,
-      startY: 54,
-      styles: { fontSize: 9, cellPadding: 3 },
-      headStyles: { fillColor: [37, 99, 235], textColor: 255, fontStyle: 'bold' },
-      alternateRowStyles: { fillColor: [248, 250, 252] },
-      didParseCell: (data) => {
-        if (data.section === 'body' && data.column.index === (multiOrg ? 5 : 4)) {
-          const v = String(data.cell.raw)
-          if (v === 'Kelmadi')         data.cell.styles.textColor = [220, 38, 38]
-          else if (v === 'Kech keldi') data.cell.styles.textColor = [217, 119, 6]
-          else                         data.cell.styles.textColor = [22, 163, 74]
-        }
-      },
-      didDrawPage: (data) => {
-        const ph = doc.internal.pageSize.getHeight()
-        const pw = doc.internal.pageSize.getWidth()
-        doc.setFontSize(7)
-        doc.setTextColor(203, 213, 225)
-        doc.text('davomatlar.uz', pw / 2, ph - 6, { align: 'center' })
-      }
-    })
-    doc.save(`davomat_${date}.pdf`)
-  }
-
-  const handlePrint = () => {
-    const { head, body, dateFormatted, orgName, ontime, late, absent } = buildTableData()
-    const doc = new jsPDF({ orientation: 'portrait', unit: 'mm', format: 'a4' })
-    const pw  = doc.internal.pageSize.getWidth()
-
-    // Brend
-    const bw = 38, bh = 14, bx = pw - 52, by = 8
-    doc.setFillColor(239, 246, 255)
-    doc.roundedRect(bx, by, bw, bh, 2.5, 2.5, 'F')
-    doc.setDrawColor(37, 99, 235); doc.setLineWidth(0.45)
-    doc.circle(bx + 6, by + 6, 3, 'S')
-    doc.setLineWidth(0.55)
-    doc.line(bx + 4.5, by + 6, bx + 5.6, by + 7.2)
-    doc.line(bx + 5.6, by + 7.2, bx + 7.8, by + 4.9)
-    doc.setFont('helvetica', 'bold'); doc.setFontSize(9); doc.setTextColor(37, 99, 235)
-    doc.text('Davomatlar.uz', bx + 13, by + 6)
-    doc.setFont('helvetica', 'normal'); doc.setFontSize(8); doc.setTextColor(148, 163, 184)
-    doc.text('Boshqaruv tizimi', bx + 13, by + 11)
-    doc.setTextColor(0)
-    doc.link(bx, by, bw, bh, { url: 'https://davomatlar.uz' })
-
-    // Sarlavha
-    doc.setFont('helvetica', 'bold'); doc.setFontSize(16); doc.setTextColor(15, 23, 42)
-    doc.text(`Davomat hisoboti — ${dateFormatted}`, 14, 18)
-    doc.setFont('helvetica', 'normal'); doc.setFontSize(10); doc.setTextColor(100, 116, 139)
-    doc.text(orgName, 14, 25)
-
-    // Statistika
-    const stats = [
-      { label: 'Jami',        val: filtered.length, c: [37,99,235]  },
-      { label: "O'z vaqtida", val: ontime,           c: [22,163,74]  },
-      { label: 'Kech keldi',  val: late,             c: [217,119,6]  },
-      { label: 'Kelmadi',     val: absent,           c: [220,38,38]  },
-    ]
-    stats.forEach((s, i) => {
+    doc.setFillColor(239, 246, 255); doc.roundedRect(bx, by, bw, bh, 2.5, 2.5, 'F')
+    doc.setDrawColor(37, 99, 235); doc.setLineWidth(0.45); doc.circle(bx + 6, by + 6, 3, 'S')
+    doc.setLineWidth(0.55); doc.line(bx+4.5,by+6,bx+5.6,by+7.2); doc.line(bx+5.6,by+7.2,bx+7.8,by+4.9)
+    doc.setFont('helvetica','bold'); doc.setFontSize(9); doc.setTextColor(37,99,235); doc.text('Davomatlar.uz',bx+13,by+6)
+    doc.setFont('helvetica','normal'); doc.setFontSize(8); doc.setTextColor(148,163,184); doc.text('Boshqaruv tizimi',bx+13,by+11)
+    doc.setTextColor(0); doc.link(bx,by,bw,bh,{url:'https://davomatlar.uz'})
+    doc.setFont('helvetica','bold'); doc.setFontSize(16); doc.setTextColor(15,23,42); doc.text(`Davomat hisoboti — ${dateFormatted}`,14,18)
+    doc.setFont('helvetica','normal'); doc.setFontSize(10); doc.setTextColor(100,116,139); doc.text(orgName,14,25)
+    const stats = [{ label:'Jami',val:filtered.length,c:[37,99,235] },{ label:"O'z vaqtida",val:ontime,c:[22,163,74] },{ label:'Kech keldi',val:late,c:[217,119,6] },{ label:'Kelmadi',val:absent,c:[220,38,38] }]
+    stats.forEach((s,i) => {
       const x = 14 + i * 44
-      doc.setFillColor(248, 250, 252); doc.roundedRect(x, 30, 42, 18, 2, 2, 'F')
-      doc.setFont('helvetica', 'bold'); doc.setFontSize(14); doc.setTextColor(...s.c)
-      doc.text(String(s.val), x + 21, 39, { align: 'center' })
-      doc.setFont('helvetica', 'normal'); doc.setFontSize(7); doc.setTextColor(100, 116, 139)
-      doc.text(s.label, x + 21, 45, { align: 'center' })
+      doc.setFillColor(248,250,252); doc.roundedRect(x,30,42,18,2,2,'F')
+      doc.setFont('helvetica','bold'); doc.setFontSize(14); doc.setTextColor(...s.c); doc.text(String(s.val),x+21,39,{align:'center'})
+      doc.setFont('helvetica','normal'); doc.setFontSize(7); doc.setTextColor(100,116,139); doc.text(s.label,x+21,45,{align:'center'})
     })
     doc.setTextColor(0)
-
-    autoTable(doc, {
-      head, body, startY: 54,
-      styles: { fontSize: 9, cellPadding: 3 },
-      headStyles: { fillColor: [37, 99, 235], textColor: 255, fontStyle: 'bold' },
-      alternateRowStyles: { fillColor: [248, 250, 252] },
-      didParseCell: (data) => {
-        if (data.section === 'body' && data.column.index === (multiOrg ? 6 : 5)) {
-          const v = String(data.cell.raw)
-          if (v.includes('Kelmadi'))   data.cell.styles.textColor = [220, 38, 38]
-          else if (v.includes('Kech')) data.cell.styles.textColor = [217, 119, 6]
-          else if (v.includes('Erta')) data.cell.styles.textColor = [147, 51, 234]
-          else                         data.cell.styles.textColor = [22, 163, 74]
-        }
-      },
-      didDrawPage: () => {
-        const ph = doc.internal.pageSize.getHeight()
-        doc.setFontSize(7); doc.setTextColor(203, 213, 225)
-        doc.text('davomatlar.uz', pw / 2, ph - 6, { align: 'center' })
-      }
+    autoTable(doc,{ head, body, startY:54, styles:{fontSize:9,cellPadding:3}, headStyles:{fillColor:[37,99,235],textColor:255,fontStyle:'bold'}, alternateRowStyles:{fillColor:[248,250,252]},
+      didParseCell:(d) => { if(d.section==='body'&&d.column.index===(multiOrg?5:4)){ const v=String(d.cell.raw); if(v==='Kelmadi') d.cell.styles.textColor=[220,38,38]; else if(v==='Kech keldi') d.cell.styles.textColor=[217,119,6]; else d.cell.styles.textColor=[22,163,74] } },
+      didDrawPage:() => { const ph=doc.internal.pageSize.getHeight(); doc.setFontSize(7); doc.setTextColor(203,213,225); doc.text('davomatlar.uz',pw/2,ph-6,{align:'center'}) }
     })
-
-    // Print dialogini ochish
-    doc.autoPrint()
-    window.open(doc.output('bloburl'), '_blank')
+    return doc
   }
+
+  const handleDownloadPDF = () => { buildPDF().save(`davomat_${date}.pdf`) }
+  const handlePrint       = () => { const doc = buildPDF(); doc.autoPrint(); window.open(doc.output('bloburl'),'_blank') }
 
   return (
     <div>
-      <div style={{ display:'flex', justifyContent:'space-between', alignItems:'center', marginBottom:'24px' }}>
+      {/* Header */}
+      <div className="flex items-center justify-between mb-6">
         <div>
-          <h1 style={{ margin:0, fontSize:'22px', fontWeight:700, color:'#0f172a', display:'flex', alignItems:'center', gap:'10px' }}>
-            <Clock size={22} color="#2563eb" /> Keldi-ketdi tarixi
+          <h1 className="flex items-center gap-2.5 text-[22px] font-bold text-slate-900 m-0">
+            <Clock size={22} className="text-brand-600" /> Keldi-ketdi tarixi
           </h1>
-          <p style={{ margin:'4px 0 0', fontSize:'13px', color:'#94a3b8' }}>Sana bo'yicha davomat</p>
+          <p className="text-[13px] text-slate-400 mt-1 mb-0">Sana bo'yicha davomat</p>
         </div>
-        <div style={{ display:'flex', gap:'8px' }}>
-          <button onClick={handlePrint} style={{
-            display:'flex', alignItems:'center', gap:'7px',
-            padding:'9px 16px', background:'#fff', border:'1px solid #e2e8f0',
-            borderRadius:'9px', color:'#475569', fontSize:'13px',
-            fontWeight:600, cursor:'pointer',
-          }}>
+        <div className="flex gap-2">
+          <button onClick={handlePrint}
+            className="flex items-center gap-1.5 px-4 py-2 bg-white border border-slate-200 rounded-xl text-slate-600 text-[13px] font-semibold cursor-pointer hover:border-slate-300 transition-colors">
             <Printer size={15}/> Chop etish
           </button>
-          <button onClick={handleDownloadPDF} style={{
-            display:'flex', alignItems:'center', gap:'7px',
-            padding:'9px 18px', background:'#2563eb', border:'none',
-            borderRadius:'9px', color:'white', fontSize:'13px',
-            fontWeight:600, cursor:'pointer', boxShadow:'0 2px 8px #2563eb30'
-          }}>
+          <button onClick={handleDownloadPDF}
+            className="flex items-center gap-1.5 px-4 py-2 bg-brand-600 border-none rounded-xl text-white text-[13px] font-semibold cursor-pointer hover:bg-brand-700 transition-colors shadow-sm">
             <Download size={15}/> PDF yuklash
           </button>
         </div>
       </div>
 
-      <div style={{ display:'flex', gap:'10px', marginBottom:'20px', flexWrap:'wrap' }}>
-        <div style={{ position:'relative' }}>
-          <button onClick={() => dateRef.current?.showPicker()} style={{
-            display:'flex', alignItems:'center', gap:'8px',
-            padding:'9px 16px', background:'#eff6ff', border:'1px solid #bfdbfe',
-            borderRadius:'9px', color:'#2563eb', fontSize:'14px', fontWeight:600,
-            cursor:'pointer', whiteSpace:'nowrap',
-          }}>
+      {/* Filters */}
+      <div className="flex gap-2.5 mb-5 flex-wrap">
+        <div className="relative">
+          <button onClick={() => dateRef.current?.showPicker()}
+            className="flex items-center gap-2 px-4 py-2 bg-brand-50 border border-brand-200 rounded-xl text-brand-600 text-[14px] font-semibold cursor-pointer whitespace-nowrap hover:bg-brand-100 transition-colors">
             <Calendar size={15}/> {date.split('-').reverse().join('.')}
           </button>
           <input ref={dateRef} type="date" value={date} onChange={e => setDate(e.target.value)}
-            style={{ position:'absolute', opacity:0, pointerEvents:'none', width:'1px', height:'1px', top:0, left:0 }}/>
+            className="absolute opacity-0 pointer-events-none w-px h-px top-0 left-0"/>
         </div>
-        <div style={{ position:'relative', flex:1, minWidth:'200px' }}>
-          <Search size={15} color="#94a3b8" style={{ position:'absolute', left:'12px', top:'50%', transform:'translateY(-50%)' }}/>
+        <div className="relative flex-1 min-w-[200px]">
+          <Search size={15} className="absolute left-3 top-1/2 -translate-y-1/2 text-slate-400"/>
           <input placeholder="Ism yoki ID bo'yicha qidirish..." value={search} onChange={e => setSearch(e.target.value)}
-            style={{ width:'100%', padding:'9px 12px 9px 36px', background:'#fff', border:'1px solid #e2e8f0', borderRadius:'8px', color:'#0f172a', fontSize:'14px', outline:'none', boxSizing:'border-box' }}/>
+            className="w-full py-2 pl-9 pr-3 bg-white border border-slate-200 rounded-xl text-slate-800 text-[14px] outline-none focus:border-brand-400 transition-colors"/>
         </div>
       </div>
 
-      <div style={{ background:'#fff', borderRadius:'14px', border:'1px solid #e2e8f0', overflow:'hidden' }}>
-        <table style={{ width:'100%', borderCollapse:'collapse' }}>
+      {/* Table */}
+      <div className="bg-white rounded-2xl border border-slate-100 shadow-card overflow-hidden">
+        <table className="w-full border-collapse">
           <thead>
-            <tr style={{ background:'#f8fafc', borderBottom:'1px solid #e2e8f0' }}>
-              {['Ism Familiya', ...(multiOrg?['Tashkilot']:[]), 'Keldi', lastColLabel, 'Kechikish', 'Holat'].map(h => (
-                <th key={h} style={{ padding:'11px 16px', textAlign:'left', fontSize:'12px', color:'#94a3b8', fontWeight:400 }}>{h}</th>
+            <tr className="bg-slate-50">
+              {['Ism Familiya', ...(multiOrg ? ['Tashkilot'] : []), 'Keldi', lastColLabel, 'Kechikish', 'Holat'].map(h => (
+                <th key={h} className="px-4 py-2.5 text-left text-[12px] text-slate-400 font-normal">{h}</th>
               ))}
             </tr>
           </thead>
           <tbody>
             {loading ? (
-              <tr><td colSpan={multiOrg?6:5} style={{ padding:'48px', textAlign:'center', color:'#94a3b8' }}>Yuklanmoqda...</td></tr>
+              <tr><td colSpan={multiOrg?6:5} className="py-12 text-center text-slate-400 text-sm">Yuklanmoqda…</td></tr>
             ) : filtered.length === 0 ? (
-              <tr><td colSpan={multiOrg?6:5} style={{ padding:'48px', textAlign:'center', color:'#94a3b8' }}>Ma'lumot yo'q</td></tr>
+              <tr><td colSpan={multiOrg?6:5} className="py-12 text-center text-slate-400 text-sm">Ma'lumot yo'q</td></tr>
             ) : filtered.map(r => {
-              const late_min = getLate(r.first_in, r.group_id)
-              const st = getStatus(r)
+              const eff      = getEffectiveFirstIn(r.first_in, r.group_id)
+              const lateMin  = getLate(r.first_in, r.group_id)
+              const isLate   = lateMin > 0
+              const st       = getStatus(r)
               return (
-                <tr key={r.employee_id} style={{ borderTop:'1px solid #f1f5f9' }}>
-                  <td style={{ padding:'11px 16px' }}>
-                    <div style={{ fontWeight:500, color:'#0f172a', fontSize:'14px' }}>{r.name}</div>
-                    {r.lavozim && <div style={{ fontSize:'11px', color:'#94a3b8' }}>{r.lavozim}</div>}
+                <tr key={r.employee_id} className="border-t border-slate-50 hover:bg-slate-50/50 transition-colors">
+                  <td className="px-4 py-2.5">
+                    <div className="text-[14px] font-medium text-slate-800">{r.name}</div>
+                    {r.lavozim && <div className="text-[11px] text-slate-400 mt-0.5">{r.lavozim}</div>}
                   </td>
                   {multiOrg && (
-                    <td style={{ padding:'11px 16px', fontSize:'13px', color:'#64748b' }}>
-                      <span style={{ display:'inline-flex', alignItems:'center', gap:'4px' }}>
-                        <Building2 size={12}/> {groupName(r.group_id)}
-                      </span>
+                    <td className="px-4 py-2.5 text-[13px] text-slate-500">
+                      <span className="flex items-center gap-1"><Building2 size={12}/> {groupName(r.group_id)}</span>
                     </td>
                   )}
-                  <td style={{ padding:'11px 16px', fontSize:'15px', color:getEffectiveFirstIn(r.first_in,r.group_id)?(late_min>0?'#f97316':'#16a34a'):'#cbd5e1', fontWeight:500 }}>{getEffectiveFirstIn(r.first_in,r.group_id) || '—'}</td>
-                  <td style={{ padding:'11px 16px', fontSize:'15px', color:r.last_out?'#475569':'#cbd5e1', fontWeight:400 }}>{r.last_out || '—'}</td>
-                  <td style={{ padding:'11px 16px', fontSize:'13px', color: late_min > 0 ? '#f97316' : '#94a3b8' }}>
-                    {late_min > 0 ? `+${late_min} daq` : '—'}
+                  <td className="px-4 py-2.5">
+                    <span className={`text-[15px] font-medium ${eff ? (isLate ? 'text-orange-500' : 'text-green-600') : 'text-slate-300'}`}>
+                      {eff || '—'}
+                    </span>
                   </td>
-                  <td style={{ padding:'11px 16px' }}>
-                    <span style={{ padding:'4px 10px', borderRadius:'20px', fontSize:'12px', fontWeight:600, background:st.bg, color:st.color }}>{st.label}</span>
+                  <td className="px-4 py-2.5">
+                    <span className={`text-[15px] font-normal ${r.last_out ? 'text-slate-600' : 'text-slate-300'}`}>
+                      {r.last_out || '—'}
+                    </span>
+                  </td>
+                  <td className="px-4 py-2.5">
+                    <span className={`text-[13px] font-medium ${isLate ? 'text-orange-500' : 'text-slate-300'}`}>
+                      {isLate ? `+${lateMin} daq` : '—'}
+                    </span>
+                  </td>
+                  <td className="px-4 py-2.5">
+                    <span className={`inline-flex px-2.5 py-1 rounded-full text-[12px] font-semibold ${st.tw}`}>{st.label}</span>
                   </td>
                 </tr>
               )
