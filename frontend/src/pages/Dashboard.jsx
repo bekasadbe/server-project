@@ -1,23 +1,23 @@
 import { useState, useEffect } from 'react'
-import { CheckCircle, Clock, XCircle, Users, Building2, RefreshCw } from 'lucide-react'
-
+import { CheckCircle, Clock, XCircle, Users, Building2, RefreshCw, TrendingUp } from 'lucide-react'
 import { API_URL, TOKEN } from '../config'
 
-const statusInfo = {
-  ontime: { label:"O'z vaqtida", color:'#16a34a', bg:'#dcfce7' },
-  late:   { label:'Kech keldi',  color:'#d97706', bg:'#fef3c7' },
-  absent: { label:'Kelmadi',     color:'#dc2626', bg:'#fee2e2' },
-}
-
-function StatCard({ icon: Icon, label, value, color, bg }) {
+function StatCard({ icon: Icon, label, value, color, loading }) {
+  const colors = {
+    blue:   { bg: 'bg-blue-50',   icon: 'text-blue-500',   val: 'text-blue-600'   },
+    green:  { bg: 'bg-green-50',  icon: 'text-green-500',  val: 'text-green-600'  },
+    amber:  { bg: 'bg-amber-50',  icon: 'text-amber-500',  val: 'text-amber-600'  },
+    red:    { bg: 'bg-red-50',    icon: 'text-red-400',    val: 'text-red-500'    },
+  }
+  const c = colors[color] || colors.blue
   return (
-    <div style={{ background:'#fff', borderRadius:'14px', padding:'20px 24px', border:'1px solid #e2e8f0', display:'flex', alignItems:'center', gap:'16px', boxShadow:'0 1px 3px #0f172a08' }}>
-      <div style={{ background:bg, borderRadius:'12px', padding:'12px', display:'flex' }}>
-        <Icon size={22} color={color} />
+    <div className="bg-white rounded-2xl border border-slate-100 p-5 flex items-center gap-4 shadow-sm">
+      <div className={`w-12 h-12 rounded-xl ${c.bg} flex items-center justify-center shrink-0`}>
+        <Icon size={22} className={c.icon} />
       </div>
       <div>
-        <div style={{ fontSize:'28px', fontWeight:400, color:'#0f172a' }}>{value}</div>
-        <div style={{ fontSize:'13px', color:'#64748b', marginTop:'2px' }}>{label}</div>
+        <div className={`text-2xl font-semibold ${c.val}`}>{loading ? '…' : value}</div>
+        <div className="text-[13px] text-slate-400 mt-0.5">{label}</div>
       </div>
     </div>
   )
@@ -48,15 +48,15 @@ export default function Dashboard({ employees = [], groups = [] }) {
     return () => clearInterval(t)
   }, [])
 
-  const getGroup      = (gid) => groups.find(g => g.id === gid)
-  const getWorkStart  = (gid) => getGroup(gid)?.work_start    || '09:00'
-  const getWorkBegin  = (gid) => getGroup(gid)?.work_begin    || '06:00'
-  const getGrace      = (gid) => getGroup(gid)?.grace_minutes ?? 0
+  const getGroup     = (gid) => groups.find(g => g.id === gid)
+  const getWorkStart = (gid) => getGroup(gid)?.work_start    || '09:00'
+  const getWorkBegin = (gid) => getGroup(gid)?.work_begin    || '06:00'
+  const getGrace     = (gid) => getGroup(gid)?.grace_minutes ?? 0
 
   const addMinutes = (t, min) => {
     const [h, m] = t.split(':').map(Number)
     const total = h * 60 + m + Number(min)
-    return `${String(Math.floor(total / 60)).padStart(2, '0')}:${String(total % 60).padStart(2, '0')}`
+    return `${String(Math.floor(total / 60)).padStart(2,'0')}:${String(total % 60).padStart(2,'0')}`
   }
 
   const toHHMM = (t) => {
@@ -75,6 +75,14 @@ export default function Dashboard({ employees = [], groups = [] }) {
     if (!effectiveIn) return 'absent'
     const lateThreshold = addMinutes(getWorkStart(row.group_id), getGrace(row.group_id))
     return toHHMM(effectiveIn) <= lateThreshold ? 'ontime' : 'late'
+  }
+
+  const getLateMin = (row) => {
+    const eff = getEffectiveFirstIn(row)
+    if (!eff) return 0
+    const [wh, wm] = addMinutes(getWorkStart(row.group_id), getGrace(row.group_id)).split(':').map(Number)
+    const [ah, am] = toHHMM(eff).split(':').map(Number)
+    return Math.max(0, (ah * 60 + am) - (wh * 60 + wm))
   }
 
   const visibleGroupIds = groups.map(g => g.id)
@@ -98,98 +106,98 @@ export default function Dashboard({ employees = [], groups = [] }) {
 
   const groupName = (gid) => groups.find(g => g.id === gid)?.name || gid
 
+  const statusBadge = {
+    ontime: <span className="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-green-50 text-green-600">O'z vaqtida</span>,
+    late:   <span className="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-amber-50 text-amber-600">Kech keldi</span>,
+    absent: <span className="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-red-50 text-red-400">Kelmadi</span>,
+  }
+
   return (
     <div>
       {/* Header */}
-      <div style={{ display:'flex', justifyContent:'space-between', alignItems:'center', marginBottom:'24px' }}>
+      <div className="flex items-center justify-between mb-6">
         <div>
-          <h1 style={{ margin:0, fontSize:'22px', fontWeight:700, color:'#0f172a' }}>Bugungi Davomat</h1>
-          <p style={{ margin:'4px 0 0', fontSize:'13px', color:'#94a3b8' }}>{todayStr}</p>
+          <h1 className="text-xl font-semibold text-slate-800">Bugungi davomat</h1>
+          <p className="text-sm text-slate-400 mt-0.5">{todayStr}</p>
         </div>
-        <div style={{ display:'flex', alignItems:'center', gap:'10px' }}>
+        <div className="flex items-center gap-2">
           {multiOrg && (
-            <div style={{ display:'flex', gap:'6px' }}>
-              <button onClick={() => setOrgFilter('all')} style={{ padding:'7px 14px', borderRadius:'8px', border:'1px solid', borderColor:orgFilter==='all'?'#2563eb':'#e2e8f0', background:orgFilter==='all'?'#eff6ff':'#fff', color:orgFilter==='all'?'#2563eb':'#64748b', fontSize:'13px', cursor:'pointer', fontWeight:orgFilter==='all'?600:400 }}>Hammasi</button>
-              {groups.map(g => (
-                <button key={g.id} onClick={() => setOrgFilter(g.id)} style={{ padding:'7px 14px', borderRadius:'8px', border:'1px solid', borderColor:orgFilter===g.id?'#2563eb':'#e2e8f0', background:orgFilter===g.id?'#eff6ff':'#fff', color:orgFilter===g.id?'#2563eb':'#64748b', fontSize:'13px', cursor:'pointer', fontWeight:orgFilter===g.id?600:400 }}>{g.name}</button>
+            <div className="flex gap-1.5">
+              {[{ id: 'all', name: 'Hammasi' }, ...groups].map(g => (
+                <button key={g.id} onClick={() => setOrgFilter(g.id)}
+                  className={`px-3 py-1.5 rounded-lg text-sm font-medium border transition-all cursor-pointer
+                    ${orgFilter === g.id ? 'bg-blue-600 text-white border-blue-600' : 'bg-white text-slate-500 border-slate-200 hover:border-blue-300'}`}>
+                  {g.name}
+                </button>
               ))}
             </div>
           )}
-          <button onClick={fetchAttendance} style={{ display:'flex', alignItems:'center', gap:'6px', padding:'8px 14px', borderRadius:'8px', border:'1px solid #e2e8f0', background:'#fff', color:'#475569', fontSize:'13px', cursor:'pointer' }}>
-            <RefreshCw size={14} /> Yangilash
+          <button onClick={fetchAttendance}
+            className="flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-sm text-slate-500 bg-white border border-slate-200 hover:border-blue-300 transition-all cursor-pointer">
+            <RefreshCw size={13} /> Yangilash
           </button>
         </div>
       </div>
 
       {/* Stat cards */}
-      <div style={{ display:'grid', gridTemplateColumns:'repeat(4,1fr)', gap:'14px', marginBottom:'24px' }}>
-        <StatCard icon={Users}       label="Jami xodim"  value={loading ? '...' : filtered.length} color="#2563eb" bg="#eff6ff" />
-        <StatCard icon={CheckCircle} label="O'z vaqtida" value={loading ? '...' : ontime}          color="#16a34a" bg="#dcfce7" />
-        <StatCard icon={Clock}       label="Kech keldi"  value={loading ? '...' : late}            color="#d97706" bg="#fef3c7" />
-        <StatCard icon={XCircle}     label="Kelmadi"     value={loading ? '...' : absent}          color="#dc2626" bg="#fee2e2" />
+      <div className="grid grid-cols-4 gap-4 mb-6">
+        <StatCard icon={Users}       label="Jami xodim"  value={loading ? '…' : filtered.length} color="blue"  loading={loading} />
+        <StatCard icon={CheckCircle} label="O'z vaqtida" value={loading ? '…' : ontime}          color="green" loading={loading} />
+        <StatCard icon={Clock}       label="Kech keldi"  value={loading ? '…' : late}            color="amber" loading={loading} />
+        <StatCard icon={XCircle}     label="Kelmadi"     value={loading ? '…' : absent}          color="red"   loading={loading} />
       </div>
 
       {/* Table */}
-      <div style={{ background:'#fff', borderRadius:'14px', border:'1px solid #e2e8f0', overflow:'hidden', boxShadow:'0 1px 3px #0f172a08' }}>
-        <div style={{ padding:'14px 20px', borderBottom:'1px solid #f1f5f9', display:'flex', alignItems:'center', gap:'8px' }}>
-          <Users size={16} color="#2563eb"/>
-          <span style={{ fontWeight:600, fontSize:'14px', color:'#0f172a' }}>Xodimlar holati</span>
+      <div className="bg-white rounded-2xl border border-slate-100 shadow-sm overflow-hidden">
+        <div className="flex items-center gap-2 px-5 py-4 border-b border-slate-50">
+          <TrendingUp size={16} className="text-blue-500" />
+          <span className="text-[14px] font-semibold text-slate-700">Xodimlar holati</span>
+          <span className="ml-auto text-xs text-slate-400">{sorted.length} ta xodim</span>
         </div>
         {loading ? (
-          <div style={{ padding:'48px', textAlign:'center', color:'#94a3b8' }}>Yuklanmoqda...</div>
+          <div className="py-16 text-center text-slate-400 text-sm">Yuklanmoqda…</div>
         ) : (
-          <table style={{ width:'100%', borderCollapse:'collapse' }}>
+          <table className="w-full">
             <thead>
-              <tr style={{ background:'#f8fafc' }}>
-                {['Ism Familiya', ...(multiOrg?['Tashkilot']:[]), 'Keldi', 'Kechikish', 'Oxirgi o\'tish', 'Holat'].map(h => (
-                  <th key={h} style={{ padding:'10px 16px', textAlign:'left', fontSize:'12px', color:'#94a3b8', fontWeight:400 }}>{h}</th>
+              <tr className="bg-slate-50 border-b border-slate-100">
+                {['Ism Familiya', ...(multiOrg ? ['Tashkilot'] : []), 'Keldi', 'Kechikish', "Oxirgi o'tish", 'Holat'].map(h => (
+                  <th key={h} className="px-5 py-3 text-left text-xs text-slate-400 font-medium">{h}</th>
                 ))}
               </tr>
             </thead>
             <tbody>
-              {sorted.map(row => {
-                const s = statusInfo[getStatus(row)]
+              {sorted.map((row, i) => {
+                const status   = getStatus(row)
+                const eff      = getEffectiveFirstIn(row)
+                const lateMin  = getLateMin(row)
                 return (
-                  <tr key={row.employee_id} style={{ borderTop:'1px solid #f1f5f9' }}>
-                    <td style={{ padding:'11px 16px', fontSize:'14px', color:'#0f172a', fontWeight:500 }}>
-                      <div>{row.name}</div>
-                      {row.lavozim && <div style={{ fontSize:'11px', color:'#94a3b8' }}>{row.lavozim}</div>}
+                  <tr key={row.employee_id} className={`border-b border-slate-50 last:border-0 ${i % 2 === 1 ? 'bg-slate-50/40' : ''}`}>
+                    <td className="px-5 py-3">
+                      <div className="text-[14px] font-medium text-slate-700">{row.name}</div>
+                      {row.lavozim && <div className="text-xs text-slate-400 mt-0.5">{row.lavozim}</div>}
                     </td>
                     {multiOrg && (
-                      <td style={{ padding:'11px 16px', fontSize:'13px', color:'#64748b' }}>
-                        <span style={{ display:'inline-flex', alignItems:'center', gap:'4px' }}>
-                          <Building2 size={12}/> {groupName(row.group_id)}
-                        </span>
+                      <td className="px-5 py-3 text-sm text-slate-500">
+                        <span className="flex items-center gap-1"><Building2 size={11}/> {groupName(row.group_id)}</span>
                       </td>
                     )}
-                    <td style={{ padding:'11px 16px' }}>
-                      {(() => {
-                        const eff = getEffectiveFirstIn(row)
-                        const status = getStatus(row)
-                        if (!eff) return <span style={{ fontSize:'15px', color:'#cbd5e1', fontWeight:400 }}>—</span>
-                        return <span style={{ fontSize:'15px', fontWeight:500, color: status === 'late' ? '#f97316' : '#16a34a' }}>{toHHMM(eff)}</span>
-                      })()}
+                    <td className="px-5 py-3">
+                      {eff
+                        ? <span className={`text-[15px] font-medium ${status === 'late' ? 'text-amber-500' : 'text-green-500'}`}>{toHHMM(eff)}</span>
+                        : <span className="text-slate-300 text-[15px]">—</span>}
                     </td>
-                    <td style={{ padding:'11px 16px' }}>
-                      {(() => {
-                        const eff = getEffectiveFirstIn(row)
-                        if (!eff) return <span style={{ fontSize:'13px', color:'#cbd5e1' }}>—</span>
-                        const [wh, wm] = addMinutes(getWorkStart(row.group_id), getGrace(row.group_id)).split(':').map(Number)
-                        const [ah, am] = toHHMM(eff).split(':').map(Number)
-                        const diff = (ah * 60 + am) - (wh * 60 + wm)
-                        if (diff <= 0) return <span style={{ fontSize:'13px', color:'#16a34a' }}>—</span>
-                        return <span style={{ fontSize:'13px', fontWeight:500, color:'#f97316' }}>+{diff} daq</span>
-                      })()}
+                    <td className="px-5 py-3">
+                      {lateMin > 0
+                        ? <span className="text-xs font-medium text-amber-500 bg-amber-50 px-2 py-0.5 rounded-full">+{lateMin} daq</span>
+                        : <span className="text-slate-300 text-sm">—</span>}
                     </td>
-                    <td style={{ padding:'11px 16px', fontSize:'15px', color:row.last_out?'#475569':'#cbd5e1', fontWeight:400 }}>{row.last_out ? toHHMM(row.last_out) : '—'}</td>
-                    <td style={{ padding:'11px 16px' }}>
-                      <span style={{ padding:'4px 10px', borderRadius:'20px', fontSize:'12px', fontWeight:600, background:s.bg, color:s.color }}>{s.label}</span>
-                    </td>
+                    <td className="px-5 py-3 text-[15px] text-slate-500">{row.last_out ? toHHMM(row.last_out) : <span className="text-slate-300">—</span>}</td>
+                    <td className="px-5 py-3">{statusBadge[status]}</td>
                   </tr>
                 )
               })}
               {sorted.length === 0 && (
-                <tr><td colSpan={multiOrg?6:5} style={{ padding:'40px', textAlign:'center', color:'#94a3b8' }}>Ma'lumot yo'q</td></tr>
+                <tr><td colSpan={multiOrg ? 6 : 5} className="py-16 text-center text-slate-400 text-sm">Ma'lumot yo'q</td></tr>
               )}
             </tbody>
           </table>

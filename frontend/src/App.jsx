@@ -144,7 +144,7 @@ export default function App() {
   }
 
   return (
-    <div style={{ display:'flex', height:'100vh', background:'#f8fafc', color:'#0f172a', overflow:'hidden' }}>
+    <div className="flex h-screen bg-slate-50 overflow-hidden">
       <Sidebar current={page} onChange={(p) => {
         if (page === 'settings' && settingsDirty) {
           if (!window.confirm("Saqlanmagan o'zgarishlar bor. Chiqib ketasizmi?")) return
@@ -152,7 +152,7 @@ export default function App() {
         setSettingsDirty(false)
         setPage(p)
       }} user={user} onLogout={handleLogout} />
-      <main style={{ flex:1, overflowY:'auto', padding:'28px 32px', background:'#f8fafc' }}>
+      <main className="flex-1 overflow-y-auto p-7">
         {pages[page] ?? pages['dashboard']}
       </main>
     </div>
