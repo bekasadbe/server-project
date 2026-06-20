@@ -23,63 +23,139 @@ function getMonday(date) {
 }
 
 function toDateStr(d) {
-  return `${d.getFullYear()}-${String(d.getMonth() + 1).padStart(2, '0')}-${String(d.getDate()).padStart(2, '0')}`
+  return `${d.getFullYear()}-${String(d.getMonth()+1).padStart(2,'0')}-${String(d.getDate()).padStart(2,'0')}`
 }
 
 function isFuture(d) {
-  const today = new Date(); today.setHours(0, 0, 0, 0)
+  const today = new Date(); today.setHours(0,0,0,0)
   return d > today
 }
 
 function isToday(d) {
-  const today = new Date(); today.setHours(0, 0, 0, 0)
+  const today = new Date(); today.setHours(0,0,0,0)
   return d.getTime() === today.getTime()
 }
 
-export default function Jadvallar({ groups = [], employees = [] }) {
-  const [monday, setMonday]     = useState(() => getMonday(new Date()))
-  const [dayData, setDayData]   = useState({})
-  const [leaves, setLeaves]     = useState([])
-  const [loading, setLoading]   = useState(false)
-  const [orgFilter, setOrgFilter] = useState('all')
+function Avatar({ name }) {
+  const initials = (name || '?').split(' ').map(w => w[0]).slice(0,2).join('').toUpperCase()
+  const COLORS = ['#2B6CB0','#7c3aed','#0f766e','#b45309','#be123c','#0891b2','#4338ca']
+  const bg = COLORS[(name || '').charCodeAt(0) % COLORS.length]
+  return (
+    <div className="w-9 h-9 rounded-full flex items-center justify-center text-white font-bold text-[12px] shrink-0" style={{ background: bg }}>
+      {initials}
+    </div>
+  )
+}
 
-  const multiOrg = groups.length > 1
-  const visibleGroupIds = groups.map(g => g.id)
-  const days = getWeekDays(monday)
-
+function Cell({ emp, day, dayData, leaves, groups }) {
   const getWorkStart  = (gid) => groups.find(g => g.id === gid)?.work_start  || '09:00'
   const getWorkFinish = (gid) => groups.find(g => g.id === gid)?.work_finish || '18:00'
   const getWorkBegin  = (gid) => groups.find(g => g.id === gid)?.work_begin  || '06:00'
   const getWorkDays   = (gid) => (groups.find(g => g.id === gid)?.work_days  || '1,2,3,4,5,6').split(',').filter(Boolean)
   const getGrace      = (gid) => groups.find(g => g.id === gid)?.grace_minutes ?? 0
-  const isDayOff      = (d, gid) => !getWorkDays(gid).includes(String(d.getDay()))
-
-  const addMinutes = (t, min) => {
+  const addMin = (t, min) => {
     const [h, m] = t.split(':').map(Number)
-    const total = h * 60 + m + Number(min)
-    return `${String(Math.floor(total / 60)).padStart(2, '0')}:${String(total % 60).padStart(2, '0')}`
+    const total = h*60+m+Number(min)
+    return `${String(Math.floor(total/60)).padStart(2,'0')}:${String(total%60).padStart(2,'0')}`
   }
+
+  const ds     = toDateStr(day)
+  const future = isFuture(day)
+  const today  = isToday(day)
+  const off    = !getWorkDays(emp.group_id).includes(String(day.getDay()))
+  const rec    = dayData[ds]?.[emp.id]
+  const leave  = leaves.find(l => l.employee_id === emp.id && l.start_date <= ds && l.end_date >= ds)
+  const isWeekend = day.getDay() === 0 || day.getDay() === 6
+
+  const ws = getWorkStart(emp.group_id)
+  const wf = getWorkFinish(emp.group_id)
+  const wb = getWorkBegin(emp.group_id)
+
+  // Ta'til / Kasallik
+  if (leave) {
+    const sick = leave.leave_type === 'sick'
+    return (
+      <div className={`mx-0.5 my-0.5 px-2.5 py-1.5 rounded-xl border-2 min-h-[52px] flex flex-col justify-center ${sick ? 'bg-purple-50 border-purple-200' : 'bg-cyan-50 border-cyan-200'}`}>
+        <div className={`flex items-center gap-1 text-[12px] font-medium ${sick ? 'text-purple-600' : 'text-cyan-600'}`}>
+          {sick ? <Stethoscope size={11}/> : <Palmtree size={11}/>}
+          {sick ? 'Kasallik' : "Ta'til"}
+        </div>
+      </div>
+    )
+  }
+
+  // Ma'lumot bor
+  if (rec && (rec.first_in || rec.last_out)) {
+    const fi  = rec.first_in
+    const lo  = rec.last_out
+    const lt  = addMin(ws, getGrace(emp.group_id))
+    const eff = fi && fi >= wb ? fi : null
+    const late     = eff && eff > lt
+    const earlyOut = lo && lo < wf
+    const inCls  = !eff ? 'text-slate-300' : late ? 'text-orange-500' : 'text-green-600'
+    const outCls = earlyOut ? 'text-orange-500' : lo ? 'text-green-600' : 'text-slate-300'
+    return (
+      <div className="mx-0.5 my-0.5 px-2.5 py-1.5 rounded-xl border-2 bg-cyan-50 border-cyan-200 min-h-[52px] flex flex-col justify-center">
+        <div className="text-[11px] text-slate-400 mb-0.5">{ws} — {wf}</div>
+        <div className="flex items-center gap-1 text-[13px] font-semibold">
+          <span className={inCls}>{eff || '—:——'}</span>
+          <span className="text-slate-300">·</span>
+          <span className={outCls}>{lo || '—:——'}</span>
+        </div>
+      </div>
+    )
+  }
+
+  // Dam olish kuni
+  if (off || (isWeekend && !rec)) {
+    return (
+      <div className="mx-0.5 my-0.5 px-2.5 py-1.5 rounded-xl border-2 bg-slate-50 border-slate-100 min-h-[52px] flex flex-col justify-center">
+        <div className="text-[12px] text-slate-300">Dam olish</div>
+      </div>
+    )
+  }
+
+  // Kelmadi / hali yo'q / rejalashtirilgan
+  const borderCls = today ? 'border-amber-300 bg-amber-50' : future ? 'border-slate-100 bg-white' : 'border-red-200 bg-red-50'
+  const textCls   = today ? 'text-amber-500' : future ? 'text-slate-200' : 'text-red-500'
+  const label     = today ? "hali yo'q" : future ? '—' : 'kelmadi'
+  return (
+    <div className={`mx-0.5 my-0.5 px-2.5 py-1.5 rounded-xl border-2 min-h-[52px] flex flex-col justify-center ${borderCls}`}>
+      <div className="text-[11px] text-slate-400 mb-0.5">{ws} — {wf}</div>
+      <div className={`text-[12px] font-semibold ${textCls}`}>{label}</div>
+    </div>
+  )
+}
+
+export default function Jadvallar({ groups = [], employees = [] }) {
+  const [monday, setMonday]       = useState(() => getMonday(new Date()))
+  const [dayData, setDayData]     = useState({})
+  const [leaves, setLeaves]       = useState([])
+  const [loading, setLoading]     = useState(false)
+  const [orgFilter, setOrgFilter] = useState('all')
+
+  const multiOrg        = groups.length > 1
+  const visibleGroupIds = groups.map(g => g.id)
+  const days            = getWeekDays(monday)
 
   useEffect(() => {
     const load = async () => {
       setLoading(true)
       const from = toDateStr(days[0])
       const to   = toDateStr(days[days.length - 1])
-
       const [attResults, leavesData] = await Promise.all([
         Promise.all(days.map(async d => {
           const ds = toDateStr(d)
           try {
-            const res = await fetch(`${API_URL}/attendance?date=${ds}`, { headers: { 'X-API-Token': TOKEN } })
+            const res  = await fetch(`${API_URL}/attendance?date=${ds}`, { headers: { 'X-API-Token': TOKEN } })
             const json = await res.json()
-            const map = {}
+            const map  = {}
             ;(json.attendance || []).forEach(r => { map[r.employee_id] = r })
             return [ds, map]
           } catch { return [ds, {}] }
         })),
         apiFetch(`/leaves?from=${from}&to=${to}`).catch(() => ({ leaves: [] }))
       ])
-
       const empIds = new Set(employees.map(e => e.id))
       setDayData(Object.fromEntries(attResults))
       setLeaves((leavesData.leaves || []).filter(l => empIds.has(l.employee_id)))
@@ -89,153 +165,71 @@ export default function Jadvallar({ groups = [], employees = [] }) {
   // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [monday.getTime(), visibleGroupIds.join(',')])
 
-  const prevWeek = () => { const m = new Date(monday); m.setDate(m.getDate() - 7); setMonday(m) }
-  const nextWeek = () => { const m = new Date(monday); m.setDate(m.getDate() + 7); setMonday(m) }
+  const prevWeek = () => { const m = new Date(monday); m.setDate(m.getDate()-7); setMonday(m) }
+  const nextWeek = () => { const m = new Date(monday); m.setDate(m.getDate()+7); setMonday(m) }
 
-  const getLeaveForDay = (empId, dateStr) => {
-    return leaves.find(l => l.employee_id === empId && l.start_date <= dateStr && l.end_date >= dateStr)
-  }
-
-  const filteredEmps = employees.filter(e =>
-    visibleGroupIds.includes(e.group_id) &&
-    (orgFilter === 'all' || e.group_id === orgFilter)
-  ).sort((a, b) => a.name.localeCompare(b.name))
+  const filteredEmps = employees
+    .filter(e => visibleGroupIds.includes(e.group_id) && (orgFilter === 'all' || e.group_id === orgFilter))
+    .sort((a, b) => a.name.localeCompare(b.name))
 
   const weekLabel = () => {
     const last = days[days.length - 1]
     return `${days[0].getDate()} ${MONTH_SHORT[days[0].getMonth()]} — ${last.getDate()} ${MONTH_SHORT[last.getMonth()]} ${last.getFullYear()}`
   }
 
-  const CellContent = ({ emp, day }) => {
-    const ds       = toDateStr(day)
-    const future   = isFuture(day)
-    const todayDay = isToday(day)
-    const rec      = dayData[ds]?.[emp.id]
-    const wb       = getWorkBegin(emp.group_id)
-    const ws       = getWorkStart(emp.group_id)
-    const wf       = getWorkFinish(emp.group_id)
-    const off      = isDayOff(day, emp.group_id)
-    const leave    = getLeaveForDay(emp.id, ds)
-    const isWeekend = day.getDay() === 0 || day.getDay() === 6
-
-    const cellStyle = (borderColor, bg = '#fff') => ({
-      margin: '3px', padding: '6px 10px', borderRadius: '10px',
-      background: isWeekend && !leave && !(rec && (rec.first_in || rec.last_out)) ? '#f0f0f1' : bg,
-      border: `2px solid ${isWeekend && !leave && !(rec && (rec.first_in || rec.last_out)) ? '#e2e8f0' : borderColor}`,
-      minHeight: '46px', display: 'flex', flexDirection: 'column', justifyContent: 'center',
-    })
-    const plannedStyle = { fontSize: '13px', color: '#94a3b8', fontWeight: 400, marginBottom: '3px', textAlign: 'left' }
-    const timeStyle    = { fontSize: '15px', fontWeight: 400, textAlign: 'left' }
-
-    // Ta'til / Kasallik
-    if (leave) {
-      const isSick = leave.leave_type === 'sick'
-      const lColor = isSick ? '#9333ea' : '#06b6d4'
-      return (
-        <div style={cellStyle(lColor, isSick ? '#fdf4ff' : '#ecfeff')}>
-          <div style={{ fontSize: '12px', fontWeight: 400, color: lColor, display: 'flex', alignItems: 'center', gap: '4px' }}>
-            {isSick ? <Stethoscope size={12} color={lColor} /> : <Palmtree size={12} color={lColor} />}
-            {isSick ? 'Kasallik' : "Ta'til"}
-          </div>
-        </div>
-      )
-    }
-
-    // Ma'lumot bor
-    if (rec && (rec.first_in || rec.last_out)) {
-      const fi            = rec.first_in
-      const lo            = rec.last_out
-      const lateThreshold = addMinutes(ws, getGrace(emp.group_id))
-      const eff           = fi && fi >= wb ? fi : null
-      const late          = eff && eff > lateThreshold
-      const earlyOut      = lo && lo < wf
-      const inColor       = !eff ? '#94a3b8' : late ? '#f97316' : '#22c55e'
-      const outColor      = earlyOut ? '#f97316' : '#22c55e'
-
-      return (
-        <div style={cellStyle('#06b6d4', '#f0fdfa')}>
-          <div style={plannedStyle}>{ws} - {wf}</div>
-          <div style={{ display: 'flex', gap: '3px', ...timeStyle }}>
-            <span style={{ color: inColor }}>{eff || '—:——'}</span>
-            <span style={{ color: '#d1d5db' }}> - </span>
-            <span style={{ color: lo ? outColor : '#d1d5db' }}>{lo || '—:——'}</span>
-          </div>
-        </div>
-      )
-    }
-
-    // Dam olish kuni (ma'lumot yo'q)
-    if (off) return (
-      <div style={cellStyle('#e2e8f0', '#f8fafc')}>
-        <div style={{ ...plannedStyle, marginBottom: 0, color: '#cbd5e1' }}>Dam olish</div>
-      </div>
-    )
-
-    // Ma'lumot yo'q (ish kuni)
-    return (
-      <div style={cellStyle(todayDay ? '#fbbf24' : future ? '#f1f5f9' : '#f43f5e', todayDay ? '#fff' : future ? '#fff' : '#fff5f5')}>
-        <div style={plannedStyle}>{ws} - {wf}</div>
-        <div style={{ ...timeStyle, fontSize: '13px', color: todayDay ? '#f59e0b' : future ? '#e2e8f0' : '#f43f5e' }}>
-          {todayDay ? "hali yo'q" : future ? '—' : 'kelmadi'}
-        </div>
-      </div>
-    )
-  }
-
-  const nameInitials = (name) => (name || '?').split(' ').map(w => w[0]).slice(0, 2).join('').toUpperCase()
-  const nameColor = () => '#0891b2'
-
   return (
     <div>
       {/* Header */}
-      <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: '20px', flexWrap: 'wrap', gap: '12px' }}>
-        <div style={{ display: 'flex', alignItems: 'center', gap: '10px' }}>
-          <button onClick={prevWeek} style={{ width: 32, height: 32, borderRadius: '8px', border: '1px solid #e2e8f0', background: '#fff', cursor: 'pointer', display: 'flex', alignItems: 'center', justifyContent: 'center', color: '#64748b' }}>
-            <ChevronLeft size={16} />
+      <div className="flex items-center justify-between mb-6 flex-wrap gap-3">
+        <div className="flex items-center gap-2">
+          <button onClick={prevWeek} className="w-8 h-8 rounded-xl border border-slate-200 bg-white flex items-center justify-center text-slate-500 cursor-pointer hover:bg-slate-50 transition-colors">
+            <ChevronLeft size={16}/>
           </button>
           <div>
-            <h1 style={{ margin: 0, fontSize: '20px', fontWeight: 700, color: '#0f172a' }}>Jadvallar</h1>
-            <p style={{ margin: '2px 0 0', fontSize: '13px', color: '#94a3b8' }}>{weekLabel()}</p>
+            <h1 className="m-0 text-[22px] font-bold text-slate-900">Jadvallar</h1>
+            <p className="m-0 text-[12px] text-slate-400">{weekLabel()}</p>
           </div>
-          <button onClick={nextWeek} style={{ width: 32, height: 32, borderRadius: '8px', border: '1px solid #e2e8f0', background: '#fff', cursor: 'pointer', display: 'flex', alignItems: 'center', justifyContent: 'center', color: '#64748b' }}>
-            <ChevronRight size={16} />
+          <button onClick={nextWeek} className="w-8 h-8 rounded-xl border border-slate-200 bg-white flex items-center justify-center text-slate-500 cursor-pointer hover:bg-slate-50 transition-colors">
+            <ChevronRight size={16}/>
           </button>
-          <button onClick={() => setMonday(getMonday(new Date()))} style={{ padding: '6px 12px', borderRadius: '8px', border: '1px solid #e2e8f0', background: '#fff', cursor: 'pointer', fontSize: '12px', color: '#64748b', fontWeight: 500 }}>
+          <button onClick={() => setMonday(getMonday(new Date()))}
+            className="px-3 py-1.5 rounded-xl border border-slate-200 bg-white text-slate-500 text-[13px] cursor-pointer hover:bg-slate-50 transition-colors font-medium">
             Bu hafta
           </button>
         </div>
-
         {multiOrg && (
-          <div style={{ display: 'flex', gap: '6px', flexWrap: 'wrap' }}>
-            <button onClick={() => setOrgFilter('all')} style={{ padding: '6px 13px', borderRadius: '8px', border: '1px solid', borderColor: orgFilter === 'all' ? '#2563eb' : '#e2e8f0', background: orgFilter === 'all' ? '#eff6ff' : '#fff', color: orgFilter === 'all' ? '#2563eb' : '#64748b', fontSize: '13px', cursor: 'pointer', fontWeight: orgFilter === 'all' ? 600 : 400 }}>Hammasi</button>
-            {groups.map(g => (
-              <button key={g.id} onClick={() => setOrgFilter(g.id)} style={{ padding: '6px 13px', borderRadius: '8px', border: '1px solid', borderColor: orgFilter === g.id ? '#2563eb' : '#e2e8f0', background: orgFilter === g.id ? '#eff6ff' : '#fff', color: orgFilter === g.id ? '#2563eb' : '#64748b', fontSize: '13px', cursor: 'pointer', fontWeight: orgFilter === g.id ? 600 : 400 }}>{g.name}</button>
+          <div className="flex gap-1.5 flex-wrap">
+            {[{ id: 'all', name: 'Hammasi' }, ...groups].map(g => (
+              <button key={g.id} onClick={() => setOrgFilter(g.id)}
+                className={`px-3.5 py-1.5 rounded-xl border text-[13px] cursor-pointer transition-colors ${orgFilter === g.id ? 'bg-brand-50 border-brand-600 text-brand-600 font-semibold' : 'bg-white border-slate-200 text-slate-500 hover:border-slate-300'}`}>
+                {g.name}
+              </button>
             ))}
           </div>
         )}
       </div>
 
-      {/* Grid */}
-      <div style={{ background: '#fff', borderRadius: '14px', border: '1px solid #e2e8f0', overflow: 'hidden', boxShadow: '0 1px 4px #0f172a06' }}>
-        <div style={{ overflowX: 'auto' }}>
-          <table style={{ width: '100%', borderCollapse: 'collapse', tableLayout: 'fixed' }}>
+      {/* Table */}
+      <div className="bg-white rounded-2xl border border-slate-100 shadow-card overflow-hidden">
+        <div className="overflow-x-auto">
+          <table className="w-full border-collapse" style={{ tableLayout: 'fixed', minWidth: '900px' }}>
             <colgroup>
-              <col style={{ width: '20%' }} />
-              {days.map((_, i) => <col key={i} style={{ width: `${80 / days.length}%` }} />)}
+              <col style={{ width: '18%' }}/>
+              {days.map((_, i) => <col key={i} style={{ width: `${82/7}%` }}/>)}
             </colgroup>
             <thead>
-              <tr style={{ background: '#f8fafc', borderBottom: '2px solid #e2e8f0' }}>
-                <th style={{ padding: '12px 16px', textAlign: 'left', borderRight: '1px solid #e2e8f0' }}>
-                  <span style={{ fontSize: '12px', fontWeight: 400, color: '#94a3b8' }}>Ism Familiya</span>
+              <tr className="bg-slate-50 border-b border-slate-100">
+                <th className="px-4 py-3 text-left border-r border-slate-100">
+                  <span className="text-[12px] text-slate-400 font-normal">Ism Familiya</span>
                 </th>
                 {days.map((d, i) => {
-                  const today = isToday(d)
-                  const isSun = d.getDay() === 0
-                  const isSat = d.getDay() === 6
+                  const today  = isToday(d)
+                  const isSun  = d.getDay() === 0
                   return (
-                    <th key={i} style={{ padding: '10px 4px', textAlign: 'center', background: today ? '#eff6ff' : (isSun || isSat) ? '#f0f0f1' : '#f8fafc', borderLeft: '1px solid #e2e8f0', borderBottom: today ? '2px solid #2563eb' : 'none' }}>
-                      <div style={{ fontSize: '11px', fontWeight: 400, color: today ? '#2563eb' : isSun ? '#f97316' : '#64748b' }}>{DAY_LABELS[i]}</div>
-                      <div style={{ fontSize: '16px', fontWeight: 400, color: today ? '#2563eb' : isSun ? '#f97316' : '#0f172a', marginTop: '1px' }}>{d.getDate()}</div>
+                    <th key={i} className={`py-2.5 px-1 text-center border-l border-slate-100 ${today ? 'bg-brand-50' : ''}`}
+                      style={{ borderBottom: today ? '2px solid #2B6CB0' : undefined }}>
+                      <div className={`text-[11px] font-normal ${today ? 'text-brand-600' : isSun ? 'text-orange-500' : 'text-slate-400'}`}>{DAY_LABELS[i]}</div>
+                      <div className={`text-[17px] font-semibold mt-0.5 ${today ? 'text-brand-600' : isSun ? 'text-orange-500' : 'text-slate-800'}`}>{d.getDate()}</div>
                     </th>
                   )
                 })}
@@ -243,29 +237,26 @@ export default function Jadvallar({ groups = [], employees = [] }) {
             </thead>
             <tbody>
               {loading ? (
-                <tr><td colSpan={8} style={{ padding: '48px', textAlign: 'center', color: '#94a3b8', fontSize: '13px' }}>Yuklanmoqda...</td></tr>
+                <tr><td colSpan={8} className="py-16 text-center text-slate-400 text-[13px]">Yuklanmoqda…</td></tr>
               ) : filteredEmps.length === 0 ? (
-                <tr><td colSpan={8} style={{ padding: '48px', textAlign: 'center', color: '#94a3b8', fontSize: '13px' }}>Xodimlar topilmadi</td></tr>
+                <tr><td colSpan={8} className="py-16 text-center text-slate-400 text-[13px]">Xodimlar topilmadi</td></tr>
               ) : filteredEmps.map((emp, ri) => (
-                <tr key={emp.id} style={{ borderBottom: ri < filteredEmps.length - 1 ? '1px solid #f1f5f9' : 'none', background: ri % 2 === 0 ? '#fff' : '#fafafa' }}>
-                  <td style={{ padding: '10px 16px', borderRight: '1px solid #e2e8f0', overflow: 'hidden' }}>
-                    <div style={{ display: 'flex', alignItems: 'center', gap: '10px' }}>
-                      <div style={{ width: 36, height: 36, borderRadius: '50%', background: nameColor(emp.name), display: 'flex', alignItems: 'center', justifyContent: 'center', color: '#fff', fontWeight: 700, fontSize: '13px', flexShrink: 0 }}>
-                        {nameInitials(emp.name)}
-                      </div>
-                      <div style={{ minWidth: 0 }}>
-                        <div style={{ fontSize: '14px', fontWeight: 400, color: '#0f172a', overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>{emp.name}</div>
-                        {emp.lavozim && <div style={{ fontSize: '12px', color: '#94a3b8', marginTop: '2px', overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>{emp.lavozim}</div>}
+                <tr key={emp.id} className={`border-t border-slate-50 ${ri % 2 === 1 ? 'bg-slate-50/40' : 'bg-white'}`}>
+                  <td className="px-4 py-2 border-r border-slate-100 overflow-hidden">
+                    <div className="flex items-center gap-2.5">
+                      <Avatar name={emp.name}/>
+                      <div className="min-w-0">
+                        <div className="text-[13px] font-medium text-slate-800 truncate">{emp.name}</div>
+                        {emp.lavozim && <div className="text-[11px] text-slate-400 truncate">{emp.lavozim}</div>}
                       </div>
                     </div>
                   </td>
                   {days.map((d, di) => {
-                    const today  = isToday(d)
-                    const isSun  = d.getDay() === 0
-                    const isSat  = d.getDay() === 6
+                    const today   = isToday(d)
+                    const isSun   = d.getDay() === 0
                     return (
-                      <td key={di} style={{ padding: '2px', textAlign: 'center', borderLeft: '1px solid #f1f5f9', background: today ? '#f8fbff' : (isSun || isSat) ? '#f4f4f5' : 'transparent', verticalAlign: 'middle' }}>
-                        <CellContent emp={emp} day={d} />
+                      <td key={di} className={`p-0 border-l border-slate-50 align-middle ${today ? 'bg-brand-50/30' : isSun ? 'bg-orange-50/30' : ''}`}>
+                        <Cell emp={emp} day={d} dayData={dayData} leaves={leaves} groups={groups}/>
                       </td>
                     )
                   })}
@@ -276,18 +267,18 @@ export default function Jadvallar({ groups = [], employees = [] }) {
         </div>
 
         {/* Legend */}
-        <div style={{ padding: '10px 16px', borderTop: '1px solid #f1f5f9', display: 'flex', gap: '20px', flexWrap: 'wrap' }}>
+        <div className="px-4 py-3 border-t border-slate-100 flex gap-5 flex-wrap">
           {[
-            { color: '#16a34a', label: "O'z vaqtida" },
-            { color: '#f59e0b', label: 'Kech keldi' },
-            { color: '#f97316', label: 'Kech / Erta ketdi' },
-            { color: '#9333ea', label: 'Kasallik' },
-            { color: '#0891b2', label: "Ta'til" },
-            { color: '#cbd5e1', label: 'Kelmadi / Rejalashtirilgan' },
+            { cls: 'bg-green-500',  label: "O'z vaqtida" },
+            { cls: 'bg-orange-400', label: 'Kech / Erta ketdi' },
+            { cls: 'bg-red-400',    label: 'Kelmadi' },
+            { cls: 'bg-purple-500', label: 'Kasallik' },
+            { cls: 'bg-cyan-500',   label: "Ta'til" },
+            { cls: 'bg-slate-300',  label: 'Dam olish' },
           ].map(l => (
-            <div key={l.label} style={{ display: 'flex', alignItems: 'center', gap: '5px' }}>
-              <div style={{ width: 8, height: 8, borderRadius: '50%', background: l.color }} />
-              <span style={{ fontSize: '11px', color: '#64748b' }}>{l.label}</span>
+            <div key={l.label} className="flex items-center gap-1.5">
+              <div className={`w-2 h-2 rounded-full ${l.cls}`}/>
+              <span className="text-[11px] text-slate-500">{l.label}</span>
             </div>
           ))}
         </div>
