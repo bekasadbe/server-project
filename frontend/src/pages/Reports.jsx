@@ -353,18 +353,6 @@ export default function Reports({ groups = [] }) {
             })}
           </div>
 
-          {/* Erta keluvchilar */}
-          {renderSection({
-            title: 'Eng erta keluvchilar',
-            subtitle: "O'rtacha kelish vaqti · kamida 3 kun",
-            icon: Sunrise, iconCls: 'text-amber-500', iconBg: 'bg-amber-50 border border-amber-100',
-            badge: 'bg-amber-50 text-amber-600',
-            list: earlyList,
-            barColors: ['#fbbf24','#cbd5e1','#fdba74'],
-            valNode: emp => minToTime(emp.avgInMin),
-            valFn: { label: "O'rtacha kelish", get: emp => minToTime(emp.avgInMin) }
-          })}
-
           {/* Ko'p ishlagan */}
           {renderSection({
             title: "Eng ko'p ishlagan",
@@ -375,6 +363,18 @@ export default function Reports({ groups = [] }) {
             barColors: ['#2B6CB0','#90CDF4','#63B3ED'],
             valNode: emp => minToHM(emp.workedMins) || '—',
             valFn: { label: 'Jami ishladi', get: emp => minToHM(emp.workedMins)||'—' }
+          })}
+
+          {/* Erta keluvchilar */}
+          {renderSection({
+            title: 'Eng erta keluvchilar',
+            subtitle: "O'rtacha kelish vaqti · kamida 3 kun",
+            icon: Sunrise, iconCls: 'text-amber-500', iconBg: 'bg-amber-50 border border-amber-100',
+            badge: 'bg-amber-50 text-amber-600',
+            list: earlyList,
+            barColors: ['#fbbf24','#cbd5e1','#fdba74'],
+            valNode: emp => minToTime(emp.avgInMin),
+            valFn: { label: "O'rtacha kelish", get: emp => minToTime(emp.avgInMin) }
           })}
         </>
       )}
