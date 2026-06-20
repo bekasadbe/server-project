@@ -1,19 +1,16 @@
 import { useState, useEffect, useRef } from 'react'
-import { Wifi, WifiOff } from 'lucide-react'
-
+import { Wifi, WifiOff, Radio } from 'lucide-react'
 import { API_URL, TOKEN } from '../config'
 
 export default function LiveEvents({ groups = [] }) {
-  const [events, setEvents]       = useState([])
-  const [connected, setConnected] = useState(false)
+  const [events, setEvents]         = useState([])
+  const [connected, setConnected]   = useState(false)
   const [lastUpdate, setLastUpdate] = useState(null)
   const lastIdRef = useRef(0)
 
   const fetchEvents = async () => {
     try {
-      const res = await fetch(`${API_URL}/events/live?limit=100`, {
-        headers: { 'X-API-Token': TOKEN }
-      })
+      const res = await fetch(`${API_URL}/events/live?limit=100`, { headers: { 'X-API-Token': TOKEN } })
       if (!res.ok) throw new Error()
       const data = await res.json()
       const newEvents = data.events || []
@@ -36,61 +33,51 @@ export default function LiveEvents({ groups = [] }) {
 
   return (
     <div>
-      <div style={{ display:'flex', alignItems:'center', justifyContent:'space-between', marginBottom:'16px' }}>
+      {/* Header */}
+      <div className="flex items-center justify-between mb-6">
         <div>
-          <h2 style={{ fontSize:'20px', fontWeight:700, color:'#0f172a', margin:0 }}>Jonli lenta</h2>
-          <p style={{ fontSize:'12px', color:'#64748b', margin:'2px 0 0' }}>Har 5 soniyada yangilanadi</p>
+          <h1 className="flex items-center gap-2.5 text-[22px] font-bold text-slate-900 m-0">
+            <Radio size={20} className="text-brand-600"/> Jonli lenta
+          </h1>
+          <p className="text-[13px] text-slate-400 mt-1 mb-0">Har 5 soniyada yangilanadi</p>
         </div>
-        <div style={{ display:'flex', alignItems:'center', gap:'6px', padding:'6px 14px', borderRadius:'20px',
-          background: connected ? '#dcfce7' : '#fee2e2', color: connected ? '#16a34a' : '#dc2626',
-          fontSize:'12px', fontWeight:600 }}>
-          {connected ? <><Wifi size={13}/> Ulangan {lastUpdate && `· ${lastUpdate}`}</> : <><WifiOff size={13}/> Ulanmadi</>}
+        <div className={`flex items-center gap-2 px-4 py-2 rounded-xl border text-[13px] font-semibold ${connected ? 'bg-green-50 border-green-200 text-green-700' : 'bg-red-50 border-red-200 text-red-600'}`}>
+          {connected
+            ? <><Wifi size={14}/> Ulangan {lastUpdate && <span className="font-normal text-green-600 ml-1">{lastUpdate}</span>}</>
+            : <><WifiOff size={14}/> Ulanmadi</>}
         </div>
       </div>
 
-      <div style={{ background:'#fff', borderRadius:'12px', border:'1px solid #e2e8f0', overflow:'hidden' }}>
-        <table style={{ width:'100%', borderCollapse:'collapse' }}>
+      {/* Table */}
+      <div className="bg-white rounded-2xl border border-slate-100 shadow-card overflow-hidden">
+        <table className="w-full border-collapse">
           <thead>
-            <tr style={{ background:'#f8fafc', borderBottom:'1px solid #e2e8f0' }}>
-              {['Vaqt','ID','Xodim','Tashkilot','Holat','Kamera'].map(h => (
-                <th key={h} style={{ padding:'7px 10px', textAlign:'left',
-                  fontSize:'12px', color:'#94a3b8', fontWeight:400, whiteSpace:'nowrap' }}>{h}</th>
+            <tr className="bg-slate-50">
+              {['Vaqt', 'ID', 'Xodim', 'Tashkilot', 'Holat', 'Kamera'].map(h => (
+                <th key={h} className="px-4 py-2.5 text-left text-[12px] text-slate-400 font-normal whitespace-nowrap">{h}</th>
               ))}
             </tr>
           </thead>
           <tbody>
             {events.length === 0 ? (
-              <tr><td colSpan={6} style={{ padding:'32px', textAlign:'center', color:'#94a3b8', fontSize:'13px' }}>
-                Hali event kelmadi...
-              </td></tr>
+              <tr>
+                <td colSpan={6} className="py-16 text-center text-slate-400 text-[13px]">Hali event kelmadi…</td>
+              </tr>
             ) : events.map((e, i) => (
-              <tr key={e.id} style={{
-                borderBottom:'1px solid #f1f5f9',
-                background: i === 0 ? '#f0fdf4' : i % 2 === 0 ? '#fafafa' : '#fff',
-              }}>
-                <td style={{ padding:'5px 10px', fontFamily:'monospace', whiteSpace:'nowrap' }}>
-                  <span style={{ fontSize:'13px', fontWeight:700, color:'#0f172a' }}>{e.time_short || e.event_time?.slice(11,16) || '—'}</span>
-                  <span style={{ fontSize:'11px', color:'#94a3b8', marginLeft:'6px' }}>{e.event_time?.slice(0,10) || ''}</span>
+              <tr key={e.id} className={`border-t border-slate-50 transition-colors ${i === 0 ? 'bg-green-50/60' : 'hover:bg-slate-50/50'}`}>
+                <td className="px-4 py-2.5">
+                  <span className="font-mono font-bold text-[13px] text-slate-900">{e.time_short || e.event_time?.slice(11,16) || '—'}</span>
+                  <span className="font-mono text-[11px] text-slate-400 ml-2">{e.event_time?.slice(0,10) || ''}</span>
                 </td>
-                <td style={{ padding:'5px 10px', fontSize:'11px', color:'#94a3b8', fontFamily:'monospace' }}>
-                  {e.employee_id}
+                <td className="px-4 py-2.5 font-mono text-[11px] text-slate-400">{e.employee_id}</td>
+                <td className="px-4 py-2.5 text-[13px] font-medium text-slate-800">{e.name || '—'}</td>
+                <td className="px-4 py-2.5 text-[12px] text-slate-500">{groupName(e.group_id)}</td>
+                <td className="px-4 py-2.5">
+                  {e.direction === 'in'
+                    ? <span className="inline-flex px-2.5 py-1 rounded-full text-[12px] font-semibold bg-green-100 text-green-700">Kirdi ↑</span>
+                    : <span className="inline-flex px-2.5 py-1 rounded-full text-[12px] font-semibold bg-amber-100 text-amber-700">Chiqdi ↓</span>}
                 </td>
-                <td style={{ padding:'5px 10px', fontSize:'12px', fontWeight:500, color:'#0f172a' }}>
-                  {e.name || '—'}
-                </td>
-                <td style={{ padding:'5px 10px', fontSize:'11px', color:'#64748b' }}>
-                  {groupName(e.group_id)}
-                </td>
-                <td style={{ padding:'5px 10px' }}>
-                  {e.direction === 'in' ? (
-                    <span style={{ color:'#16a34a', fontSize:'12px', fontWeight:600 }}>Kirdi</span>
-                  ) : (
-                    <span style={{ color:'#d97706', fontSize:'12px', fontWeight:600 }}>Chiqdi</span>
-                  )}
-                </td>
-                <td style={{ padding:'5px 10px', fontSize:'11px', color:'#94a3b8', fontFamily:'monospace' }}>
-                  {e.device_ip || '—'}
-                </td>
+                <td className="px-4 py-2.5 font-mono text-[11px] text-slate-400">{e.device_ip || '—'}</td>
               </tr>
             ))}
           </tbody>
