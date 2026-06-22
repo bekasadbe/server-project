@@ -12,8 +12,7 @@ from database import (
     get_accounts, add_account, update_account, delete_account,
     save_event, get_direction,
     hash_password, verify_password, is_hashed, get_conn,
-    get_leaves, add_leave, delete_leave,
-    get_pricing, set_config
+    get_leaves, add_leave, delete_leave
 )
 from datetime import date, datetime, timezone, timedelta
 from collections import defaultdict
@@ -326,27 +325,6 @@ def leave_delete(lid):
     if not check_token():
         return jsonify({'error': 'Unauthorized'}), 401
     delete_leave(lid)
-    return jsonify({'ok': True})
-
-
-@app.route('/config/pricing', methods=['GET'])
-def config_pricing_get():
-    return jsonify(get_pricing())
-
-
-@app.route('/config/pricing', methods=['PUT'])
-def config_pricing_put():
-    if not check_token():
-        return jsonify({'ok': False}), 401
-    data = request.json or {}
-    role = data.get('_role', '')
-    if role != 'admin':
-        return jsonify({'ok': False, 'error': 'Ruxsat yoq'}), 403
-    for key in ('basic', 'business', 'corp'):
-        if key in data:
-            val = str(data[key]).replace(' ', '').replace(',', '').replace('\xa0', '')
-            if val.isdigit():
-                set_config('pricing_' + key, val)
     return jsonify({'ok': True})
 
 

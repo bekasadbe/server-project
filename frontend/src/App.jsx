@@ -134,7 +134,6 @@ export default function App() {
         onDeleteGroup={deleteGroup}
         onMoveEmployee={moveEmployee}
         onUpdateGroup={updateGroup}
-        user={user}
       />,
       accounts: <Accounts
         groups={groups}
