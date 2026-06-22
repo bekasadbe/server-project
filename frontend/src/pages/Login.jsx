@@ -241,18 +241,15 @@ export default function Login({ onLogin }) {
         </p>
 
         {/* 3 ta karta */}
-        <div style={{ display:'grid', gridTemplateColumns:'repeat(auto-fit, minmax(280px, 1fr))', gap:'16px', maxWidth:'960px', margin:'0 auto' }}>
+        <div style={{ display:'grid', gridTemplateColumns:'repeat(auto-fit, minmax(290px, 1fr))', gap:'20px', maxWidth:'980px', margin:'0 auto' }}>
           {[
             {
               icon: Zap,
-              label: null,
+              badge: null,
               name: "Boshlang'ich",
               desc: 'Kichik jamoa uchun ideal',
               price: '1 000 000',
-              unit: "so'm / oy",
               color: '#60a5fa',
-              grad: 'rgba(96,165,250,0.18)',
-              border: 'rgba(96,165,250,0.3)',
               gift: null,
               features: [
                 '10 tagacha xodim',
@@ -267,15 +264,11 @@ export default function Login({ onLogin }) {
             },
             {
               icon: Star,
-              label: 'Eng mashhur',
+              badge: '⭐ Eng mashhur',
               name: 'Biznes',
               desc: "O'rta tashkilotlar uchun",
               price: '2 500 000',
-              unit: "so'm / oy",
               color: '#fbbf24',
-              grad: 'rgba(251,191,36,0.15)',
-              border: 'rgba(251,191,36,0.45)',
-              highlight: true,
               gift: null,
               features: [
                 '40 tagacha xodim',
@@ -285,22 +278,19 @@ export default function Login({ onLogin }) {
                 'Kunlik + oylik hisobotlar & PDF',
                 'Xodimlar bazasi (kadrlar)',
                 "Ta'til va kasallik hisobi",
-                'Haftalik jadval ko\'rinishi',
+                "Haftalik jadval ko'rinishi",
                 'Statistika va reytinglar',
                 'Kechikish nazorati',
               ],
             },
             {
               icon: Building2,
-              label: '🎁 Sovg\'a bor',
+              badge: '🎁 Sovg\'a bor',
               name: 'Korporativ',
               desc: 'Yirik tashkilotlar uchun',
               price: '4 000 000',
-              unit: "so'm / oy",
-              color: '#a78bfa',
-              grad: 'rgba(167,139,250,0.18)',
-              border: 'rgba(167,139,250,0.35)',
-              gift: 'Face ID qurilmasi sovg\'a! (6 oylik shartnomada)',
+              color: '#34d399',
+              gift: true,
               features: [
                 '100 tagacha xodim',
                 'Cheksiz filiallar boshqaruvi',
@@ -309,94 +299,99 @@ export default function Login({ onLogin }) {
                 "To'liq hisobotlar paketi & PDF",
                 'Xodimlar bazasi (kadrlar)',
                 "Ta'til va kasallik hisobi",
-                'Haftalik jadval ko\'rinishi',
+                "Haftalik jadval ko'rinishi",
                 'Statistika va reytinglar',
                 'Kechikish nazorati',
                 'Telegram xabarnomalar*',
                 'Ustuvor texnik yordam',
               ],
             },
-          ].map(({ icon: Icon, label, name, desc, price, unit, color, grad, border, highlight, gift, features }, i) => (
+          ].map(({ icon: Icon, badge, name, desc, price, color, gift, features }, i) => (
             <div key={name}
               style={{
                 position:'relative', overflow:'hidden',
-                background: highlight
-                  ? 'rgba(255,255,255,0.13)'
-                  : grad.replace('0.18','0.08').replace('0.15','0.06'),
-                backdropFilter:'blur(20px)',
-                border: `1.5px solid ${border}`,
+                background:'rgba(255,255,255,0.1)',
+                backdropFilter:'blur(24px)',
+                border:`1.5px solid ${color}55`,
                 borderRadius:'24px',
-                padding:'28px 24px',
+                padding:'28px 24px 24px',
                 textAlign:'left',
                 transition:'transform 0.25s, box-shadow 0.25s',
                 animation:`cardIn 0.5s ${i*0.12}s both`,
+                display:'flex', flexDirection:'column',
               }}
-              onMouseEnter={e => { e.currentTarget.style.transform='translateY(-6px)'; e.currentTarget.style.boxShadow=`0 20px 60px ${color}33` }}
+              onMouseEnter={e => { e.currentTarget.style.transform='translateY(-6px)'; e.currentTarget.style.boxShadow=`0 24px 64px ${color}44` }}
               onMouseLeave={e => { e.currentTarget.style.transform='translateY(0)'; e.currentTarget.style.boxShadow='none' }}
             >
-              {/* Top gradient bar */}
-              <div style={{ position:'absolute', top:0, left:0, right:0, height:'3px', background:`linear-gradient(90deg, ${color}, ${color}88)`, borderRadius:'24px 24px 0 0' }}/>
+              {/* Top color bar */}
+              <div style={{ position:'absolute', top:0, left:0, right:0, height:'4px', background:`linear-gradient(90deg,${color},${color}66)`, borderRadius:'24px 24px 0 0' }}/>
 
-              {/* Mashhur badge */}
-              {label && (
-                <div style={{ position:'absolute', top:'20px', right:'20px', background:`${color}33`, border:`1px solid ${color}66`, borderRadius:'50px', padding:'3px 10px', fontSize:'11px', color, fontWeight:700 }}>
-                  {label}
+              {/* Fon glow */}
+              <div style={{ position:'absolute', top:'-40px', right:'-40px', width:'160px', height:'160px', borderRadius:'50%', background:color, opacity:0.07, filter:'blur(40px)', pointerEvents:'none' }}/>
+
+              {/* Badge + Icon row */}
+              <div style={{ display:'flex', alignItems:'center', justifyContent:'space-between', marginBottom:'18px' }}>
+                <div style={{ width:'46px', height:'46px', borderRadius:'14px', background:`${color}20`, border:`1.5px solid ${color}55`, display:'flex', alignItems:'center', justifyContent:'center' }}>
+                  <Icon size={22} color={color}/>
                 </div>
-              )}
-
-              {/* Icon */}
-              <div style={{ width:'44px', height:'44px', borderRadius:'14px', background:`${color}22`, border:`1.5px solid ${color}44`, display:'flex', alignItems:'center', justifyContent:'center', marginBottom:'16px' }}>
-                <Icon size={20} color={color}/>
+                {badge && (
+                  <div style={{ background:`${color}22`, border:`1px solid ${color}55`, borderRadius:'50px', padding:'4px 12px', fontSize:'12px', color, fontWeight:700, whiteSpace:'nowrap' }}>
+                    {badge}
+                  </div>
+                )}
               </div>
 
-              {/* Name */}
-              <div style={{ fontSize:'20px', fontWeight:800, color:'white', marginBottom:'4px' }}>{name}</div>
+              {/* Name & desc */}
+              <div style={{ fontSize:'22px', fontWeight:800, color:'white', marginBottom:'4px' }}>{name}</div>
               <div style={{ fontSize:'13px', color:'rgba(255,255,255,0.45)', marginBottom:'20px' }}>{desc}</div>
 
               {/* Price */}
-              <div style={{ marginBottom:'6px' }}>
-                <span style={{ fontSize:'34px', fontWeight:800, color:'white', letterSpacing:'-1px' }}>{price}</span>
-                <span style={{ fontSize:'13px', color:'rgba(255,255,255,0.4)', marginLeft:'6px' }}>{unit}</span>
-              </div>
-              <div style={{ display:'inline-flex', alignItems:'center', gap:'6px', background:`${color}18`, border:`1px solid ${color}33`, borderRadius:'50px', padding:'4px 12px', marginBottom:'24px' }}>
-                <Users size={12} color={color}/>
-                <span style={{ fontSize:'12px', color, fontWeight:600 }}>{features[0]}</span>
+              <div style={{ marginBottom:'20px', paddingBottom:'20px', borderBottom:`1px solid ${color}22` }}>
+                <div style={{ display:'flex', alignItems:'baseline', gap:'6px' }}>
+                  <span style={{ fontSize:'36px', fontWeight:800, color:'white', letterSpacing:'-1.5px', lineHeight:1 }}>{price}</span>
+                  <span style={{ fontSize:'13px', color:'rgba(255,255,255,0.35)' }}>so'm / oy</span>
+                </div>
+                <div style={{ marginTop:'10px', display:'inline-flex', alignItems:'center', gap:'6px', background:`${color}18`, border:`1px solid ${color}33`, borderRadius:'50px', padding:'4px 12px' }}>
+                  <Users size={12} color={color}/>
+                  <span style={{ fontSize:'12px', color, fontWeight:600 }}>{features[0]}</span>
+                </div>
               </div>
 
               {/* Features */}
-              <div style={{ borderTop:'1px solid rgba(255,255,255,0.08)', paddingTop:'20px', display:'flex', flexDirection:'column', gap:'10px' }}>
+              <div style={{ flex:1, display:'flex', flexDirection:'column', gap:'9px', marginBottom:'20px' }}>
                 {features.map(f => (
-                  <div key={f} style={{ display:'flex', alignItems:'center', gap:'10px' }}>
-                    <div style={{ width:'18px', height:'18px', borderRadius:'50%', background:`${color}22`, border:`1px solid ${color}44`, display:'flex', alignItems:'center', justifyContent:'center', shrink:0, flexShrink:0 }}>
+                  <div key={f} style={{ display:'flex', alignItems:'flex-start', gap:'10px' }}>
+                    <div style={{ marginTop:'1px', width:'18px', height:'18px', borderRadius:'50%', background:`${color}20`, border:`1px solid ${color}44`, display:'flex', alignItems:'center', justifyContent:'center', flexShrink:0 }}>
                       <Check size={10} color={color} strokeWidth={3}/>
                     </div>
-                    <span style={{ fontSize:'13px', color:'rgba(255,255,255,0.7)', lineHeight:1.4 }}>{f}</span>
+                    <span style={{ fontSize:'13px', color:'rgba(255,255,255,0.75)', lineHeight:1.45 }}>{f}</span>
                   </div>
                 ))}
               </div>
 
               {/* Gift banner */}
               {gift && (
-                <div style={{ marginTop:'20px', padding:'12px 14px', borderRadius:'14px', background:'linear-gradient(135deg,rgba(251,191,36,0.18),rgba(167,139,250,0.18))', border:'1.5px solid rgba(251,191,36,0.4)', display:'flex', alignItems:'flex-start', gap:'10px' }}>
+                <div style={{ marginBottom:'16px', padding:'12px 14px', borderRadius:'14px', background:'rgba(52,211,153,0.1)', border:'1.5px solid rgba(52,211,153,0.35)', display:'flex', alignItems:'flex-start', gap:'10px' }}>
                   <span style={{ fontSize:'20px', lineHeight:1, flexShrink:0 }}>🎁</span>
                   <div>
-                    <div style={{ fontSize:'13px', fontWeight:700, color:'#fbbf24', marginBottom:'2px' }}>Sovg'a!</div>
-                    <div style={{ fontSize:'12px', color:'rgba(255,255,255,0.65)', lineHeight:1.5 }}>Face ID qurilmasi <strong style={{ color:'white' }}>bepul beriladi</strong> — 6 oylik shartnoma tuzganda sotib olish shart emas!</div>
+                    <div style={{ fontSize:'13px', fontWeight:700, color:'#34d399', marginBottom:'2px' }}>Sovg'a!</div>
+                    <div style={{ fontSize:'12px', color:'rgba(255,255,255,0.6)', lineHeight:1.5 }}>Face ID qurilmasi <strong style={{ color:'white' }}>bepul beriladi</strong> — 6 oylik shartnoma tuzganda</div>
                   </div>
                 </div>
               )}
 
               {/* CTA */}
               <button onClick={openLogin} style={{
-                marginTop:'24px', width:'100%', padding:'13px', borderRadius:'14px',
-                background: highlight ? color : `${color}22`,
-                border: `1.5px solid ${highlight ? color : color+'44'}`,
-                color: highlight ? '#000' : color,
+                width:'100%', padding:'13px', borderRadius:'14px',
+                background: color,
+                border:'none',
+                color: name === 'Biznes' ? '#1a1a00' : '#fff',
                 fontSize:'14px', fontWeight:700, cursor:'pointer',
-                transition:'all 0.2s',
+                transition:'opacity 0.2s, transform 0.15s',
+                boxShadow:`0 6px 24px ${color}44`,
               }}
-                onMouseEnter={e => { e.currentTarget.style.background = color; e.currentTarget.style.color='#000' }}
-                onMouseLeave={e => { e.currentTarget.style.background = highlight ? color : `${color}22`; e.currentTarget.style.color = highlight ? '#000' : color }}
+                onMouseEnter={e => { e.currentTarget.style.opacity='0.88'; e.currentTarget.style.transform='scale(0.99)' }}
+                onMouseLeave={e => { e.currentTarget.style.opacity='1'; e.currentTarget.style.transform='scale(1)' }}
               >
                 Boshlash →
               </button>
