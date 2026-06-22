@@ -1,5 +1,6 @@
-import { useState } from 'react'
-import { Plus, Trash2, Search, FolderOpen, Folder, Pencil, UserPlus, Eye, EyeOff } from 'lucide-react'
+import { useState, useEffect } from 'react'
+import { Plus, Trash2, Search, FolderOpen, Folder, Pencil, UserPlus, Eye, EyeOff, Tag, Save } from 'lucide-react'
+import { API_URL, TOKEN } from '../config'
 
 const inputCls = "w-full px-3 py-2.5 bg-white border border-slate-200 rounded-xl text-slate-800 text-[14px] outline-none focus:border-brand-400 transition-colors"
 const labelCls = "text-[12px] text-slate-500 font-semibold block mb-1.5"
@@ -17,7 +18,7 @@ function Modal({ title, subtitle, onClose, children }) {
   )
 }
 
-export default function AdminPanel({ employees, groups, onAddEmployee, onDeleteEmployee, onDeleteEmployees, onUpdateEmployee, onAddGroup, onDeleteGroup, onMoveEmployee, onUpdateGroup }) {
+export default function AdminPanel({ employees, groups, onAddEmployee, onDeleteEmployee, onDeleteEmployees, onUpdateEmployee, onAddGroup, onDeleteGroup, onMoveEmployee, onUpdateGroup, user }) {
   const [selectedGroup, setSelectedGroup] = useState(groups[0]?.id || null)
   const [search, setSearch]   = useState('')
   const [selected, setSelected] = useState(new Set())
@@ -41,6 +42,36 @@ export default function AdminPanel({ employees, groups, onAddEmployee, onDeleteE
   const [editEmpGroupId, setEditEmpGroupId]   = useState('')
   const [editEmpError, setEditEmpError]       = useState('')
   const [showAddEmp, setShowAddEmp]           = useState(false)
+
+  // Narxlar
+  const [pricing, setPricing]       = useState({ basic: '1000000', business: '2500000', corp: '4000000' })
+  const [pricingEdit, setPricingEdit] = useState({ basic: '', business: '', corp: '' })
+  const [pricingSaving, setPricingSaving] = useState(false)
+  const [pricingMsg, setPricingMsg]   = useState('')
+
+  useEffect(() => {
+    fetch(`${API_URL}/config/pricing`, { headers: { 'X-API-Token': TOKEN } })
+      .then(r => r.json()).then(d => {
+        setPricing(d)
+        setPricingEdit({ basic: d.basic, business: d.business, corp: d.corp })
+      }).catch(() => {})
+  }, [])
+
+  const handleSavePricing = async () => {
+    setPricingSaving(true); setPricingMsg('')
+    try {
+      const res = await fetch(`${API_URL}/config/pricing`, {
+        method: 'PUT',
+        headers: { 'Content-Type': 'application/json', 'X-API-Token': TOKEN },
+        body: JSON.stringify({ ...pricingEdit, _role: user?.role }),
+      })
+      const d = await res.json()
+      if (d.ok) { setPricing({ ...pricingEdit }); setPricingMsg('✅ Saqlandi') }
+      else setPricingMsg('❌ ' + (d.error || 'Xatolik'))
+    } catch { setPricingMsg('❌ Ulanish xatoligi') }
+    setPricingSaving(false)
+    setTimeout(() => setPricingMsg(''), 3000)
+  }
 
   const currentGroup = groups.find(g => g.id === selectedGroup) || (groups.length > 0 ? groups[0] : null)
   const groupEmps    = employees.filter(e => e.group === selectedGroup)
@@ -189,6 +220,54 @@ export default function AdminPanel({ employees, groups, onAddEmployee, onDeleteE
       ) : (
         <div className="flex items-center justify-center h-48 bg-white rounded-2xl border border-slate-100 text-slate-400 text-[14px]">Yuqoridan tashkilot tanlang</div>
       )}
+
+      {/* Narxlar bo'limi */}
+      <div className="mt-6 bg-white rounded-2xl border border-slate-100 shadow-card p-6">
+        <div className="flex items-center justify-between mb-5">
+          <div className="flex items-center gap-2">
+            <Tag size={18} className="text-brand-600"/>
+            <div>
+              <div className="text-[16px] font-bold text-slate-900">Tarif narxlari</div>
+              <div className="text-[12px] text-slate-400">Landing page da ko'rsatiladigan narxlar</div>
+            </div>
+          </div>
+          <div className="flex items-center gap-3">
+            {pricingMsg && <span className="text-[13px] font-medium text-slate-600">{pricingMsg}</span>}
+            <button onClick={handleSavePricing} disabled={pricingSaving}
+              className="flex items-center gap-1.5 px-4 py-2 bg-brand-600 border-none rounded-xl text-white text-[13px] font-semibold cursor-pointer hover:bg-brand-700 transition-colors disabled:opacity-50">
+              <Save size={14}/> {pricingSaving ? 'Saqlanmoqda...' : 'Saqlash'}
+            </button>
+          </div>
+        </div>
+        <div className="grid grid-cols-3 gap-4">
+          {[
+            { key: 'basic',    label: "Boshlang'ich", sub: '10 tagacha xodim',  color: 'bg-orange-50 border-orange-200', badge: 'text-orange-600 bg-orange-100' },
+            { key: 'business', label: 'Biznes',       sub: '40 tagacha xodim',  color: 'bg-blue-50 border-blue-200',   badge: 'text-blue-600 bg-blue-100' },
+            { key: 'corp',     label: 'Korporativ',   sub: '100 tagacha xodim', color: 'bg-green-50 border-green-200', badge: 'text-green-600 bg-green-100' },
+          ].map(({ key, label, sub, color, badge }) => (
+            <div key={key} className={`rounded-xl border p-4 ${color}`}>
+              <div className="flex items-center justify-between mb-3">
+                <span className="text-[13px] font-bold text-slate-800">{label}</span>
+                <span className={`text-[11px] font-semibold px-2 py-0.5 rounded-full ${badge}`}>{sub}</span>
+              </div>
+              <div className="relative">
+                <input
+                  type="number"
+                  value={pricingEdit[key]}
+                  onChange={e => setPricingEdit(p => ({ ...p, [key]: e.target.value }))}
+                  className="w-full px-3 py-2.5 pr-16 bg-white border border-slate-200 rounded-xl text-slate-900 text-[15px] font-bold outline-none focus:border-brand-400 transition-colors"
+                />
+                <span className="absolute right-3 top-1/2 -translate-y-1/2 text-[12px] text-slate-400 font-normal">so'm/oy</span>
+              </div>
+              {pricingEdit[key] !== pricing[key] && (
+                <div className="mt-1.5 text-[11px] text-slate-400">
+                  Avvalgi: {Number(pricing[key]).toLocaleString('ru')} so'm
+                </div>
+              )}
+            </div>
+          ))}
+        </div>
+      </div>
 
       {/* Edit emp modal */}
       {showEditEmp && (

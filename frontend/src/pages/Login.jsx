@@ -39,12 +39,21 @@ export default function Login({ onLogin }) {
 
   const pricingRef = useRef(null)
   const [pricingVisible, setPricingVisible] = useState(false)
+  const [prices, setPrices] = useState({ basic: '1 000 000', business: '2 500 000', corp: '4 000 000' })
+
   useEffect(() => {
     const el = pricingRef.current
     if (!el) return
     const obs = new IntersectionObserver(([e]) => { if (e.isIntersecting) { setPricingVisible(true); obs.disconnect() } }, { threshold: 0.1 })
     obs.observe(el)
     return () => obs.disconnect()
+  }, [])
+
+  useEffect(() => {
+    fetch('/api/config/pricing').then(r => r.json()).then(d => {
+      const fmt = v => Number(v).toLocaleString('ru').replace(/,/g, ' ')
+      setPrices({ basic: fmt(d.basic), business: fmt(d.business), corp: fmt(d.corp) })
+    }).catch(() => {})
   }, [])
 
   // Split-screen login sahifasi
@@ -265,19 +274,19 @@ export default function Login({ onLogin }) {
           {[
             {
               icon: Zap, badge: null, name:"Boshlang'ich", desc:'Kichik jamoa uchun ideal',
-              price:'1 000 000', color:'#f97316', lightBg:'#fff7ed', borderC:'#fed7aa',
+              price: prices.basic, color:'#f97316', lightBg:'#fff7ed', borderC:'#fed7aa',
               gift: null,
               features:['10 tagacha xodim','1 ta filial boshqaruvi','Face ID kamera integratsiya','Real vaqt kuzatuv','Kunlik hisobotlar & PDF','Xodimlar bazasi (kadrlar)',"Ta'til va kasallik hisobi",'Kechikish nazorati'],
             },
             {
               icon: Star, badge:'⭐ Eng mashhur', name:'Biznes', desc:"O'rta tashkilotlar uchun",
-              price:'2 500 000', color:'#2563eb', lightBg:'#eff6ff', borderC:'#bfdbfe',
+              price: prices.business, color:'#2563eb', lightBg:'#eff6ff', borderC:'#bfdbfe',
               gift: null,
               features:['40 tagacha xodim','5 tagacha filial boshqaruvi','Face ID kamera integratsiya','Real vaqt kuzatuv','Kunlik + oylik hisobotlar & PDF','Xodimlar bazasi (kadrlar)',"Ta'til va kasallik hisobi","Haftalik jadval ko'rinishi",'Statistika va reytinglar','Kechikish nazorati'],
             },
             {
               icon: Building2, badge:"🎁 Sovg'a bor", name:'Korporativ', desc:'Yirik tashkilotlar uchun',
-              price:'4 000 000', color:'#059669', lightBg:'#f0fdf4', borderC:'#a7f3d0',
+              price: prices.corp, color:'#059669', lightBg:'#f0fdf4', borderC:'#a7f3d0',
               gift: true,
               features:['100 tagacha xodim','Cheksiz filiallar boshqaruvi','Face ID kamera — sotib olish shart emas','Real vaqt kuzatuv',"To'liq hisobotlar paketi & PDF",'Xodimlar bazasi (kadrlar)',"Ta'til va kasallik hisobi","Haftalik jadval ko'rinishi",'Statistika va reytinglar','Kechikish nazorati','Telegram xabarnomalar*','Ustuvor texnik yordam'],
             },

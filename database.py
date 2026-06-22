@@ -117,6 +117,18 @@ def init_db():
             )
         ''')
 
+        conn.execute('''
+            CREATE TABLE IF NOT EXISTS config (
+                key   TEXT PRIMARY KEY,
+                value TEXT NOT NULL
+            )
+        ''')
+
+        # Default narxlar
+        conn.execute("INSERT OR IGNORE INTO config (key, value) VALUES ('pricing_basic',    '1000000')")
+        conn.execute("INSERT OR IGNORE INTO config (key, value) VALUES ('pricing_business', '2500000')")
+        conn.execute("INSERT OR IGNORE INTO config (key, value) VALUES ('pricing_corp',     '4000000')")
+
         # Default guruhlar
         conn.execute("INSERT OR IGNORE INTO groups (id, name, work_start, work_begin) VALUES ('inno',   'Inno Texnopark', '09:00', '06:00')")
         conn.execute("INSERT OR IGNORE INTO groups (id, name, work_start, work_begin) VALUES ('milliy', 'Milliy Offis',   '09:00', '06:00')")
@@ -311,6 +323,26 @@ def delete_leave(lid):
     with get_conn() as conn:
         conn.execute('DELETE FROM leaves WHERE id=?', (lid,))
         conn.commit()
+
+
+def get_config(key, default=None):
+    with get_conn() as conn:
+        row = conn.execute('SELECT value FROM config WHERE key=?', (key,)).fetchone()
+    return row['value'] if row else default
+
+
+def set_config(key, value):
+    with get_conn() as conn:
+        conn.execute('INSERT OR REPLACE INTO config (key, value) VALUES (?,?)', (key, str(value)))
+        conn.commit()
+
+
+def get_pricing():
+    return {
+        'basic':    get_config('pricing_basic',    '1000000'),
+        'business': get_config('pricing_business', '2500000'),
+        'corp':     get_config('pricing_corp',     '4000000'),
+    }
 
 
 init_db()
