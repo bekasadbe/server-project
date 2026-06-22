@@ -28,15 +28,15 @@ export default function Login({ onLogin }) {
     <div className="flex h-screen w-screen overflow-hidden bg-white">
 
       {/* Chap panel — brand */}
-      <div className="hidden lg:flex flex-col justify-between w-[52%] bg-brand-700 p-12 relative overflow-hidden">
+      <div className="hidden lg:flex flex-col justify-between w-[52%] p-12 relative overflow-hidden" style={{ background: 'linear-gradient(145deg, #1a56db 0%, #1e429f 40%, #1a365d 100%)' }}>
         {/* Fon doiralari */}
-        <div className="absolute -top-24 -left-24 w-96 h-96 rounded-full bg-brand-600 opacity-40"/>
-        <div className="absolute bottom-0 right-0 w-80 h-80 rounded-full bg-brand-800 opacity-60"/>
-        <div className="absolute top-1/2 -right-16 w-64 h-64 rounded-full bg-brand-500 opacity-20"/>
+        <div className="absolute -top-24 -left-24 w-96 h-96 rounded-full opacity-30" style={{ background: '#3b82f6' }}/>
+        <div className="absolute bottom-0 right-0 w-80 h-80 rounded-full opacity-50" style={{ background: '#0f2460' }}/>
+        <div className="absolute top-1/2 -right-16 w-64 h-64 rounded-full opacity-25" style={{ background: '#60a5fa' }}/>
 
         {/* Logo */}
         <div className="relative z-10 flex items-center gap-3">
-          <div className="w-10 h-10 rounded-xl bg-white/20 border border-white/30 flex items-center justify-center">
+          <div className="w-10 h-10 rounded-xl border flex items-center justify-center" style={{ background: 'rgba(96,165,250,0.3)', borderColor: 'rgba(147,197,253,0.5)' }}>
             <CheckCircle2 size={22} className="text-white"/>
           </div>
           <div>
@@ -49,26 +49,26 @@ export default function Login({ onLogin }) {
         <div className="relative z-10">
           <h1 className="text-white font-extrabold text-[38px] leading-tight mb-4">
             Xodimlar davomatini<br/>
-            <span className="text-white/70">nazorat qiling</span>
+            <span className="text-blue-300">nazorat qiling</span>
           </h1>
-          <p className="text-white/60 text-[15px] leading-relaxed mb-10 max-w-sm">
+          <p className="text-blue-200/80 text-[15px] leading-relaxed mb-10 max-w-sm">
             Face ID qurilmalar bilan integratsiya, real vaqt hisobotlar va tashkilotlar bo'yicha boshqaruv.
           </p>
 
           <div className="flex flex-col gap-4">
             {FEATURES.map(({ icon: Icon, text }) => (
               <div key={text} className="flex items-center gap-3">
-                <div className="w-8 h-8 rounded-lg bg-white/10 flex items-center justify-center shrink-0">
-                  <Icon size={15} className="text-white/80"/>
+                <div className="w-8 h-8 rounded-lg flex items-center justify-center shrink-0" style={{ background: 'rgba(96,165,250,0.25)', border: '1px solid rgba(147,197,253,0.3)' }}>
+                  <Icon size={15} className="text-blue-200"/>
                 </div>
-                <span className="text-white/75 text-[14px]">{text}</span>
+                <span className="text-blue-100 text-[14px]">{text}</span>
               </div>
             ))}
           </div>
         </div>
 
         {/* Footer */}
-        <div className="relative z-10 flex items-center gap-2 text-white/30 text-[12px]">
+        <div className="relative z-10 flex items-center gap-2 text-blue-300/50 text-[12px]">
           <CheckCircle2 size={12}/>
           davomatlar.uz · 2026
         </div>
