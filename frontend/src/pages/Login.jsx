@@ -1,6 +1,6 @@
 import { useState } from 'react'
 import { loginAsync } from '../auth'
-import { Eye, EyeOff, CheckCircle, CheckCircle2, Clock, Users, TrendingUp, X, Phone, MapPin, Send, BarChart3, ShieldCheck, ArrowLeft } from 'lucide-react'
+import { Eye, EyeOff, CheckCircle, CheckCircle2, Clock, Users, TrendingUp, X, Phone, MapPin, Send, BarChart3, ShieldCheck, ArrowLeft, Zap, Star, Building2, Check } from 'lucide-react'
 
 const LOGIN_FEATURES = [
   { icon: Clock,       text: 'Kelish-ketish vaqtini real vaqtda kuzatish' },
@@ -226,6 +226,172 @@ export default function Login({ onLogin }) {
         </div>
       </main>
 
+      {/* Tariflar bo'limi */}
+      <section style={{ position:'relative', zIndex:10, padding:'60px 20px 40px', textAlign:'center' }}>
+        {/* Sarlavha */}
+        <div style={{ display:'inline-flex', alignItems:'center', gap:'8px', background:'rgba(255,255,255,0.1)', backdropFilter:'blur(10px)', border:'1px solid rgba(255,255,255,0.15)', borderRadius:'50px', padding:'6px 18px', marginBottom:'20px' }}>
+          <Zap size={13} color="#fbbf24"/>
+          <span style={{ fontSize:'13px', color:'rgba(255,255,255,0.9)', fontWeight:500 }}>Qulay narxlar</span>
+        </div>
+        <h2 style={{ margin:'0 0 10px', fontSize:'40px', fontWeight:800, color:'white', letterSpacing:'-1px', lineHeight:1.15 }}>
+          Biznesingizga mos tarif
+        </h2>
+        <p style={{ margin:'0 0 44px', fontSize:'15px', color:'rgba(255,255,255,0.55)', maxWidth:'400px', marginLeft:'auto', marginRight:'auto', lineHeight:1.7 }}>
+          Xodimlar soniga qarab eng qulay tarifni tanlang.<br/>Har oyda bekor qilish mumkin.
+        </p>
+
+        {/* 3 ta karta */}
+        <div style={{ display:'grid', gridTemplateColumns:'repeat(auto-fit, minmax(280px, 1fr))', gap:'16px', maxWidth:'960px', margin:'0 auto' }}>
+          {[
+            {
+              icon: Zap,
+              label: null,
+              name: "Boshlang'ich",
+              desc: 'Kichik jamoa uchun ideal',
+              price: '149 000',
+              unit: "so'm / oy",
+              employees: '10 tagacha xodim',
+              color: '#60a5fa',
+              grad: 'rgba(96,165,250,0.18)',
+              border: 'rgba(96,165,250,0.3)',
+              features: [
+                '10 tagacha xodim',
+                'Face ID kamera integratsiya',
+                'Real vaqt kuzatuv',
+                'Kunlik hisobotlar',
+                'PDF yuklab olish',
+                '1 ta tashkilot',
+              ],
+            },
+            {
+              icon: Star,
+              label: 'Eng mashhur',
+              name: 'Biznes',
+              desc: "O'rta tashkilotlar uchun",
+              price: '249 000',
+              unit: "so'm / oy",
+              employees: '25 tagacha xodim',
+              color: '#fbbf24',
+              grad: 'rgba(251,191,36,0.15)',
+              border: 'rgba(251,191,36,0.45)',
+              highlight: true,
+              features: [
+                '25 tagacha xodim',
+                'Face ID kamera integratsiya',
+                'Real vaqt kuzatuv',
+                'Kunlik + oylik hisobotlar',
+                'PDF yuklab olish',
+                'Statistika va reytinglar',
+                'Kechikish nazorati',
+                '3 tagacha tashkilot',
+              ],
+            },
+            {
+              icon: Building2,
+              label: null,
+              name: 'Korporativ',
+              desc: 'Yirik tashkilotlar uchun',
+              price: '399 000',
+              unit: "so'm / oy",
+              employees: 'Cheksiz xodim',
+              color: '#a78bfa',
+              grad: 'rgba(167,139,250,0.18)',
+              border: 'rgba(167,139,250,0.35)',
+              features: [
+                'Cheksiz xodimlar',
+                'Face ID kamera integratsiya',
+                'Real vaqt kuzatuv',
+                "To'liq hisobotlar paketi",
+                'PDF yuklab olish',
+                'Statistika va reytinglar',
+                'Kechikish nazorati',
+                "Cheksiz tashkilotlar",
+                'Telegram xabarnomalar*',
+                'Ustuvor texnik yordam',
+              ],
+            },
+          ].map(({ icon: Icon, label, name, desc, price, unit, color, grad, border, highlight, features }, i) => (
+            <div key={name}
+              style={{
+                position:'relative', overflow:'hidden',
+                background: highlight
+                  ? 'rgba(255,255,255,0.13)'
+                  : grad.replace('0.18','0.08').replace('0.15','0.06'),
+                backdropFilter:'blur(20px)',
+                border: `1.5px solid ${border}`,
+                borderRadius:'24px',
+                padding:'28px 24px',
+                textAlign:'left',
+                transition:'transform 0.25s, box-shadow 0.25s',
+                animation:`cardIn 0.5s ${i*0.12}s both`,
+              }}
+              onMouseEnter={e => { e.currentTarget.style.transform='translateY(-6px)'; e.currentTarget.style.boxShadow=`0 20px 60px ${color}33` }}
+              onMouseLeave={e => { e.currentTarget.style.transform='translateY(0)'; e.currentTarget.style.boxShadow='none' }}
+            >
+              {/* Top gradient bar */}
+              <div style={{ position:'absolute', top:0, left:0, right:0, height:'3px', background:`linear-gradient(90deg, ${color}, ${color}88)`, borderRadius:'24px 24px 0 0' }}/>
+
+              {/* Mashhur badge */}
+              {label && (
+                <div style={{ position:'absolute', top:'20px', right:'20px', background:`${color}33`, border:`1px solid ${color}66`, borderRadius:'50px', padding:'3px 10px', fontSize:'11px', color, fontWeight:700 }}>
+                  {label}
+                </div>
+              )}
+
+              {/* Icon */}
+              <div style={{ width:'44px', height:'44px', borderRadius:'14px', background:`${color}22`, border:`1.5px solid ${color}44`, display:'flex', alignItems:'center', justifyContent:'center', marginBottom:'16px' }}>
+                <Icon size={20} color={color}/>
+              </div>
+
+              {/* Name */}
+              <div style={{ fontSize:'20px', fontWeight:800, color:'white', marginBottom:'4px' }}>{name}</div>
+              <div style={{ fontSize:'13px', color:'rgba(255,255,255,0.45)', marginBottom:'20px' }}>{desc}</div>
+
+              {/* Price */}
+              <div style={{ marginBottom:'6px' }}>
+                <span style={{ fontSize:'34px', fontWeight:800, color:'white', letterSpacing:'-1px' }}>{price}</span>
+                <span style={{ fontSize:'13px', color:'rgba(255,255,255,0.4)', marginLeft:'6px' }}>{unit}</span>
+              </div>
+              <div style={{ display:'inline-flex', alignItems:'center', gap:'6px', background:`${color}18`, border:`1px solid ${color}33`, borderRadius:'50px', padding:'4px 12px', marginBottom:'24px' }}>
+                <Users size={12} color={color}/>
+                <span style={{ fontSize:'12px', color, fontWeight:600 }}>{features[0]}</span>
+              </div>
+
+              {/* Features */}
+              <div style={{ borderTop:'1px solid rgba(255,255,255,0.08)', paddingTop:'20px', display:'flex', flexDirection:'column', gap:'10px' }}>
+                {features.map(f => (
+                  <div key={f} style={{ display:'flex', alignItems:'center', gap:'10px' }}>
+                    <div style={{ width:'18px', height:'18px', borderRadius:'50%', background:`${color}22`, border:`1px solid ${color}44`, display:'flex', alignItems:'center', justifyContent:'center', shrink:0, flexShrink:0 }}>
+                      <Check size={10} color={color} strokeWidth={3}/>
+                    </div>
+                    <span style={{ fontSize:'13px', color:'rgba(255,255,255,0.7)', lineHeight:1.4 }}>{f}</span>
+                  </div>
+                ))}
+              </div>
+
+              {/* CTA */}
+              <button onClick={openLogin} style={{
+                marginTop:'24px', width:'100%', padding:'13px', borderRadius:'14px',
+                background: highlight ? color : `${color}22`,
+                border: `1.5px solid ${highlight ? color : color+'44'}`,
+                color: highlight ? '#000' : color,
+                fontSize:'14px', fontWeight:700, cursor:'pointer',
+                transition:'all 0.2s',
+              }}
+                onMouseEnter={e => { e.currentTarget.style.background = color; e.currentTarget.style.color='#000' }}
+                onMouseLeave={e => { e.currentTarget.style.background = highlight ? color : `${color}22`; e.currentTarget.style.color = highlight ? '#000' : color }}
+              >
+                Boshlash →
+              </button>
+            </div>
+          ))}
+        </div>
+
+        <p style={{ marginTop:'28px', fontSize:'12px', color:'rgba(255,255,255,0.25)' }}>
+          * Telegram xabarnomalar — ishlanmoqda · Barcha narxlar QQS siz
+        </p>
+      </section>
+
       {/* Footer */}
       <footer style={{ position:'relative', zIndex:10 }}>
         <div style={{ display:'flex', flexWrap:'wrap', justifyContent:'center', gap:'6px', padding:'12px 24px 28px' }}>
@@ -261,6 +427,7 @@ export default function Login({ onLogin }) {
         @media (max-width: 768px) {
           .cards-grid { grid-template-columns: repeat(2, 1fr) !important; }
           .hero-title  { font-size: 38px !important; letter-spacing: -1px !important; }
+          .pricing-grid { grid-template-columns: 1fr !important; }
         }
         @media (max-width: 480px) {
           .cards-grid { grid-template-columns: repeat(2, 1fr) !important; }
