@@ -249,7 +249,7 @@ export default function Login({ onLogin }) {
               name: "Boshlang'ich",
               desc: 'Kichik jamoa uchun ideal',
               price: '1 000 000',
-              color: '#60a5fa',
+              color: '#2563eb',
               gift: null,
               features: [
                 '10 tagacha xodim',
@@ -375,7 +375,7 @@ export default function Login({ onLogin }) {
                   <span style={{ fontSize:'20px', lineHeight:1, flexShrink:0 }}>🎁</span>
                   <div>
                     <div style={{ fontSize:'13px', fontWeight:700, color:'#34d399', marginBottom:'2px' }}>Sovg'a!</div>
-                    <div style={{ fontSize:'12px', color:'rgba(255,255,255,0.6)', lineHeight:1.5 }}>Face ID qurilmasi <strong style={{ color:'white' }}>bepul beriladi</strong> — 6 oylik shartnoma tuzganda</div>
+                    <div style={{ fontSize:'12px', color:'rgba(255,255,255,0.6)', lineHeight:1.5 }}>6 oylik shartnoma tuzganda — Face ID qurilmasi <strong style={{ color:'white' }}>bepul beriladi</strong></div>
                   </div>
                 </div>
               )}
