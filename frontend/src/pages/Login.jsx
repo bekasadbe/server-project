@@ -248,12 +248,12 @@ export default function Login({ onLogin }) {
               label: null,
               name: "Boshlang'ich",
               desc: 'Kichik jamoa uchun ideal',
-              price: '149 000',
+              price: '1 000 000',
               unit: "so'm / oy",
-              employees: '10 tagacha xodim',
               color: '#60a5fa',
               grad: 'rgba(96,165,250,0.18)',
               border: 'rgba(96,165,250,0.3)',
+              gift: null,
               features: [
                 '10 tagacha xodim',
                 'Face ID kamera integratsiya',
@@ -268,38 +268,38 @@ export default function Login({ onLogin }) {
               label: 'Eng mashhur',
               name: 'Biznes',
               desc: "O'rta tashkilotlar uchun",
-              price: '249 000',
+              price: '2 500 000',
               unit: "so'm / oy",
-              employees: '25 tagacha xodim',
               color: '#fbbf24',
               grad: 'rgba(251,191,36,0.15)',
               border: 'rgba(251,191,36,0.45)',
               highlight: true,
+              gift: null,
               features: [
-                '25 tagacha xodim',
+                '40 tagacha xodim',
                 'Face ID kamera integratsiya',
                 'Real vaqt kuzatuv',
                 'Kunlik + oylik hisobotlar',
                 'PDF yuklab olish',
                 'Statistika va reytinglar',
                 'Kechikish nazorati',
-                '3 tagacha tashkilot',
+                '5 tagacha tashkilot',
               ],
             },
             {
               icon: Building2,
-              label: null,
+              label: '🎁 Sovg\'a bor',
               name: 'Korporativ',
               desc: 'Yirik tashkilotlar uchun',
-              price: '399 000',
+              price: '4 000 000',
               unit: "so'm / oy",
-              employees: 'Cheksiz xodim',
               color: '#a78bfa',
               grad: 'rgba(167,139,250,0.18)',
               border: 'rgba(167,139,250,0.35)',
+              gift: 'Face ID qurilmasi sovg\'a! (6 oylik shartnomada)',
               features: [
-                'Cheksiz xodimlar',
-                'Face ID kamera integratsiya',
+                '100 tagacha xodim',
+                'Face ID kamera — sotib olish shart emas',
                 'Real vaqt kuzatuv',
                 "To'liq hisobotlar paketi",
                 'PDF yuklab olish',
@@ -310,7 +310,7 @@ export default function Login({ onLogin }) {
                 'Ustuvor texnik yordam',
               ],
             },
-          ].map(({ icon: Icon, label, name, desc, price, unit, color, grad, border, highlight, features }, i) => (
+          ].map(({ icon: Icon, label, name, desc, price, unit, color, grad, border, highlight, gift, features }, i) => (
             <div key={name}
               style={{
                 position:'relative', overflow:'hidden',
@@ -369,6 +369,17 @@ export default function Login({ onLogin }) {
                 ))}
               </div>
 
+              {/* Gift banner */}
+              {gift && (
+                <div style={{ marginTop:'20px', padding:'12px 14px', borderRadius:'14px', background:'linear-gradient(135deg,rgba(251,191,36,0.18),rgba(167,139,250,0.18))', border:'1.5px solid rgba(251,191,36,0.4)', display:'flex', alignItems:'flex-start', gap:'10px' }}>
+                  <span style={{ fontSize:'20px', lineHeight:1, flexShrink:0 }}>🎁</span>
+                  <div>
+                    <div style={{ fontSize:'13px', fontWeight:700, color:'#fbbf24', marginBottom:'2px' }}>Sovg'a!</div>
+                    <div style={{ fontSize:'12px', color:'rgba(255,255,255,0.65)', lineHeight:1.5 }}>Face ID qurilmasi <strong style={{ color:'white' }}>bepul beriladi</strong> — 6 oylik shartnoma tuzganda sotib olish shart emas!</div>
+                  </div>
+                </div>
+              )}
+
               {/* CTA */}
               <button onClick={openLogin} style={{
                 marginTop:'24px', width:'100%', padding:'13px', borderRadius:'14px',
@@ -388,7 +399,7 @@ export default function Login({ onLogin }) {
         </div>
 
         <p style={{ marginTop:'28px', fontSize:'12px', color:'rgba(255,255,255,0.25)' }}>
-          * Telegram xabarnomalar — ishlanmoqda · Barcha narxlar QQS siz
+          * Telegram xabarnomalar — tez orada · Barcha narxlar QQS siz · Korporativ tarifda 6 oylik shartnoma talab qilinadi
         </p>
       </section>
 
