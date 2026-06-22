@@ -149,10 +149,20 @@ export default function Login({ onLogin }) {
       <header style={{ position:'sticky', top:0, zIndex:100, background:'rgba(0,30,120,0.35)', backdropFilter:'blur(20px)', borderBottom:'1px solid rgba(255,255,255,0.12)', boxSizing:'border-box', width:'100%' }}>
         <div style={{ ...W, display:'flex', justifyContent:'space-between', alignItems:'center', padding:'14px 24px' }}>
           <div style={{ display:'flex', alignItems:'center', gap:'10px' }}>
-            <div style={{ width:'36px', height:'36px', borderRadius:'10px', background:'rgba(255,255,255,0.2)', backdropFilter:'blur(10px)', border:'1px solid rgba(255,255,255,0.4)', display:'flex', alignItems:'center', justifyContent:'center' }}>
-              <CheckCircle size={20} color="white" strokeWidth={2.5}/>
+            <div style={{ flexShrink:0 }}>
+              <svg width="36" height="36" viewBox="0 0 64 64" fill="none" xmlns="http://www.w3.org/2000/svg">
+                <defs>
+                  <linearGradient id="hg1" x1="0" y1="0" x2="64" y2="64" gradientUnits="userSpaceOnUse">
+                    <stop offset="0%" stopColor="#93c5fd"/>
+                    <stop offset="100%" stopColor="#3b82f6"/>
+                  </linearGradient>
+                </defs>
+                <rect width="64" height="64" rx="14" fill="rgba(255,255,255,0.18)"/>
+                <circle cx="32" cy="32" r="18" fill="none" stroke="url(#hg1)" strokeWidth="2.5"/>
+                <path d="M23 32.5L29 38.5L41 25.5" stroke="url(#hg1)" strokeWidth="3.5" strokeLinecap="round" strokeLinejoin="round"/>
+              </svg>
             </div>
-            <span style={{ fontSize:'18px', fontWeight:700, color:'#fff', letterSpacing:'-0.3px' }}>Davomatlar.uz</span>
+            <span style={{ fontSize:'18px', fontWeight:700, color:'#fff', letterSpacing:'-0.5px' }}>Davomatlar.uz</span>
           </div>
           <div style={{ display:'flex', gap:'10px', alignItems:'center' }}>
             <a href="#tariflar" style={{ fontSize:'14px', color:'rgba(255,255,255,0.6)', textDecoration:'none', padding:'8px 16px', borderRadius:'50px', transition:'color 0.2s' }}
@@ -180,7 +190,7 @@ export default function Login({ onLogin }) {
           </div>
           <h1 style={{ margin:'0 0 20px', fontSize:'clamp(38px,6vw,72px)', fontWeight:900, color:'white', lineHeight:1.08, letterSpacing:'-2px' }}>
             Xodimlar davomatini<br/>
-            <span style={{ background:'linear-gradient(90deg,#60a5fa,#a78bfa,#34d399)', WebkitBackgroundClip:'text', WebkitTextFillColor:'transparent', backgroundClip:'text' }}>
+            <span style={{ background:'linear-gradient(180deg,#ffffff 0%,#93c5fd 100%)', WebkitBackgroundClip:'text', WebkitTextFillColor:'transparent', backgroundClip:'text' }}>
               nazorat qiling
             </span>
           </h1>
@@ -324,7 +334,7 @@ export default function Login({ onLogin }) {
               name: "Boshlang'ich",
               desc: 'Kichik jamoa uchun ideal',
               price: '1 000 000',
-              color: '#38bdf8',
+              color: '#fb923c',
               gift: null,
               features: [
                 '10 tagacha xodim',
