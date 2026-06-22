@@ -137,16 +137,20 @@ export default function Login({ onLogin }) {
       background:'linear-gradient(135deg, #60b8ff 0%, #1a7fe8 25%, #0a5fd4 50%, #0038b8 75%, #001e8a 100%)',
       display:'flex', flexDirection:'column',
     }}>
-      {/* Fon */}
+      {/* Fon effektlari */}
       <div style={{ position:'fixed', inset:0, overflow:'hidden', pointerEvents:'none', zIndex:0 }}>
-        <div style={{ position:'absolute', top:'-10%', left:'-5%', width:'700px', height:'600px', borderRadius:'50%', background:'rgba(255,255,255,0.22)', filter:'blur(90px)' }}/>
-        <div style={{ position:'absolute', top:'5%', right:'10%', width:'350px', height:'350px', borderRadius:'50%', background:'rgba(255,255,255,0.18)', filter:'blur(60px)' }}/>
-        <div style={{ position:'absolute', bottom:'-5%', right:'-5%', width:'500px', height:'400px', borderRadius:'50%', background:'rgba(10,30,150,0.45)', filter:'blur(80px)' }}/>
+        <div style={{ position:'absolute', top:'-10%', left:'-5%', width:'700px', height:'600px', borderRadius:'50%', background:'rgba(255,255,255,0.25)', filter:'blur(90px)' }}/>
+        <div style={{ position:'absolute', top:'5%', right:'10%', width:'350px', height:'350px', borderRadius:'50%', background:'rgba(255,255,255,0.2)', filter:'blur(60px)' }}/>
+        <div style={{ position:'absolute', bottom:'-5%', right:'-5%', width:'500px', height:'400px', borderRadius:'50%', background:'rgba(10,30,150,0.5)', filter:'blur(80px)' }}/>
         <div style={{ position:'absolute', inset:0, backgroundImage:'linear-gradient(rgba(255,255,255,0.04) 1px, transparent 1px), linear-gradient(90deg, rgba(255,255,255,0.04) 1px, transparent 1px)', backgroundSize:'60px 60px' }}/>
+        {Array.from({length:22}).map((_,i) => {
+          const size=4+(i*7)%14, left=(i*47+3)%100, delay=(i*1.3)%8, dur=10+(i*2.7)%14, op=0.12+(i%5)*0.05
+          return <div key={i} style={{ position:'absolute', left:`${left}%`, bottom:'-5%', width:`${size}px`, height:`${size}px`, borderRadius:'50%', background:'rgba(255,255,255,0.9)', opacity:op, animation:`floatUp ${dur}s ${delay}s linear infinite` }}/>
+        })}
       </div>
 
       {/* ── HEADER ── */}
-      <header style={{ position:'sticky', top:0, zIndex:100, background:'rgba(0,30,120,0.35)', backdropFilter:'blur(20px)', borderBottom:'1px solid rgba(255,255,255,0.12)', boxSizing:'border-box', width:'100%' }}>
+      <header style={{ position:'sticky', top:0, zIndex:100, background:'rgba(255,255,255,0.07)', backdropFilter:'blur(14px)', borderBottom:'1px solid rgba(255,255,255,0.1)', boxSizing:'border-box', width:'100%' }}>
         <div style={{ ...W, display:'flex', justifyContent:'space-between', alignItems:'center', padding:'14px 24px' }}>
           <div style={{ display:'flex', alignItems:'center', gap:'10px' }}>
             <div style={{ flexShrink:0 }}>
@@ -199,20 +203,20 @@ export default function Login({ onLogin }) {
           </p>
           <div style={{ display:'flex', gap:'12px', justifyContent:'center', flexWrap:'wrap', marginBottom:'64px' }}>
             <button onClick={openLogin} style={{
-              background:'rgba(255,255,255,0.95)', border:'none', borderRadius:'14px',
-              padding:'15px 32px', color:'#0a3fa8', fontSize:'16px', fontWeight:700, cursor:'pointer',
-              boxShadow:'0 8px 32px rgba(0,0,0,0.2)', transition:'all 0.2s',
+              background:'rgba(255,255,255,0.15)', backdropFilter:'blur(12px)',
+              border:'1px solid rgba(255,255,255,0.3)', borderRadius:'50px',
+              padding:'13px 30px', color:'white', fontSize:'15px', fontWeight:700, cursor:'pointer', transition:'all 0.2s',
             }}
-              onMouseEnter={e=>{e.currentTarget.style.transform='translateY(-2px)';e.currentTarget.style.boxShadow='0 12px 40px rgba(0,0,0,0.3)'}}
-              onMouseLeave={e=>{e.currentTarget.style.transform='none';e.currentTarget.style.boxShadow='0 8px 32px rgba(0,0,0,0.2)'}}
+              onMouseEnter={e=>e.currentTarget.style.background='rgba(255,255,255,0.25)'}
+              onMouseLeave={e=>e.currentTarget.style.background='rgba(255,255,255,0.15)'}
             >Bepul boshlash →</button>
             <a href="#tariflar" style={{
               display:'flex', alignItems:'center', gap:'8px',
-              background:'rgba(255,255,255,0.08)', border:'1px solid rgba(255,255,255,0.15)', borderRadius:'14px',
-              padding:'15px 28px', color:'white', fontSize:'16px', fontWeight:600, textDecoration:'none',
-              backdropFilter:'blur(10px)', transition:'all 0.2s',
+              background:'rgba(255,255,255,0.08)', backdropFilter:'blur(10px)',
+              border:'1px solid rgba(255,255,255,0.15)', borderRadius:'50px',
+              padding:'13px 26px', color:'rgba(255,255,255,0.85)', fontSize:'15px', fontWeight:600, textDecoration:'none', transition:'all 0.2s',
             }}
-              onMouseEnter={e=>e.currentTarget.style.background='rgba(255,255,255,0.14)'}
+              onMouseEnter={e=>e.currentTarget.style.background='rgba(255,255,255,0.15)'}
               onMouseLeave={e=>e.currentTarget.style.background='rgba(255,255,255,0.08)'}
             >Tariflarni ko'rish</a>
           </div>
@@ -266,19 +270,22 @@ export default function Login({ onLogin }) {
                 title:"Ta'til va kasallik", desc:"Xodim ta'tilda yoki kasallikda ekanligini belgilash. Statistikaga avtomatik kiritiladi." },
             ].map(({ icon:Icon, color, bg, border, title, desc }, i) => (
               <div key={title} style={{
-                background:'rgba(255,255,255,0.08)', border:`1px solid ${border}`,
-                borderRadius:'20px', padding:'28px 24px',
+                position:'relative', overflow:'hidden',
+                background:'rgba(255,255,255,0.06)', backdropFilter:'blur(20px)',
+                border:'1px solid rgba(255,255,255,0.1)', borderRadius:'18px', padding:'24px 20px',
                 transition:'transform 0.25s, box-shadow 0.25s',
                 animation:`cardIn 0.5s ${i*0.08}s both`,
               }}
                 onMouseEnter={e=>{e.currentTarget.style.transform='translateY(-5px)';e.currentTarget.style.boxShadow=`0 16px 48px ${color}22`}}
                 onMouseLeave={e=>{e.currentTarget.style.transform='none';e.currentTarget.style.boxShadow='none'}}
               >
-                <div style={{ width:'48px', height:'48px', borderRadius:'14px', background:bg, border:`1.5px solid ${border}`, display:'flex', alignItems:'center', justifyContent:'center', marginBottom:'18px' }}>
-                  <Icon size={22} color={color}/>
+                <div style={{ position:'absolute', top:0, left:0, right:0, height:'2px', background:`linear-gradient(90deg,${color},${color}55)`, borderRadius:'18px 18px 0 0' }}/>
+                <div style={{ position:'absolute', right:'-8px', bottom:'-8px', opacity:0.06 }}><Icon size={70} color={color}/></div>
+                <div style={{ width:'40px', height:'40px', borderRadius:'12px', background:`linear-gradient(135deg,${color},${color}99)`, display:'flex', alignItems:'center', justifyContent:'center', marginBottom:'14px', boxShadow:`0 4px 14px ${color}55` }}>
+                  <Icon size={19} color="white"/>
                 </div>
-                <div style={{ fontSize:'17px', fontWeight:700, color:'white', marginBottom:'8px' }}>{title}</div>
-                <div style={{ fontSize:'14px', color:'rgba(255,255,255,0.45)', lineHeight:1.7 }}>{desc}</div>
+                <div style={{ fontSize:'16px', fontWeight:700, color:'white', marginBottom:'7px' }}>{title}</div>
+                <div style={{ fontSize:'13px', color:'rgba(255,255,255,0.5)', lineHeight:1.7 }}>{desc}</div>
               </div>
             ))}
           </div>
@@ -286,7 +293,7 @@ export default function Login({ onLogin }) {
       </section>
 
       {/* ── QANDAY ISHLAYDI ── */}
-      <section style={{ position:'relative', zIndex:1, padding:'80px 24px', background:'rgba(0,20,80,0.25)' }}>
+      <section style={{ position:'relative', zIndex:1, padding:'80px 24px', background:'rgba(0,0,0,0.12)' }}>
         <div style={W}>
           <div style={{ textAlign:'center', marginBottom:'52px' }}>
             <h2 style={{ margin:'0 0 12px', fontSize:'clamp(26px,4vw,38px)', fontWeight:800, color:'white', letterSpacing:'-1px' }}>
@@ -300,7 +307,7 @@ export default function Login({ onLogin }) {
               { n:'02', color:'#a78bfa', title:'Xodimlarni qo\'shing', desc:"Admin paneldan xodimlar ro'yxatini kiriting. Filial va lavozimlarni belgilang" },
               { n:'03', color:'#34d399', title:'Avtomatik nazorat', desc:"Endi hamma narsa o'zi ishlaydi. Kunlik hisobotlar, kechikish ogohlantirishlari — hammasi tayyor" },
             ].map(({ n, color, title, desc }) => (
-              <div key={n} style={{ background:'rgba(255,255,255,0.08)', border:'1px solid rgba(255,255,255,0.15)', borderRadius:'20px', padding:'32px 24px', position:'relative', overflow:'hidden' }}>
+              <div key={n} style={{ background:'rgba(255,255,255,0.06)', backdropFilter:'blur(20px)', border:'1px solid rgba(255,255,255,0.1)', borderRadius:'18px', padding:'28px 22px', position:'relative', overflow:'hidden' }}>
                 <div style={{ position:'absolute', top:'-10px', right:'-10px', fontSize:'80px', fontWeight:900, color, opacity:0.06, lineHeight:1 }}>{n}</div>
                 <div style={{ fontSize:'13px', fontWeight:700, color, marginBottom:'14px', letterSpacing:'2px' }}>QADAM {n}</div>
                 <div style={{ fontSize:'18px', fontWeight:700, color:'white', marginBottom:'10px' }}>{title}</div>
@@ -492,7 +499,7 @@ export default function Login({ onLogin }) {
 
       {/* ── CTA ── */}
       <section style={{ position:'relative', zIndex:1, padding:'80px 24px', textAlign:'center' }}>
-        <div style={{ ...W, background:'rgba(255,255,255,0.09)', backdropFilter:'blur(20px)', border:'1px solid rgba(255,255,255,0.18)', borderRadius:'28px', padding:'60px 40px' }}>
+        <div style={{ ...W, background:'rgba(255,255,255,0.07)', backdropFilter:'blur(20px)', border:'1px solid rgba(255,255,255,0.12)', borderRadius:'24px', padding:'60px 40px' }}>
           <h2 style={{ margin:'0 0 14px', fontSize:'clamp(24px,4vw,38px)', fontWeight:800, color:'white', letterSpacing:'-1px' }}>
             Bugun boshlang — bepul sinab ko'ring
           </h2>
@@ -500,12 +507,12 @@ export default function Login({ onLogin }) {
             Sozlash 3 daqiqa. Kamera ulang, xodim qo'shing — tizim o'zi ishlaydi.
           </p>
           <button onClick={openLogin} style={{
-            background:'rgba(255,255,255,0.95)', border:'none', borderRadius:'14px',
-            padding:'16px 40px', color:'#0a3fa8', fontSize:'16px', fontWeight:700, cursor:'pointer',
-            boxShadow:'0 8px 32px rgba(0,0,0,0.2)', transition:'all 0.2s',
+            background:'rgba(255,255,255,0.15)', backdropFilter:'blur(12px)',
+            border:'1px solid rgba(255,255,255,0.3)', borderRadius:'50px',
+            padding:'14px 36px', color:'white', fontSize:'15px', fontWeight:700, cursor:'pointer', transition:'all 0.2s',
           }}
-            onMouseEnter={e=>{e.currentTarget.style.transform='translateY(-2px)';e.currentTarget.style.boxShadow='0 12px 40px rgba(0,0,0,0.3)'}}
-            onMouseLeave={e=>{e.currentTarget.style.transform='none';e.currentTarget.style.boxShadow='0 8px 32px rgba(0,0,0,0.2)'}}
+            onMouseEnter={e=>e.currentTarget.style.background='rgba(255,255,255,0.25)'}
+            onMouseLeave={e=>e.currentTarget.style.background='rgba(255,255,255,0.15)'}
           >
             Tizimga kirish →
           </button>
@@ -513,7 +520,7 @@ export default function Login({ onLogin }) {
       </section>
 
       {/* ── FOOTER ── */}
-      <footer style={{ position:'relative', zIndex:1, borderTop:'1px solid rgba(255,255,255,0.12)', padding:'28px 24px', background:'rgba(0,20,80,0.2)' }}>
+      <footer style={{ position:'relative', zIndex:1, borderTop:'1px solid rgba(255,255,255,0.1)', padding:'24px 24px' }}>
         <div style={{ ...W, display:'flex', flexWrap:'wrap', justifyContent:'space-between', alignItems:'center', gap:'16px' }}>
           <div style={{ display:'flex', alignItems:'center', gap:'8px' }}>
             <CheckCircle size={16} color="#3b82f6"/>
@@ -543,9 +550,10 @@ export default function Login({ onLogin }) {
       </footer>
 
       <style>{`
-        @keyframes spin   { to { transform: rotate(360deg) } }
-        @keyframes cardIn { from{ opacity:0; transform:translateY(20px) } to{ opacity:1; transform:translateY(0) } }
-        input::placeholder { color: #94a3b8 }
+        @keyframes spin    { to { transform: rotate(360deg) } }
+        @keyframes cardIn  { from{ opacity:0; transform:translateY(16px) } to{ opacity:1; transform:translateY(0) } }
+        @keyframes floatUp { 0%{ transform:translateY(0) translateX(0); opacity:0 } 10%{ opacity:1 } 90%{ opacity:0.6 } 100%{ transform:translateY(-110vh) translateX(30px); opacity:0 } }
+        input::placeholder { color: #cbd5e1 }
         html { scroll-behavior: smooth; }
       `}</style>
     </div>
