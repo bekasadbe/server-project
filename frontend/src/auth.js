@@ -14,7 +14,7 @@ export async function loginAsync(username, password) {
       localStorage.setItem('user', JSON.stringify(user))
       return { user }
     }
-    return { error: data.error || "Login yoki parol noto'g'ri" }
+    return { error: data.error || "Login yoki parol noto'g'ri", remaining: data.remaining ?? null, blocked: data.blocked || false }
   } catch {
     return { error: "Serverga ulanishda xatolik" }
   }

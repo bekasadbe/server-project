@@ -27,15 +27,18 @@ app = Flask(__name__)
 # ── RATE LIMITING (/auth uchun) ───────────────────────────
 _login_attempts = defaultdict(list)  # ip → [timestamp, ...]
 
-def check_rate_limit(ip, max_attempts=10, window=300):
-    """5 daqiqada 10 tadan ko'p urinish bo'lsa bloklash"""
+MAX_ATTEMPTS = 5
+WINDOW_SEC   = 300  # 5 daqiqa
+
+def check_rate_limit(ip):
     now = time.time()
-    attempts = [t for t in _login_attempts[ip] if now - t < window]
+    attempts = [t for t in _login_attempts[ip] if now - t < WINDOW_SEC]
     _login_attempts[ip] = attempts
-    if len(attempts) >= max_attempts:
-        return False
+    if len(attempts) >= MAX_ATTEMPTS:
+        return False, 0
     _login_attempts[ip].append(now)
-    return True
+    remaining = MAX_ATTEMPTS - len(_login_attempts[ip])
+    return True, remaining
 
 API_TOKEN = os.environ.get('API_TOKEN', 'Dav0mat@API#2026!')
 
@@ -265,13 +268,17 @@ def events_push():
 
 @app.route('/auth', methods=['POST'])
 def auth_login():
-    ip = request.headers.get('X-Forwarded-For', request.remote_addr)
-    if not check_rate_limit(ip):
-        return jsonify({'ok': False, 'error': 'Juda ko\'p urinish. 5 daqiqa kuting.'}), 429
+    ip = request.headers.get('X-Forwarded-For', request.remote_addr).split(',')[0].strip()
+    allowed, remaining = check_rate_limit(ip)
+    if not allowed:
+        return jsonify({'ok': False, 'error': "Juda ko'p urinish. 5 daqiqa kuting.", 'blocked': True}), 429
 
     data     = request.json or {}
     username = data.get('username', '').strip()
     password = data.get('password', '').strip()
+
+    if not username or not password:
+        return jsonify({'ok': False, 'error': 'Login va parol kiriting', 'remaining': remaining}), 400
 
     # Super admin
     admin_pass = os.environ.get('ADMIN_PASSWORD', 'Inno@Adm!n2026')
@@ -292,7 +299,8 @@ def auth_login():
         all_groups = linked if linked else []
         return jsonify({'ok': True, 'role': acc_role, 'name': row['name'], 'groupId': all_groups[0] if all_groups else None, 'accountId': row['id'], 'username': row['login'], 'linkedGroupIds': linked})
 
-    return jsonify({'ok': False, 'error': "Login yoki parol noto'g'ri"}), 401
+    print(f"[AUTH FAIL] ip={ip} user={username}")
+    return jsonify({'ok': False, 'error': "Login yoki parol noto'g'ri", 'remaining': remaining}), 401
 
 
 @app.route('/leaves', methods=['GET'])

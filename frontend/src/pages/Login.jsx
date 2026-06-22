@@ -16,15 +16,38 @@ export default function Login({ onLogin }) {
   const [showPass, setShowPass]   = useState(false)
   const [error, setError]         = useState('')
   const [loading, setLoading]     = useState(false)
+  const [failCount, setFailCount] = useState(0)
+  const [cooldown, setCooldown]   = useState(0)
+  const [remaining, setRemaining] = useState(null)
+
+  useEffect(() => {
+    if (cooldown <= 0) return
+    const t = setTimeout(() => setCooldown(c => c - 1), 1000)
+    return () => clearTimeout(t)
+  }, [cooldown])
 
   const handleSubmit = async (e) => {
     e.preventDefault()
+    if (cooldown > 0) return
     setError('')
     setLoading(true)
     try {
       const res = await loginAsync(username, password)
-      if (res?.user) { onLogin(res.user) }
-      else { setError(res?.error || "Login yoki parol noto'g'ri") }
+      if (res?.user) {
+        setFailCount(0); onLogin(res.user)
+      } else {
+        const newFail = failCount + 1
+        setFailCount(newFail)
+        if (res?.remaining !== null && res?.remaining !== undefined) setRemaining(res.remaining)
+        if (res?.blocked) {
+          setError("Juda ko'p urinish. 5 daqiqa kuting.")
+          setCooldown(300)
+        } else {
+          setError(res?.error || "Login yoki parol noto'g'ri")
+          // Progressive delay: 1s, 2s, 4s, 8s
+          if (newFail >= 2) setCooldown(Math.min(Math.pow(2, newFail - 2), 30))
+        }
+      }
     } catch {
       setError("Serverga ulanishda xatolik")
     } finally {
@@ -33,7 +56,7 @@ export default function Login({ onLogin }) {
   }
 
   const openLogin = () => {
-    setError(''); setUsername(''); setPassword('')
+    setError(''); setUsername(''); setPassword(''); setFailCount(0); setCooldown(0); setRemaining(null)
     setShowLogin(true)
   }
 
@@ -124,16 +147,24 @@ export default function Login({ onLogin }) {
               </div>
             </div>
             {error && (
-              <div className="px-4 py-3 bg-red-50 border border-red-200 rounded-xl text-red-600 text-[13px]">{error}</div>
+              <div className="px-4 py-3 bg-red-50 border border-red-200 rounded-xl text-red-600 text-[13px]">
+                <div>{error}</div>
+                {remaining !== null && remaining > 0 && !cooldown && (
+                  <div className="mt-1 text-red-400 text-[12px]">⚠️ {remaining} ta urinish qoldi</div>
+                )}
+                {cooldown > 0 && (
+                  <div className="mt-1 text-red-500 text-[12px] font-semibold">⏱ {cooldown} soniyadan keyin qayta urinib ko'ring</div>
+                )}
+              </div>
             )}
-            <button type="submit" disabled={loading}
-              className={`w-full py-3 rounded-xl text-white text-[15px] font-bold border-none mt-1 transition-all ${loading ? 'bg-brand-300 cursor-not-allowed' : 'bg-brand-600 hover:bg-brand-700 cursor-pointer'}`}>
+            <button type="submit" disabled={loading || cooldown > 0}
+              className={`w-full py-3 rounded-xl text-white text-[15px] font-bold border-none mt-1 transition-all ${loading || cooldown > 0 ? 'bg-brand-300 cursor-not-allowed' : 'bg-brand-600 hover:bg-brand-700 cursor-pointer'}`}>
               {loading ? (
                 <span className="flex items-center justify-center gap-2">
                   <span className="w-4 h-4 border-2 border-white/30 border-t-white rounded-full animate-spin inline-block"/>
-                  Kirish...
+                  Tekshirilmoqda...
                 </span>
-              ) : 'Kirish →'}
+              ) : cooldown > 0 ? `Kuting ${cooldown}s...` : 'Kirish →'}
             </button>
           </form>
           <button onClick={() => setShowLogin(false)}
@@ -264,19 +295,19 @@ export default function Login({ onLogin }) {
         <div style={{ display:'grid', gridTemplateColumns:'repeat(auto-fit,minmax(290px,1fr))', gap:'20px', maxWidth:'980px', margin:'0 auto' }}>
           {[
             {
-              icon: Zap, badge: null, name:"Boshlang'ich", desc:'Kichik jamoa uchun ideal',
+              icon: Zap, badge: null, name:'Plus', desc:'Kichik jamoa uchun ideal',
               price:'1 000 000', color:'#f97316', lightBg:'#fff7ed', borderC:'#fed7aa',
               gift: null,
-              features:['10 tagacha xodim','1 ta filial boshqaruvi','Face ID kamera integratsiya','Real vaqt kuzatuv','Kunlik hisobotlar & PDF','Xodimlar bazasi (kadrlar)',"Ta'til va kasallik hisobi",'Kechikish nazorati'],
+              features:['12 tagacha xodim','1 ta filial boshqaruvi','Face ID kamera integratsiya','Real vaqt kuzatuv','Kunlik hisobotlar & PDF','Xodimlar bazasi (kadrlar)',"Ta'til va kasallik hisobi",'Kechikish nazorati'],
             },
             {
-              icon: Star, badge:'⭐ Eng mashhur', name:'Biznes', desc:"O'rta tashkilotlar uchun",
+              icon: Star, badge:'⭐ Eng mashhur', name:'Pro', desc:"O'rta tashkilotlar uchun",
               price:'2 500 000', color:'#2563eb', lightBg:'#eff6ff', borderC:'#bfdbfe',
               gift: null,
-              features:['40 tagacha xodim','5 tagacha filial boshqaruvi','Face ID kamera integratsiya','Real vaqt kuzatuv','Kunlik + oylik hisobotlar & PDF','Xodimlar bazasi (kadrlar)',"Ta'til va kasallik hisobi","Haftalik jadval ko'rinishi",'Statistika va reytinglar','Kechikish nazorati'],
+              features:['35 tagacha xodim','5 tagacha filial boshqaruvi','Face ID kamera integratsiya','Real vaqt kuzatuv','Kunlik + oylik hisobotlar & PDF','Xodimlar bazasi (kadrlar)',"Ta'til va kasallik hisobi","Haftalik jadval ko'rinishi",'Statistika va reytinglar','Kechikish nazorati'],
             },
             {
-              icon: Building2, badge:"🎁 Sovg'a bor", name:'Korporativ', desc:'Yirik tashkilotlar uchun',
+              icon: Building2, badge:"🎁 Sovg'a bor", name:'Ultra', desc:'Yirik tashkilotlar uchun',
               price:'4 000 000', color:'#059669', lightBg:'#f0fdf4', borderC:'#a7f3d0',
               gift: true,
               features:['100 tagacha xodim','Cheksiz filiallar boshqaruvi','Face ID kamera — sotib olish shart emas','Real vaqt kuzatuv',"To'liq hisobotlar paketi & PDF",'Xodimlar bazasi (kadrlar)',"Ta'til va kasallik hisobi","Haftalik jadval ko'rinishi",'Statistika va reytinglar','Kechikish nazorati','Telegram xabarnomalar*','Ustuvor texnik yordam'],
@@ -337,15 +368,15 @@ export default function Login({ onLogin }) {
                 </div>
               )}
 
-              <button onClick={openLogin} style={{
-                width:'100%', padding:'13px', borderRadius:'13px', border:'none',
-                background:color, color:'#fff',
-                fontSize:'14px', fontWeight:700, cursor:'pointer',
+              <a href="https://t.me/davomatlaruz" target="_blank" rel="noreferrer" style={{
+                display:'block', width:'100%', padding:'13px', borderRadius:'13px', border:'none',
+                background:color, color:'#fff', textAlign:'center',
+                fontSize:'14px', fontWeight:700, cursor:'pointer', textDecoration:'none',
                 boxShadow:`0 6px 20px ${color}44`, transition:'opacity 0.2s, transform 0.15s',
               }}
                 onMouseEnter={e=>{e.currentTarget.style.opacity='0.88';e.currentTarget.style.transform='scale(0.99)'}}
                 onMouseLeave={e=>{e.currentTarget.style.opacity='1';e.currentTarget.style.transform='scale(1)'}}
-              >Boshlash →</button>
+              >Bog'lanish →</a>
             </div>
           ))}
         </div>
