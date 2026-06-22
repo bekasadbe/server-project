@@ -1,4 +1,4 @@
-import { useState } from 'react'
+import { useState, useEffect, useRef } from 'react'
 import { loginAsync } from '../auth'
 import { Eye, EyeOff, CheckCircle, CheckCircle2, Clock, Users, TrendingUp, X, Phone, MapPin, Send, BarChart3, ShieldCheck, ArrowLeft, Zap, Star, Building2, Check } from 'lucide-react'
 
@@ -29,6 +29,16 @@ export default function Login({ onLogin }) {
     setError(''); setUsername(''); setPassword('')
     setShowLogin(true)
   }
+
+  const pricingRef = useRef(null)
+  const [pricingVisible, setPricingVisible] = useState(false)
+  useEffect(() => {
+    const el = pricingRef.current
+    if (!el) return
+    const obs = new IntersectionObserver(([e]) => { if (e.isIntersecting) { setPricingVisible(true); obs.disconnect() } }, { threshold: 0.1 })
+    obs.observe(el)
+    return () => obs.disconnect()
+  }, [])
 
   // Split-screen login sahifasi
   if (showLogin) return (
@@ -227,7 +237,7 @@ export default function Login({ onLogin }) {
       </main>
 
       {/* Tariflar */}
-      <section style={{ position:'relative', zIndex:10, padding:'60px 20px 48px', textAlign:'center' }}>
+      <section ref={pricingRef} style={{ position:'relative', zIndex:10, padding:'60px 20px 48px', textAlign:'center', opacity: pricingVisible ? 1 : 0, transform: pricingVisible ? 'translateY(0)' : 'translateY(40px)', transition:'opacity 0.7s ease, transform 0.7s ease' }}>
         <div style={{ display:'inline-flex', alignItems:'center', gap:'8px', background:'rgba(255,255,255,0.1)', backdropFilter:'blur(10px)', border:'1px solid rgba(255,255,255,0.15)', borderRadius:'50px', padding:'6px 18px', marginBottom:'20px' }}>
           <Zap size={13} color="#fbbf24"/>
           <span style={{ fontSize:'13px', color:'rgba(255,255,255,0.9)', fontWeight:500 }}>Qulay narxlar</span>
