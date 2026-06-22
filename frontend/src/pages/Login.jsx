@@ -1,9 +1,16 @@
 import { useState } from 'react'
 import { loginAsync } from '../auth'
-import { Eye, EyeOff, CheckCircle, Clock, Users, TrendingUp, X, Phone, MapPin, Send } from 'lucide-react'
+import { Eye, EyeOff, CheckCircle, CheckCircle2, Clock, Users, TrendingUp, X, Phone, MapPin, Send, BarChart3, ShieldCheck, ArrowLeft } from 'lucide-react'
+
+const LOGIN_FEATURES = [
+  { icon: Clock,       text: 'Kelish-ketish vaqtini real vaqtda kuzatish' },
+  { icon: Users,       text: "50+ xodimni bir tashkilotda boshqarish" },
+  { icon: BarChart3,   text: 'Oylik statistika va reytinglar' },
+  { icon: ShieldCheck, text: 'Face ID kamera integratsiyasi' },
+]
 
 export default function Login({ onLogin }) {
-  const [showModal, setShowModal] = useState(false)
+  const [showLogin, setShowLogin] = useState(false)
   const [username, setUsername]   = useState('')
   const [password, setPassword]   = useState('')
   const [showPass, setShowPass]   = useState(false)
@@ -18,10 +25,109 @@ export default function Login({ onLogin }) {
     else { setError("Login yoki parol noto'g'ri"); setLoading(false) }
   }
 
-  const openModal = () => {
+  const openLogin = () => {
     setError(''); setUsername(''); setPassword('')
-    setShowModal(true)
+    setShowLogin(true)
   }
+
+  // Split-screen login sahifasi
+  if (showLogin) return (
+    <div className="flex h-screen w-screen overflow-hidden bg-white">
+      {/* Chap panel */}
+      <div className="hidden lg:flex flex-col justify-between w-[52%] p-12 relative overflow-hidden" style={{ background:'linear-gradient(145deg,#1a56db 0%,#1e429f 40%,#1a365d 100%)' }}>
+        <div className="absolute -top-24 -left-24 w-96 h-96 rounded-full opacity-30" style={{ background:'#3b82f6' }}/>
+        <div className="absolute bottom-0 right-0 w-80 h-80 rounded-full opacity-50" style={{ background:'#0f2460' }}/>
+        <div className="absolute top-1/2 -right-16 w-64 h-64 rounded-full opacity-25" style={{ background:'#60a5fa' }}/>
+        <div className="relative z-10 flex items-center gap-3">
+          <div className="w-10 h-10 rounded-xl border flex items-center justify-center" style={{ background:'rgba(96,165,250,0.3)', borderColor:'rgba(147,197,253,0.5)' }}>
+            <CheckCircle2 size={22} className="text-white"/>
+          </div>
+          <div>
+            <div className="text-white font-bold text-[18px] leading-none">Davomatlar.uz</div>
+            <div className="text-[12px] mt-0.5" style={{ color:'rgba(147,197,253,0.6)' }}>Boshqaruv tizimi</div>
+          </div>
+        </div>
+        <div className="relative z-10">
+          <h1 className="text-white font-extrabold text-[38px] leading-tight mb-4">
+            Xodimlar davomatini<br/>
+            <span className="text-blue-300">nazorat qiling</span>
+          </h1>
+          <p className="text-[15px] leading-relaxed mb-10 max-w-sm" style={{ color:'rgba(147,197,253,0.8)' }}>
+            Face ID qurilmalar bilan integratsiya, real vaqt hisobotlar va tashkilotlar bo'yicha boshqaruv.
+          </p>
+          <div className="flex flex-col gap-4">
+            {LOGIN_FEATURES.map(({ icon: Icon, text }) => (
+              <div key={text} className="flex items-center gap-3">
+                <div className="w-8 h-8 rounded-lg flex items-center justify-center shrink-0" style={{ background:'rgba(96,165,250,0.25)', border:'1px solid rgba(147,197,253,0.3)' }}>
+                  <Icon size={15} className="text-blue-200"/>
+                </div>
+                <span className="text-blue-100 text-[14px]">{text}</span>
+              </div>
+            ))}
+          </div>
+        </div>
+        <div className="relative z-10 flex items-center gap-2 text-[12px]" style={{ color:'rgba(147,197,253,0.4)' }}>
+          <CheckCircle2 size={12}/> davomatlar.uz · 2026
+        </div>
+      </div>
+
+      {/* O'ng panel — form */}
+      <div className="flex-1 flex flex-col items-center justify-center px-8 bg-slate-50">
+        <button onClick={() => setShowLogin(false)}
+          className="absolute top-6 left-6 lg:hidden flex items-center gap-1.5 text-slate-500 text-[13px] bg-transparent border-none cursor-pointer">
+          <ArrowLeft size={15}/> Orqaga
+        </button>
+        <div className="w-full max-w-sm">
+          <div className="mb-8">
+            <h2 className="text-[26px] font-bold text-slate-900 mb-1">Kirish</h2>
+            <p className="text-slate-400 text-[14px]">Login va parolni kiriting</p>
+          </div>
+          <form onSubmit={handleSubmit} className="flex flex-col gap-4">
+            <div>
+              <label className="text-[12px] text-slate-500 font-semibold block mb-1.5">Login</label>
+              <input value={username} onChange={e => { setUsername(e.target.value); setError('') }}
+                placeholder="admin" autoComplete="username"
+                className="w-full px-4 py-3 bg-white border border-slate-200 rounded-xl text-slate-900 text-[14px] outline-none focus:border-brand-500 transition-all"
+                style={{ boxSizing:'border-box' }}
+              />
+            </div>
+            <div>
+              <label className="text-[12px] text-slate-500 font-semibold block mb-1.5">Parol</label>
+              <div className="relative">
+                <input type={showPass ? 'text' : 'password'} value={password}
+                  onChange={e => { setPassword(e.target.value); setError('') }}
+                  placeholder="••••••••" autoComplete="current-password"
+                  className="w-full px-4 py-3 pr-11 bg-white border border-slate-200 rounded-xl text-slate-900 text-[14px] outline-none focus:border-brand-500 transition-all"
+                  style={{ boxSizing:'border-box' }}
+                />
+                <button type="button" onClick={() => setShowPass(!showPass)}
+                  className="absolute right-3 top-1/2 -translate-y-1/2 text-slate-400 hover:text-slate-600 bg-transparent border-none cursor-pointer flex">
+                  {showPass ? <EyeOff size={16}/> : <Eye size={16}/>}
+                </button>
+              </div>
+            </div>
+            {error && (
+              <div className="px-4 py-3 bg-red-50 border border-red-200 rounded-xl text-red-600 text-[13px]">{error}</div>
+            )}
+            <button type="submit" disabled={loading}
+              className={`w-full py-3 rounded-xl text-white text-[15px] font-bold border-none mt-1 transition-all ${loading ? 'bg-brand-300 cursor-not-allowed' : 'bg-brand-600 hover:bg-brand-700 cursor-pointer'}`}>
+              {loading ? (
+                <span className="flex items-center justify-center gap-2">
+                  <span className="w-4 h-4 border-2 border-white/30 border-t-white rounded-full animate-spin inline-block"/>
+                  Kirish...
+                </span>
+              ) : 'Kirish →'}
+            </button>
+          </form>
+          <button onClick={() => setShowLogin(false)}
+            className="hidden lg:flex items-center gap-1.5 mx-auto mt-6 text-slate-400 text-[13px] bg-transparent border-none cursor-pointer hover:text-slate-600 transition-colors">
+            <ArrowLeft size={14}/> Bosh sahifaga qaytish
+          </button>
+        </div>
+      </div>
+      <style>{`input::placeholder{color:#cbd5e1}`}</style>
+    </div>
+  )
 
   return (
     <div style={{
@@ -60,7 +166,7 @@ export default function Login({ onLogin }) {
           </div>
           <span style={{ fontSize:'18px', fontWeight:700, letterSpacing:'-0.5px', color:'#ffffff' }}>Davomatlar.uz</span>
         </div>
-        <button onClick={openModal} style={{
+        <button onClick={openLogin} style={{
           display:'flex', alignItems:'center', gap:'6px',
           background:'rgba(255,255,255,0.12)', backdropFilter:'blur(12px)',
           border:'1px solid rgba(255,255,255,0.2)', borderRadius:'50px',
@@ -119,85 +225,6 @@ export default function Login({ onLogin }) {
           ))}
         </div>
       </main>
-
-      {/* Login Modal — yangi dizayn */}
-      {showModal && (
-        <div style={{
-          position:'fixed', inset:0, zIndex:100,
-          background:'rgba(0,0,0,0.45)', backdropFilter:'blur(10px)',
-          display:'flex', alignItems:'center', justifyContent:'center',
-          animation:'fadeIn 0.2s ease',
-        }} onClick={e => e.target === e.currentTarget && setShowModal(false)}>
-          <div className="login-modal" style={{
-            width:'400px', background:'#ffffff', borderRadius:'24px',
-            padding:'36px', boxShadow:'0 32px 80px rgba(0,0,0,0.35)',
-            animation:'slideUp 0.25s ease',
-          }}>
-            {/* Header */}
-            <div style={{ display:'flex', justifyContent:'space-between', alignItems:'center', marginBottom:'28px' }}>
-              <div style={{ display:'flex', alignItems:'center', gap:'10px' }}>
-                <div style={{ width:'40px', height:'40px', borderRadius:'12px', background:'#EBF8FF', display:'flex', alignItems:'center', justifyContent:'center' }}>
-                  <CheckCircle size={22} color="#2B6CB0"/>
-                </div>
-                <div>
-                  <div style={{ fontSize:'17px', fontWeight:700, color:'#0f172a' }}>Xush kelibsiz</div>
-                  <div style={{ fontSize:'12px', color:'#94a3b8' }}>Davomatlar.uz tizimiga kiring</div>
-                </div>
-              </div>
-              <button onClick={() => setShowModal(false)} style={{ background:'#f8fafc', border:'1px solid #e2e8f0', borderRadius:'10px', color:'#94a3b8', width:'34px', height:'34px', cursor:'pointer', display:'flex', alignItems:'center', justifyContent:'center' }}>
-                <X size={15}/>
-              </button>
-            </div>
-
-            <form onSubmit={handleSubmit}>
-              <div style={{ marginBottom:'14px' }}>
-                <label style={{ fontSize:'12px', color:'#64748b', display:'block', marginBottom:'6px', fontWeight:600 }}>Login</label>
-                <input value={username} onChange={e => { setUsername(e.target.value); setError('') }}
-                  placeholder="admin" autoComplete="username"
-                  style={{ width:'100%', padding:'11px 14px', boxSizing:'border-box', background:'#f8fafc', border:'1.5px solid #e2e8f0', borderRadius:'12px', color:'#0f172a', fontSize:'14px', outline:'none', transition:'border-color 0.2s' }}
-                  onFocus={e => e.target.style.borderColor='#4299E1'}
-                  onBlur={e => e.target.style.borderColor='#e2e8f0'}
-                />
-              </div>
-              <div style={{ marginBottom:'20px' }}>
-                <label style={{ fontSize:'12px', color:'#64748b', display:'block', marginBottom:'6px', fontWeight:600 }}>Parol</label>
-                <div style={{ position:'relative' }}>
-                  <input type={showPass ? 'text' : 'password'} value={password} onChange={e => { setPassword(e.target.value); setError('') }}
-                    placeholder="••••••••" autoComplete="current-password"
-                    style={{ width:'100%', padding:'11px 40px 11px 14px', boxSizing:'border-box', background:'#f8fafc', border:'1.5px solid #e2e8f0', borderRadius:'12px', color:'#0f172a', fontSize:'14px', outline:'none', transition:'border-color 0.2s' }}
-                    onFocus={e => e.target.style.borderColor='#4299E1'}
-                    onBlur={e => e.target.style.borderColor='#e2e8f0'}
-                  />
-                  <button type="button" onClick={() => setShowPass(!showPass)} style={{ position:'absolute', right:'12px', top:'50%', transform:'translateY(-50%)', background:'none', border:'none', cursor:'pointer', color:'#94a3b8', display:'flex' }}>
-                    {showPass ? <EyeOff size={16}/> : <Eye size={16}/>}
-                  </button>
-                </div>
-              </div>
-
-              {error && (
-                <div style={{ marginBottom:'14px', padding:'10px 14px', background:'#fff5f5', border:'1px solid #fed7d7', borderRadius:'10px', color:'#e53e3e', fontSize:'13px' }}>
-                  {error}
-                </div>
-              )}
-
-              <button type="submit" disabled={loading} style={{
-                width:'100%', padding:'13px', background: loading ? '#90CDF4' : '#2B6CB0',
-                border:'none', borderRadius:'12px', color:'white', fontSize:'15px',
-                fontWeight:700, cursor: loading ? 'not-allowed' : 'pointer',
-                display:'flex', alignItems:'center', justifyContent:'center', gap:'8px',
-                transition:'background 0.2s',
-              }}
-                onMouseEnter={e => { if(!loading) e.currentTarget.style.background='#2C5282' }}
-                onMouseLeave={e => { if(!loading) e.currentTarget.style.background='#2B6CB0' }}
-              >
-                {loading ? (
-                  <><div style={{ width:'15px', height:'15px', border:'2px solid rgba(255,255,255,0.3)', borderTopColor:'white', borderRadius:'50%', animation:'spin 0.8s linear infinite' }}/> Kirish...</>
-                ) : 'Kirish →'}
-              </button>
-            </form>
-          </div>
-        </div>
-      )}
 
       {/* Footer */}
       <footer style={{ position:'relative', zIndex:10 }}>
