@@ -129,119 +129,194 @@ export default function Login({ onLogin }) {
     </div>
   )
 
+  const W = { maxWidth:'1100px', margin:'0 auto', width:'100%', padding:'0 24px', boxSizing:'border-box' }
+
   return (
     <div style={{
       width:'100vw', minHeight:'100vh', overflowY:'auto', overflowX:'hidden', position:'relative',
-      background:'linear-gradient(135deg, #60b8ff 0%, #1a7fe8 25%, #0a5fd4 50%, #0038b8 75%, #001e8a 100%)',
+      background:'linear-gradient(160deg, #0f172a 0%, #0c1f5e 40%, #0a3fa8 70%, #0d5edb 100%)',
       display:'flex', flexDirection:'column',
     }}>
-      {/* Fon effektlari */}
-      <div style={{ position:'absolute', inset:0, overflow:'hidden', pointerEvents:'none' }}>
-        <div style={{ position:'absolute', top:'-10%', left:'-5%', width:'700px', height:'600px', borderRadius:'50%', background:'rgba(255,255,255,0.25)', filter:'blur(90px)' }}/>
-        <div style={{ position:'absolute', top:'5%', right:'10%', width:'350px', height:'350px', borderRadius:'50%', background:'rgba(255,255,255,0.2)', filter:'blur(60px)' }}/>
-        <div style={{ position:'absolute', bottom:'-5%', right:'-5%', width:'500px', height:'400px', borderRadius:'50%', background:'rgba(10,30,150,0.5)', filter:'blur(80px)' }}/>
-        <div style={{ position:'absolute', inset:0, backgroundImage:'linear-gradient(rgba(255,255,255,0.04) 1px, transparent 1px), linear-gradient(90deg, rgba(255,255,255,0.04) 1px, transparent 1px)', backgroundSize:'60px 60px' }}/>
-        {Array.from({length:22}).map((_,i) => {
-          const size  = 4 + (i*7)%14
-          const left  = (i*47 + 3)%100
-          const delay = (i*1.3)%8
-          const dur   = 10 + (i*2.7)%14
-          const op    = 0.12 + (i%5)*0.05
-          return (
-            <div key={i} style={{
-              position:'absolute', left:`${left}%`, bottom:'-5%',
-              width:`${size}px`, height:`${size}px`, borderRadius:'50%',
-              background:'rgba(255,255,255,0.9)', opacity:op,
-              animation:`floatUp ${dur}s ${delay}s linear infinite`,
-            }}/>
-          )
-        })}
+      {/* Fon */}
+      <div style={{ position:'fixed', inset:0, overflow:'hidden', pointerEvents:'none', zIndex:0 }}>
+        <div style={{ position:'absolute', top:'-20%', left:'-10%', width:'800px', height:'700px', borderRadius:'50%', background:'rgba(99,102,241,0.18)', filter:'blur(120px)' }}/>
+        <div style={{ position:'absolute', top:'30%', right:'-10%', width:'600px', height:'500px', borderRadius:'50%', background:'rgba(14,165,233,0.15)', filter:'blur(100px)' }}/>
+        <div style={{ position:'absolute', bottom:'-10%', left:'30%', width:'700px', height:'500px', borderRadius:'50%', background:'rgba(37,99,235,0.2)', filter:'blur(120px)' }}/>
+        <div style={{ position:'absolute', inset:0, backgroundImage:'linear-gradient(rgba(255,255,255,0.025) 1px, transparent 1px), linear-gradient(90deg, rgba(255,255,255,0.025) 1px, transparent 1px)', backgroundSize:'80px 80px' }}/>
       </div>
 
-      {/* Header */}
-      <header style={{ position:'relative', zIndex:10, display:'flex', justifyContent:'space-between', alignItems:'center', padding:'14px 20px', background:'rgba(255,255,255,0.07)', backdropFilter:'blur(14px)', borderBottom:'1px solid rgba(255,255,255,0.1)', flexShrink:0, width:'100%', boxSizing:'border-box' }}>
-        <div style={{ display:'flex', alignItems:'center', gap:'10px' }}>
-          <div style={{ width:'36px', height:'36px', borderRadius:'10px', background:'rgba(255,255,255,0.25)', backdropFilter:'blur(10px)', border:'1px solid rgba(255,255,255,0.5)', display:'flex', alignItems:'center', justifyContent:'center', flexShrink:0 }}>
-            <CheckCircle size={20} color="white" strokeWidth={2.5}/>
+      {/* ── HEADER ── */}
+      <header style={{ position:'sticky', top:0, zIndex:100, background:'rgba(9,18,52,0.7)', backdropFilter:'blur(20px)', borderBottom:'1px solid rgba(255,255,255,0.07)', boxSizing:'border-box', width:'100%' }}>
+        <div style={{ ...W, display:'flex', justifyContent:'space-between', alignItems:'center', padding:'14px 24px' }}>
+          <div style={{ display:'flex', alignItems:'center', gap:'10px' }}>
+            <div style={{ width:'36px', height:'36px', borderRadius:'10px', background:'linear-gradient(135deg,#3b82f6,#1d4ed8)', display:'flex', alignItems:'center', justifyContent:'center', boxShadow:'0 4px 14px rgba(59,130,246,0.5)' }}>
+              <CheckCircle size={20} color="white" strokeWidth={2.5}/>
+            </div>
+            <span style={{ fontSize:'18px', fontWeight:700, color:'#fff', letterSpacing:'-0.3px' }}>Davomatlar.uz</span>
           </div>
-          <span style={{ fontSize:'18px', fontWeight:700, letterSpacing:'-0.5px', color:'#ffffff' }}>Davomatlar.uz</span>
+          <div style={{ display:'flex', gap:'10px', alignItems:'center' }}>
+            <a href="#tariflar" style={{ fontSize:'14px', color:'rgba(255,255,255,0.6)', textDecoration:'none', padding:'8px 16px', borderRadius:'50px', transition:'color 0.2s' }}
+              onMouseEnter={e=>e.currentTarget.style.color='#fff'} onMouseLeave={e=>e.currentTarget.style.color='rgba(255,255,255,0.6)'}>
+              Tariflar
+            </a>
+            <button onClick={openLogin} style={{
+              background:'linear-gradient(135deg,#3b82f6,#1d4ed8)', border:'none', borderRadius:'50px',
+              padding:'10px 22px', color:'white', fontSize:'14px', fontWeight:600, cursor:'pointer',
+              boxShadow:'0 4px 16px rgba(59,130,246,0.45)', transition:'all 0.2s',
+            }}
+              onMouseEnter={e=>{e.currentTarget.style.transform='translateY(-1px)';e.currentTarget.style.boxShadow='0 6px 22px rgba(59,130,246,0.6)'}}
+              onMouseLeave={e=>{e.currentTarget.style.transform='translateY(0)';e.currentTarget.style.boxShadow='0 4px 16px rgba(59,130,246,0.45)'}}
+            >Kirish →</button>
+          </div>
         </div>
-        <button onClick={openLogin} style={{
-          display:'flex', alignItems:'center', gap:'6px',
-          background:'rgba(255,255,255,0.12)', backdropFilter:'blur(12px)',
-          border:'1px solid rgba(255,255,255,0.2)', borderRadius:'50px',
-          padding:'9px 20px', color:'white', fontSize:'14px', fontWeight:600,
-          cursor:'pointer', transition:'all 0.2s', flexShrink:0,
-        }}
-          onMouseEnter={e => e.currentTarget.style.background='rgba(255,255,255,0.2)'}
-          onMouseLeave={e => e.currentTarget.style.background='rgba(255,255,255,0.12)'}
-        >
-          Kirish →
-        </button>
       </header>
 
-      {/* Hero */}
-      <main className="landing-main" style={{ flex:1, position:'relative', zIndex:10, display:'flex', flexDirection:'column', alignItems:'center', justifyContent:'center', textAlign:'center', padding:'40px 20px 32px' }}>
-        <div style={{ display:'inline-flex', alignItems:'center', gap:'8px', background:'rgba(255,255,255,0.1)', backdropFilter:'blur(10px)', border:'1px solid rgba(255,255,255,0.15)', borderRadius:'50px', padding:'6px 18px', marginBottom:'24px' }}>
-          <div style={{ width:'8px', height:'8px', borderRadius:'50%', background:'#4ade80', boxShadow:'0 0 8px #4ade80', flexShrink:0 }}/>
-          <span style={{ fontSize:'13px', color:'rgba(255,255,255,0.9)', fontWeight:500 }}>Real vaqt davomat tizimi</span>
-        </div>
-
-        <h1 className="hero-title" style={{ margin:'0 0 16px', fontWeight:800, color:'white', lineHeight:1.1, letterSpacing:'-1.5px', maxWidth:'700px' }}>
-          Xodimlar davomatini<br/>
-          <span style={{ background:'linear-gradient(180deg, #ffffff 0%, #93c5fd 100%)', WebkitBackgroundClip:'text', WebkitTextFillColor:'transparent', backgroundClip:'text' }}>nazorat qiling</span>
-        </h1>
-
-        <p style={{ margin:'0 0 36px', fontSize:'16px', color:'rgba(255,255,255,0.6)', lineHeight:1.7, maxWidth:'420px' }}>
-          Face ID qurilmalar bilan integratsiya, real vaqt hisobotlar va tashkilotlar bo'yicha boshqaruv tizimi.
-        </p>
-
-        <div className="cards-grid" style={{ display:'grid', gap:'12px', width:'100%', maxWidth:'860px' }}>
-          {[
-            { icon: Clock,       color:'#f87171', grad:'#f87171,#fb923c', title:'Kelish-ketish vaqti',  desc:"Aniq kirish va chiqish vaqtini avtomatik qayd etish" },
-            { icon: TrendingUp,  color:'#a78bfa', grad:'#a78bfa,#818cf8', title:'Ish soatlari hisobi',  desc:'Kunlik, haftalik, oylik grafiklar va tahlil' },
-            { icon: Users,       color:'#38bdf8', grad:'#38bdf8,#60a5fa', title:'Tanaffus nazorati',    desc:'Daqiqagacha aniq tanaffus vaqtini kuzatish' },
-            { icon: CheckCircle, color:'#4ade80', grad:'#4ade80,#34d399', title:'Face ID integratsiya', desc:"Parolsiz, qurilmalar bilan to'liq sinxronizatsiya" },
-          ].map(({ icon: Icon, color, grad, title, desc }, i) => (
-            <div key={title} style={{
-              position:'relative', overflow:'hidden',
-              background:'rgba(255,255,255,0.06)', backdropFilter:'blur(20px)',
-              border:'1px solid rgba(255,255,255,0.1)', borderRadius:'18px',
-              padding:'18px 16px 16px', textAlign:'left',
-              transition:'transform 0.2s, box-shadow 0.2s',
-              animation:`cardIn 0.5s ${i*0.1}s both`, cursor:'default',
+      {/* ── HERO ── */}
+      <section style={{ position:'relative', zIndex:1, padding:'90px 24px 80px', textAlign:'center' }}>
+        <div style={W}>
+          <div style={{ display:'inline-flex', alignItems:'center', gap:'8px', background:'rgba(74,222,128,0.12)', border:'1px solid rgba(74,222,128,0.3)', borderRadius:'50px', padding:'6px 16px', marginBottom:'28px' }}>
+            <div style={{ width:'7px', height:'7px', borderRadius:'50%', background:'#4ade80', boxShadow:'0 0 8px #4ade80' }}/>
+            <span style={{ fontSize:'13px', color:'#86efac', fontWeight:500 }}>Real vaqt davomat tizimi</span>
+          </div>
+          <h1 style={{ margin:'0 0 20px', fontSize:'clamp(38px,6vw,72px)', fontWeight:900, color:'white', lineHeight:1.08, letterSpacing:'-2px' }}>
+            Xodimlar davomatini<br/>
+            <span style={{ background:'linear-gradient(90deg,#60a5fa,#a78bfa,#34d399)', WebkitBackgroundClip:'text', WebkitTextFillColor:'transparent', backgroundClip:'text' }}>
+              nazorat qiling
+            </span>
+          </h1>
+          <p style={{ margin:'0 auto 36px', fontSize:'18px', color:'rgba(255,255,255,0.5)', lineHeight:1.75, maxWidth:'500px' }}>
+            Face ID qurilmalar orqali avtomatik davomat, real vaqt hisobotlar va filiallarni markazlashgan boshqaruv.
+          </p>
+          <div style={{ display:'flex', gap:'12px', justifyContent:'center', flexWrap:'wrap', marginBottom:'64px' }}>
+            <button onClick={openLogin} style={{
+              background:'linear-gradient(135deg,#3b82f6,#1d4ed8)', border:'none', borderRadius:'14px',
+              padding:'15px 32px', color:'white', fontSize:'16px', fontWeight:700, cursor:'pointer',
+              boxShadow:'0 8px 32px rgba(59,130,246,0.5)', transition:'all 0.2s',
             }}
-              onMouseEnter={e => { e.currentTarget.style.transform='translateY(-4px)'; e.currentTarget.style.boxShadow=`0 8px 32px ${color}44` }}
-              onMouseLeave={e => { e.currentTarget.style.transform='translateY(0)';    e.currentTarget.style.boxShadow='none' }}
-            >
-              <div style={{ position:'absolute', top:0, left:0, right:0, height:'2px', background:`linear-gradient(90deg,${grad})`, borderRadius:'18px 18px 0 0' }}/>
-              <div style={{ position:'absolute', right:'-8px', bottom:'-8px', opacity:0.07 }}><Icon size={70} color={color}/></div>
-              <div style={{ width:'36px', height:'36px', borderRadius:'12px', background:`linear-gradient(135deg,${grad})`, display:'flex', alignItems:'center', justifyContent:'center', marginBottom:'12px', boxShadow:`0 4px 14px ${color}55` }}>
-                <Icon size={18} color="white"/>
-              </div>
-              <div style={{ fontSize:'15px', fontWeight:700, color:'white', marginBottom:'6px', lineHeight:1.3 }}>{title}</div>
-              <div style={{ fontSize:'13px', color:'rgba(255,255,255,0.5)', lineHeight:1.6 }}>{desc}</div>
-            </div>
-          ))}
-        </div>
-      </main>
+              onMouseEnter={e=>{e.currentTarget.style.transform='translateY(-2px)';e.currentTarget.style.boxShadow='0 12px 40px rgba(59,130,246,0.65)'}}
+              onMouseLeave={e=>{e.currentTarget.style.transform='none';e.currentTarget.style.boxShadow='0 8px 32px rgba(59,130,246,0.5)'}}
+            >Bepul boshlash →</button>
+            <a href="#tariflar" style={{
+              display:'flex', alignItems:'center', gap:'8px',
+              background:'rgba(255,255,255,0.08)', border:'1px solid rgba(255,255,255,0.15)', borderRadius:'14px',
+              padding:'15px 28px', color:'white', fontSize:'16px', fontWeight:600, textDecoration:'none',
+              backdropFilter:'blur(10px)', transition:'all 0.2s',
+            }}
+              onMouseEnter={e=>e.currentTarget.style.background='rgba(255,255,255,0.14)'}
+              onMouseLeave={e=>e.currentTarget.style.background='rgba(255,255,255,0.08)'}
+            >Tariflarni ko'rish</a>
+          </div>
 
-      {/* Tariflar bo'limi */}
-      <section style={{ position:'relative', zIndex:10, padding:'60px 20px 40px', textAlign:'center' }}>
-        {/* Sarlavha */}
-        <div style={{ display:'inline-flex', alignItems:'center', gap:'8px', background:'rgba(255,255,255,0.1)', backdropFilter:'blur(10px)', border:'1px solid rgba(255,255,255,0.15)', borderRadius:'50px', padding:'6px 18px', marginBottom:'20px' }}>
-          <Zap size={13} color="#fbbf24"/>
-          <span style={{ fontSize:'13px', color:'rgba(255,255,255,0.9)', fontWeight:500 }}>Qulay narxlar</span>
+          {/* Stats */}
+          <div style={{ display:'grid', gridTemplateColumns:'repeat(auto-fit,minmax(160px,1fr))', gap:'1px', background:'rgba(255,255,255,0.07)', borderRadius:'20px', overflow:'hidden', border:'1px solid rgba(255,255,255,0.07)' }}>
+            {[
+              { val:'100+',  label:'Xodim kuzatilmoqda' },
+              { val:'99.9%', label:'Ishlash barqarorligi' },
+              { val:'24/7',  label:'Real vaqt monitoring' },
+              { val:'3 daq', label:"O'rnatish vaqti" },
+            ].map(s => (
+              <div key={s.label} style={{ padding:'24px 16px', background:'rgba(255,255,255,0.04)', textAlign:'center' }}>
+                <div style={{ fontSize:'28px', fontWeight:800, color:'white', letterSpacing:'-1px' }}>{s.val}</div>
+                <div style={{ fontSize:'12px', color:'rgba(255,255,255,0.4)', marginTop:'4px' }}>{s.label}</div>
+              </div>
+            ))}
+          </div>
         </div>
-        <h2 style={{ margin:'0 0 10px', fontSize:'40px', fontWeight:800, color:'white', letterSpacing:'-1px', lineHeight:1.15 }}>
+      </section>
+
+      {/* ── IMKONIYATLAR ── */}
+      <section style={{ position:'relative', zIndex:1, padding:'80px 24px' }}>
+        <div style={W}>
+          <div style={{ textAlign:'center', marginBottom:'52px' }}>
+            <div style={{ display:'inline-flex', alignItems:'center', gap:'8px', background:'rgba(99,102,241,0.12)', border:'1px solid rgba(99,102,241,0.3)', borderRadius:'50px', padding:'6px 16px', marginBottom:'16px' }}>
+              <Zap size={12} color="#a78bfa"/>
+              <span style={{ fontSize:'13px', color:'#c4b5fd', fontWeight:500 }}>Asosiy imkoniyatlar</span>
+            </div>
+            <h2 style={{ margin:'0 0 12px', fontSize:'clamp(26px,4vw,40px)', fontWeight:800, color:'white', letterSpacing:'-1px' }}>
+              Hamma narsa bir joyda
+            </h2>
+            <p style={{ margin:0, fontSize:'16px', color:'rgba(255,255,255,0.4)', maxWidth:'440px', marginLeft:'auto', marginRight:'auto', lineHeight:1.7 }}>
+              Kichik jamoadan tortib yirik korporatsiyagacha — har biri uchun qulay
+            </p>
+          </div>
+
+          <div style={{ display:'grid', gridTemplateColumns:'repeat(auto-fit,minmax(300px,1fr))', gap:'16px' }}>
+            {[
+              { icon:Clock,      color:'#f97316', bg:'rgba(249,115,22,0.12)', border:'rgba(249,115,22,0.25)',
+                title:'Kelish-ketish vaqti', desc:"Xodim kamera oldidan o'tishi bilan tizim avtomatik qayd etadi. Sekund aniqligida." },
+              { icon:BarChart3,  color:'#a78bfa', bg:'rgba(167,139,250,0.12)', border:'rgba(167,139,250,0.25)',
+                title:'Hisobot va statistika', desc:'Kunlik, haftalik, oylik hisobotlar. PDF yuklab olish va chop etish imkoniyati.' },
+              { icon:Users,      color:'#38bdf8', bg:'rgba(56,189,248,0.12)', border:'rgba(56,189,248,0.25)',
+                title:'Filiallarni boshqarish', desc:"Bir panelda barcha filiallar. Har bir bo'limning davomati alohida ko'rinadi." },
+              { icon:ShieldCheck,color:'#4ade80', bg:'rgba(74,222,128,0.12)', border:'rgba(74,222,128,0.25)',
+                title:'Face ID integratsiya', desc:"Hikvision kameralari bilan to'liq sinxronizatsiya. Parol, kartasiz — faqat yuz." },
+              { icon:TrendingUp, color:'#fbbf24', bg:'rgba(251,191,36,0.12)', border:'rgba(251,191,36,0.25)',
+                title:"Reyting va tahlil", desc:"Kim eng erta keladi? Kim ko'p ishlaydi? Ohirgi 7 ish kuni bo'yicha reyting." },
+              { icon:CheckCircle2,color:'#f472b6',bg:'rgba(244,114,182,0.12)', border:'rgba(244,114,182,0.25)',
+                title:"Ta'til va kasallik", desc:"Xodim ta'tilda yoki kasallikda ekanligini belgilash. Statistikaga avtomatik kiritiladi." },
+            ].map(({ icon:Icon, color, bg, border, title, desc }, i) => (
+              <div key={title} style={{
+                background:'rgba(255,255,255,0.04)', border:`1px solid ${border}`,
+                borderRadius:'20px', padding:'28px 24px',
+                transition:'transform 0.25s, box-shadow 0.25s',
+                animation:`cardIn 0.5s ${i*0.08}s both`,
+              }}
+                onMouseEnter={e=>{e.currentTarget.style.transform='translateY(-5px)';e.currentTarget.style.boxShadow=`0 16px 48px ${color}22`}}
+                onMouseLeave={e=>{e.currentTarget.style.transform='none';e.currentTarget.style.boxShadow='none'}}
+              >
+                <div style={{ width:'48px', height:'48px', borderRadius:'14px', background:bg, border:`1.5px solid ${border}`, display:'flex', alignItems:'center', justifyContent:'center', marginBottom:'18px' }}>
+                  <Icon size={22} color={color}/>
+                </div>
+                <div style={{ fontSize:'17px', fontWeight:700, color:'white', marginBottom:'8px' }}>{title}</div>
+                <div style={{ fontSize:'14px', color:'rgba(255,255,255,0.45)', lineHeight:1.7 }}>{desc}</div>
+              </div>
+            ))}
+          </div>
+        </div>
+      </section>
+
+      {/* ── QANDAY ISHLAYDI ── */}
+      <section style={{ position:'relative', zIndex:1, padding:'80px 24px', background:'rgba(0,0,0,0.15)' }}>
+        <div style={W}>
+          <div style={{ textAlign:'center', marginBottom:'52px' }}>
+            <h2 style={{ margin:'0 0 12px', fontSize:'clamp(26px,4vw,38px)', fontWeight:800, color:'white', letterSpacing:'-1px' }}>
+              Qanday ishlaydi?
+            </h2>
+            <p style={{ margin:0, fontSize:'16px', color:'rgba(255,255,255,0.4)' }}>3 qadamda ishga tushirish</p>
+          </div>
+          <div style={{ display:'grid', gridTemplateColumns:'repeat(auto-fit,minmax(240px,1fr))', gap:'16px' }}>
+            {[
+              { n:'01', color:'#60a5fa', title:'Kamerani ulang', desc:"Hikvision Face ID kamerangizni davomatlar.uz:6610 manziliga HTTP Push qilib sozlang" },
+              { n:'02', color:'#a78bfa', title:'Xodimlarni qo\'shing', desc:"Admin paneldan xodimlar ro'yxatini kiriting. Filial va lavozimlarni belgilang" },
+              { n:'03', color:'#34d399', title:'Avtomatik nazorat', desc:"Endi hamma narsa o'zi ishlaydi. Kunlik hisobotlar, kechikish ogohlantirishlari — hammasi tayyor" },
+            ].map(({ n, color, title, desc }) => (
+              <div key={n} style={{ background:'rgba(255,255,255,0.04)', border:'1px solid rgba(255,255,255,0.08)', borderRadius:'20px', padding:'32px 24px', position:'relative', overflow:'hidden' }}>
+                <div style={{ position:'absolute', top:'-10px', right:'-10px', fontSize:'80px', fontWeight:900, color, opacity:0.06, lineHeight:1 }}>{n}</div>
+                <div style={{ fontSize:'13px', fontWeight:700, color, marginBottom:'14px', letterSpacing:'2px' }}>QADAM {n}</div>
+                <div style={{ fontSize:'18px', fontWeight:700, color:'white', marginBottom:'10px' }}>{title}</div>
+                <div style={{ fontSize:'14px', color:'rgba(255,255,255,0.45)', lineHeight:1.7 }}>{desc}</div>
+              </div>
+            ))}
+          </div>
+        </div>
+      </section>
+
+      {/* ── TARIFLAR ── */}
+      <section id="tariflar" style={{ position:'relative', zIndex:1, padding:'80px 24px 60px', textAlign:'center' }}>
+        <div style={W}>
+        <div style={{ display:'inline-flex', alignItems:'center', gap:'8px', background:'rgba(251,191,36,0.12)', border:'1px solid rgba(251,191,36,0.3)', borderRadius:'50px', padding:'6px 16px', marginBottom:'16px' }}>
+          <Zap size={12} color="#fbbf24"/>
+          <span style={{ fontSize:'13px', color:'#fde68a', fontWeight:500 }}>Qulay narxlar</span>
+        </div>
+        <h2 style={{ margin:'0 0 12px', fontSize:'clamp(26px,4vw,40px)', fontWeight:800, color:'white', letterSpacing:'-1px' }}>
           Biznesingizga mos tarif
         </h2>
-        <p style={{ margin:'0 0 44px', fontSize:'15px', color:'rgba(255,255,255,0.55)', maxWidth:'400px', marginLeft:'auto', marginRight:'auto', lineHeight:1.7 }}>
-          Xodimlar soniga qarab eng qulay tarifni tanlang.<br/>Har oyda bekor qilish mumkin.
+        <p style={{ margin:'0 0 48px', fontSize:'16px', color:'rgba(255,255,255,0.4)', maxWidth:'400px', marginLeft:'auto', marginRight:'auto', lineHeight:1.7 }}>
+          Xodimlar soniga qarab eng qulay tarifni tanlang. Har oyda bekor qilish mumkin.
         </p>
 
         {/* 3 ta karta */}
-        <div style={{ display:'grid', gridTemplateColumns:'repeat(auto-fit, minmax(290px, 1fr))', gap:'20px', maxWidth:'980px', margin:'0 auto' }}>
+        <div style={{ display:'grid', gridTemplateColumns:'repeat(auto-fit, minmax(290px, 1fr))', gap:'20px' }}>
           {[
             {
               icon: Zap,
@@ -399,57 +474,69 @@ export default function Login({ onLogin }) {
           ))}
         </div>
 
-        <p style={{ marginTop:'28px', fontSize:'12px', color:'rgba(255,255,255,0.25)' }}>
+        <p style={{ marginTop:'32px', fontSize:'12px', color:'rgba(255,255,255,0.2)' }}>
           * Telegram xabarnomalar — tez orada · Barcha narxlar QQS siz · Korporativ tarifda 6 oylik shartnoma talab qilinadi
         </p>
+        </div>
       </section>
 
-      {/* Footer */}
-      <footer style={{ position:'relative', zIndex:10 }}>
-        <div style={{ display:'flex', flexWrap:'wrap', justifyContent:'center', gap:'6px', padding:'12px 24px 28px' }}>
-          {[
-            { icon: Send,   text:'@acsham',                          href:'https://t.me/acsham' },
-            { icon: Phone,  text:'+998 90-873-89-63',                href:'tel:+998908738963' },
-            { icon: MapPin, text:"Toshkent sh, Olmazor Qamarniso 13", href:null },
-          ].map(({ icon: Icon, text, href }) => {
-            const inner = (
-              <div style={{ display:'flex', alignItems:'center', gap:'7px', padding:'7px 14px', borderRadius:'50px', background:'rgba(255,255,255,0.07)', border:'1px solid rgba(255,255,255,0.1)', fontSize:'13px', color:'rgba(255,255,255,0.8)', whiteSpace:'nowrap', transition:'background 0.2s' }}
-                onMouseEnter={e => e.currentTarget.style.background='rgba(255,255,255,0.14)'}
-                onMouseLeave={e => e.currentTarget.style.background='rgba(255,255,255,0.07)'}
-              >
-                <Icon size={13} color="rgba(255,255,255,0.6)"/>{text}
-              </div>
-            )
-            return href
-              ? <a key={text} href={href} target="_blank" rel="noreferrer" style={{ textDecoration:'none' }}>{inner}</a>
-              : <div key={text}>{inner}</div>
-          })}
+      {/* ── CTA ── */}
+      <section style={{ position:'relative', zIndex:1, padding:'80px 24px', textAlign:'center' }}>
+        <div style={{ ...W, background:'linear-gradient(135deg,rgba(59,130,246,0.2),rgba(99,102,241,0.15))', border:'1px solid rgba(99,102,241,0.25)', borderRadius:'28px', padding:'60px 40px' }}>
+          <h2 style={{ margin:'0 0 14px', fontSize:'clamp(24px,4vw,38px)', fontWeight:800, color:'white', letterSpacing:'-1px' }}>
+            Bugun boshlang — bepul sinab ko'ring
+          </h2>
+          <p style={{ margin:'0 0 32px', fontSize:'16px', color:'rgba(255,255,255,0.45)', lineHeight:1.7 }}>
+            Sozlash 3 daqiqa. Kamera ulang, xodim qo'shing — tizim o'zi ishlaydi.
+          </p>
+          <button onClick={openLogin} style={{
+            background:'linear-gradient(135deg,#3b82f6,#6366f1)', border:'none', borderRadius:'14px',
+            padding:'16px 40px', color:'white', fontSize:'16px', fontWeight:700, cursor:'pointer',
+            boxShadow:'0 8px 32px rgba(99,102,241,0.5)', transition:'all 0.2s',
+          }}
+            onMouseEnter={e=>{e.currentTarget.style.transform='translateY(-2px)';e.currentTarget.style.boxShadow='0 12px 40px rgba(99,102,241,0.65)'}}
+            onMouseLeave={e=>{e.currentTarget.style.transform='none';e.currentTarget.style.boxShadow='0 8px 32px rgba(99,102,241,0.5)'}}
+          >
+            Tizimga kirish →
+          </button>
+        </div>
+      </section>
+
+      {/* ── FOOTER ── */}
+      <footer style={{ position:'relative', zIndex:1, borderTop:'1px solid rgba(255,255,255,0.06)', padding:'28px 24px' }}>
+        <div style={{ ...W, display:'flex', flexWrap:'wrap', justifyContent:'space-between', alignItems:'center', gap:'16px' }}>
+          <div style={{ display:'flex', alignItems:'center', gap:'8px' }}>
+            <CheckCircle size={16} color="#3b82f6"/>
+            <span style={{ fontSize:'14px', fontWeight:600, color:'rgba(255,255,255,0.5)' }}>Davomatlar.uz</span>
+          </div>
+          <div style={{ display:'flex', flexWrap:'wrap', gap:'8px', justifyContent:'center' }}>
+            {[
+              { icon: Send,   text:'@acsham',                           href:'https://t.me/acsham' },
+              { icon: Phone,  text:'+998 90-873-89-63',                 href:'tel:+998908738963' },
+              { icon: MapPin, text:"Toshkent sh, Olmazor Qamarniso 13", href:null },
+            ].map(({ icon: Icon, text, href }) => {
+              const inner = (
+                <div style={{ display:'flex', alignItems:'center', gap:'7px', padding:'7px 14px', borderRadius:'50px', background:'rgba(255,255,255,0.05)', border:'1px solid rgba(255,255,255,0.09)', fontSize:'13px', color:'rgba(255,255,255,0.55)', whiteSpace:'nowrap', transition:'all 0.2s' }}
+                  onMouseEnter={e => {e.currentTarget.style.background='rgba(255,255,255,0.1)'; e.currentTarget.style.color='rgba(255,255,255,0.85)'}}
+                  onMouseLeave={e => {e.currentTarget.style.background='rgba(255,255,255,0.05)'; e.currentTarget.style.color='rgba(255,255,255,0.55)'}}
+                >
+                  <Icon size={13}/>{text}
+                </div>
+              )
+              return href
+                ? <a key={text} href={href} target="_blank" rel="noreferrer" style={{ textDecoration:'none' }}>{inner}</a>
+                : <div key={text}>{inner}</div>
+            })}
+          </div>
+          <div style={{ fontSize:'12px', color:'rgba(255,255,255,0.2)' }}>© 2026 Davomatlar.uz</div>
         </div>
       </footer>
 
       <style>{`
-        @keyframes spin    { to { transform: rotate(360deg) } }
-        @keyframes fadeIn  { from{ opacity:0 } to{ opacity:1 } }
-        @keyframes slideUp { from{ opacity:0; transform:translateY(20px) } to{ opacity:1; transform:translateY(0) } }
-        @keyframes cardIn  { from{ opacity:0; transform:translateY(16px) } to{ opacity:1; transform:translateY(0) } }
-        @keyframes floatUp { 0%{ transform:translateY(0) translateX(0); opacity:0 } 10%{ opacity:1 } 90%{ opacity:0.6 } 100%{ transform:translateY(-110vh) translateX(30px); opacity:0 } }
-        input::placeholder { color: #cbd5e1 }
-        .cards-grid { grid-template-columns: repeat(4, 1fr); }
-        .hero-title  { font-size: 58px; }
-        @media (max-width: 768px) {
-          .cards-grid { grid-template-columns: repeat(2, 1fr) !important; }
-          .hero-title  { font-size: 38px !important; letter-spacing: -1px !important; }
-          .pricing-grid { grid-template-columns: 1fr !important; }
-        }
-        @media (max-width: 480px) {
-          .cards-grid { grid-template-columns: repeat(2, 1fr) !important; }
-          .hero-title  { font-size: 32px !important; }
-          .login-modal { width: calc(100vw - 32px) !important; padding: 24px 18px !important; }
-        }
-        @media (max-width: 768px) {
-          html, body { overflow-y: auto !important; height: auto !important; }
-          .landing-main { justify-content: flex-start !important; padding-top: 24px !important; }
-        }
+        @keyframes spin   { to { transform: rotate(360deg) } }
+        @keyframes cardIn { from{ opacity:0; transform:translateY(20px) } to{ opacity:1; transform:translateY(0) } }
+        input::placeholder { color: #94a3b8 }
+        html { scroll-behavior: smooth; }
       `}</style>
     </div>
   )
