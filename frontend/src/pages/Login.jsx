@@ -249,7 +249,7 @@ export default function Login({ onLogin }) {
               name: "Boshlang'ich",
               desc: 'Kichik jamoa uchun ideal',
               price: '1 000 000',
-              color: '#2563eb',
+              color: '#38bdf8',
               gift: null,
               features: [
                 '10 tagacha xodim',
