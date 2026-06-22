@@ -1,6 +1,6 @@
 import { useState, useEffect, useRef } from 'react'
 import { loginAsync } from '../auth'
-import { Eye, EyeOff, CheckCircle, CheckCircle2, Clock, Users, TrendingUp, X, Phone, MapPin, Send, BarChart3, ShieldCheck, ArrowLeft, Zap, Star, Building2, Check } from 'lucide-react'
+import { Eye, EyeOff, CheckCircle, CheckCircle2, Clock, Users, TrendingUp, Phone, MapPin, Send, BarChart3, ShieldCheck, ArrowLeft, Zap, Star, Building2, Check } from 'lucide-react'
 
 const LOGIN_FEATURES = [
   { icon: Clock,       text: 'Kelish-ketish vaqtini real vaqtda kuzatish' },
@@ -19,10 +19,17 @@ export default function Login({ onLogin }) {
 
   const handleSubmit = async (e) => {
     e.preventDefault()
+    setError('')
     setLoading(true)
-    const user = await loginAsync(username, password)
-    if (user) { onLogin(user) }
-    else { setError("Login yoki parol noto'g'ri"); setLoading(false) }
+    try {
+      const res = await loginAsync(username, password)
+      if (res?.user) { onLogin(res.user) }
+      else { setError(res?.error || "Login yoki parol noto'g'ri") }
+    } catch {
+      setError("Serverga ulanishda xatolik")
+    } finally {
+      setLoading(false)
+    }
   }
 
   const openLogin = () => {
@@ -206,7 +213,7 @@ export default function Login({ onLogin }) {
           Face ID qurilmalar bilan integratsiya, real vaqt hisobotlar va tashkilotlar bo'yicha boshqaruv tizimi.
         </p>
 
-        <div className="cards-grid" style={{ display:'grid', gap:'12px', width:'100%', maxWidth:'860px' }}>
+        <div className="cards-grid" style={{ display:'grid', gap:'16px', width:'100%', maxWidth:'980px' }}>
           {[
             { icon: Clock,       color:'#f87171', grad:'#f87171,#fb923c', title:'Kelish-ketish vaqti',  desc:"Aniq kirish va chiqish vaqtini avtomatik qayd etish" },
             { icon: TrendingUp,  color:'#a78bfa', grad:'#a78bfa,#818cf8', title:'Ish soatlari hisobi',  desc:'Kunlik, haftalik, oylik grafiklar va tahlil' },
@@ -215,126 +222,124 @@ export default function Login({ onLogin }) {
           ].map(({ icon: Icon, color, grad, title, desc }, i) => (
             <div key={title} style={{
               position:'relative', overflow:'hidden',
-              background:'rgba(255,255,255,0.06)', backdropFilter:'blur(20px)',
-              border:'1px solid rgba(255,255,255,0.1)', borderRadius:'18px',
-              padding:'18px 16px 16px', textAlign:'left',
+              background:'rgba(255,255,255,0.08)', backdropFilter:'blur(20px)',
+              border:'1px solid rgba(255,255,255,0.12)', borderRadius:'22px',
+              padding:'26px 22px 22px', textAlign:'left',
               transition:'transform 0.2s, box-shadow 0.2s',
               animation:`cardIn 0.5s ${i*0.1}s both`, cursor:'default',
             }}
-              onMouseEnter={e => { e.currentTarget.style.transform='translateY(-4px)'; e.currentTarget.style.boxShadow=`0 8px 32px ${color}44` }}
+              onMouseEnter={e => { e.currentTarget.style.transform='translateY(-5px)'; e.currentTarget.style.boxShadow=`0 12px 40px ${color}44` }}
               onMouseLeave={e => { e.currentTarget.style.transform='translateY(0)';    e.currentTarget.style.boxShadow='none' }}
             >
-              <div style={{ position:'absolute', top:0, left:0, right:0, height:'2px', background:`linear-gradient(90deg,${grad})`, borderRadius:'18px 18px 0 0' }}/>
-              <div style={{ position:'absolute', right:'-8px', bottom:'-8px', opacity:0.07 }}><Icon size={70} color={color}/></div>
-              <div style={{ width:'36px', height:'36px', borderRadius:'12px', background:`linear-gradient(135deg,${grad})`, display:'flex', alignItems:'center', justifyContent:'center', marginBottom:'12px', boxShadow:`0 4px 14px ${color}55` }}>
-                <Icon size={18} color="white"/>
+              <div style={{ position:'absolute', top:0, left:0, right:0, height:'3px', background:`linear-gradient(90deg,${grad})`, borderRadius:'22px 22px 0 0' }}/>
+              <div style={{ position:'absolute', right:'-10px', bottom:'-10px', opacity:0.07 }}><Icon size={90} color={color}/></div>
+              <div style={{ width:'48px', height:'48px', borderRadius:'14px', background:`linear-gradient(135deg,${grad})`, display:'flex', alignItems:'center', justifyContent:'center', marginBottom:'16px', boxShadow:`0 4px 16px ${color}55` }}>
+                <Icon size={24} color="white"/>
               </div>
-              <div style={{ fontSize:'15px', fontWeight:700, color:'white', marginBottom:'6px', lineHeight:1.3 }}>{title}</div>
-              <div style={{ fontSize:'13px', color:'rgba(255,255,255,0.5)', lineHeight:1.6 }}>{desc}</div>
+              <div style={{ fontSize:'17px', fontWeight:700, color:'white', marginBottom:'8px', lineHeight:1.3 }}>{title}</div>
+              <div style={{ fontSize:'14px', color:'rgba(255,255,255,0.55)', lineHeight:1.65 }}>{desc}</div>
             </div>
           ))}
         </div>
       </main>
 
       {/* Tariflar */}
-      <section ref={pricingRef} style={{ position:'relative', zIndex:10, padding:'60px 20px 48px', textAlign:'center', opacity: pricingVisible ? 1 : 0, transform: pricingVisible ? 'translateY(0)' : 'translateY(40px)', transition:'opacity 0.7s ease, transform 0.7s ease' }}>
-        <div style={{ display:'inline-flex', alignItems:'center', gap:'8px', background:'rgba(255,255,255,0.1)', backdropFilter:'blur(10px)', border:'1px solid rgba(255,255,255,0.15)', borderRadius:'50px', padding:'6px 18px', marginBottom:'20px' }}>
-          <Zap size={13} color="#fbbf24"/>
-          <span style={{ fontSize:'13px', color:'rgba(255,255,255,0.9)', fontWeight:500 }}>Qulay narxlar</span>
+      <section ref={pricingRef} style={{
+        position:'relative', zIndex:10, padding:'72px 20px 60px', textAlign:'center',
+        background:'#f8fafc',
+        opacity: pricingVisible ? 1 : 0, transform: pricingVisible ? 'translateY(0)' : 'translateY(40px)',
+        transition:'opacity 0.7s ease, transform 0.7s ease',
+      }}>
+        <div style={{ display:'inline-flex', alignItems:'center', gap:'8px', background:'#fff3e0', border:'1px solid #fed7aa', borderRadius:'50px', padding:'6px 18px', marginBottom:'20px' }}>
+          <Zap size={13} color="#f97316"/>
+          <span style={{ fontSize:'13px', color:'#ea580c', fontWeight:600 }}>Qulay narxlar</span>
         </div>
-        <h2 style={{ margin:'0 0 10px', fontSize:'36px', fontWeight:800, color:'white', letterSpacing:'-1px' }}>
+        <h2 style={{ margin:'0 0 10px', fontSize:'36px', fontWeight:800, color:'#0f172a', letterSpacing:'-1px' }}>
           Biznesingizga mos tarif
         </h2>
-        <p style={{ margin:'0 auto 40px', fontSize:'15px', color:'rgba(255,255,255,0.5)', maxWidth:'400px', lineHeight:1.7 }}>
+        <p style={{ margin:'0 auto 44px', fontSize:'15px', color:'#64748b', maxWidth:'400px', lineHeight:1.7 }}>
           Xodimlar soniga qarab eng qulay tarifni tanlang. Har oyda bekor qilish mumkin.
         </p>
 
-        <div style={{ display:'grid', gridTemplateColumns:'repeat(auto-fit,minmax(290px,1fr))', gap:'16px', maxWidth:'980px', margin:'0 auto' }}>
+        <div style={{ display:'grid', gridTemplateColumns:'repeat(auto-fit,minmax(290px,1fr))', gap:'20px', maxWidth:'980px', margin:'0 auto' }}>
           {[
             {
               icon: Zap, badge: null, name:"Boshlang'ich", desc:'Kichik jamoa uchun ideal',
-              price:'1 000 000', color:'#fb923c',
+              price:'1 000 000', color:'#f97316', lightBg:'#fff7ed', borderC:'#fed7aa',
               gift: null,
               features:['10 tagacha xodim','1 ta filial boshqaruvi','Face ID kamera integratsiya','Real vaqt kuzatuv','Kunlik hisobotlar & PDF','Xodimlar bazasi (kadrlar)',"Ta'til va kasallik hisobi",'Kechikish nazorati'],
             },
             {
               icon: Star, badge:'⭐ Eng mashhur', name:'Biznes', desc:"O'rta tashkilotlar uchun",
-              price:'2 500 000', color:'#fbbf24',
+              price:'2 500 000', color:'#2563eb', lightBg:'#eff6ff', borderC:'#bfdbfe',
               gift: null,
               features:['40 tagacha xodim','5 tagacha filial boshqaruvi','Face ID kamera integratsiya','Real vaqt kuzatuv','Kunlik + oylik hisobotlar & PDF','Xodimlar bazasi (kadrlar)',"Ta'til va kasallik hisobi","Haftalik jadval ko'rinishi",'Statistika va reytinglar','Kechikish nazorati'],
             },
             {
               icon: Building2, badge:"🎁 Sovg'a bor", name:'Korporativ', desc:'Yirik tashkilotlar uchun',
-              price:'4 000 000', color:'#34d399',
+              price:'4 000 000', color:'#059669', lightBg:'#f0fdf4', borderC:'#a7f3d0',
               gift: true,
               features:['100 tagacha xodim','Cheksiz filiallar boshqaruvi','Face ID kamera — sotib olish shart emas','Real vaqt kuzatuv',"To'liq hisobotlar paketi & PDF",'Xodimlar bazasi (kadrlar)',"Ta'til va kasallik hisobi","Haftalik jadval ko'rinishi",'Statistika va reytinglar','Kechikish nazorati','Telegram xabarnomalar*','Ustuvor texnik yordam'],
             },
-          ].map(({ icon:Icon, badge, name, desc, price, color, gift, features }, i) => (
+          ].map(({ icon:Icon, badge, name, desc, price, color, lightBg, borderC, gift, features }, i) => (
             <div key={name} style={{
               position:'relative', overflow:'hidden',
-              background:'rgba(255,255,255,0.07)', backdropFilter:'blur(20px)',
-              border:`1.5px solid ${color}55`,
+              background:'#ffffff',
+              border:`1.5px solid ${borderC}`,
               borderRadius:'22px', padding:'26px 22px 22px',
               textAlign:'left', display:'flex', flexDirection:'column',
+              boxShadow:'0 4px 24px rgba(0,0,0,0.06)',
               transition:'transform 0.25s, box-shadow 0.25s',
               animation:`cardIn 0.5s ${i*0.12}s both`,
             }}
-              onMouseEnter={e=>{e.currentTarget.style.transform='translateY(-6px)';e.currentTarget.style.boxShadow=`0 20px 60px ${color}33`}}
-              onMouseLeave={e=>{e.currentTarget.style.transform='translateY(0)';e.currentTarget.style.boxShadow='none'}}
+              onMouseEnter={e=>{e.currentTarget.style.transform='translateY(-6px)';e.currentTarget.style.boxShadow=`0 16px 48px ${color}22`}}
+              onMouseLeave={e=>{e.currentTarget.style.transform='translateY(0)';e.currentTarget.style.boxShadow='0 4px 24px rgba(0,0,0,0.06)'}}
             >
-              {/* top bar */}
-              <div style={{ position:'absolute', top:0, left:0, right:0, height:'3px', background:`linear-gradient(90deg,${color},${color}66)`, borderRadius:'22px 22px 0 0' }}/>
-              {/* fon glow */}
-              <div style={{ position:'absolute', top:'-40px', right:'-40px', width:'140px', height:'140px', borderRadius:'50%', background:color, opacity:0.07, filter:'blur(36px)', pointerEvents:'none' }}/>
+              <div style={{ position:'absolute', top:0, left:0, right:0, height:'4px', background:`linear-gradient(90deg,${color},${color}88)`, borderRadius:'22px 22px 0 0' }}/>
 
               {/* Badge + Icon */}
-              <div style={{ display:'flex', alignItems:'center', justifyContent:'space-between', marginBottom:'16px' }}>
-                <div style={{ width:'44px', height:'44px', borderRadius:'13px', background:`${color}20`, border:`1.5px solid ${color}44`, display:'flex', alignItems:'center', justifyContent:'center' }}>
-                  <Icon size={20} color={color}/>
+              <div style={{ display:'flex', alignItems:'center', justifyContent:'space-between', marginBottom:'18px' }}>
+                <div style={{ width:'46px', height:'46px', borderRadius:'13px', background:lightBg, border:`1.5px solid ${borderC}`, display:'flex', alignItems:'center', justifyContent:'center' }}>
+                  <Icon size={21} color={color}/>
                 </div>
-                {badge && <div style={{ background:`${color}22`, border:`1px solid ${color}44`, borderRadius:'50px', padding:'4px 11px', fontSize:'12px', color, fontWeight:700 }}>{badge}</div>}
+                {badge && <div style={{ background:lightBg, border:`1px solid ${borderC}`, borderRadius:'50px', padding:'4px 12px', fontSize:'12px', color, fontWeight:700 }}>{badge}</div>}
               </div>
 
-              {/* Ism */}
-              <div style={{ fontSize:'21px', fontWeight:800, color:'white', marginBottom:'3px' }}>{name}</div>
-              <div style={{ fontSize:'13px', color:'rgba(255,255,255,0.4)', marginBottom:'18px' }}>{desc}</div>
+              <div style={{ fontSize:'21px', fontWeight:800, color:'#0f172a', marginBottom:'3px' }}>{name}</div>
+              <div style={{ fontSize:'13px', color:'#94a3b8', marginBottom:'18px' }}>{desc}</div>
 
-              {/* Narx */}
-              <div style={{ marginBottom:'16px', paddingBottom:'16px', borderBottom:`1px solid ${color}22` }}>
-                <span style={{ fontSize:'34px', fontWeight:800, color:'white', letterSpacing:'-1.5px' }}>{price}</span>
-                <span style={{ fontSize:'13px', color:'rgba(255,255,255,0.35)', marginLeft:'6px' }}>so'm / oy</span>
-                <div style={{ marginTop:'10px', display:'inline-flex', alignItems:'center', gap:'6px', background:`${color}18`, border:`1px solid ${color}33`, borderRadius:'50px', padding:'4px 12px' }}>
+              <div style={{ marginBottom:'16px', paddingBottom:'16px', borderBottom:`1px solid #f1f5f9` }}>
+                <span style={{ fontSize:'34px', fontWeight:800, color:'#0f172a', letterSpacing:'-1.5px' }}>{price}</span>
+                <span style={{ fontSize:'13px', color:'#94a3b8', marginLeft:'6px' }}>so'm / oy</span>
+                <div style={{ marginTop:'10px', display:'inline-flex', alignItems:'center', gap:'6px', background:lightBg, border:`1px solid ${borderC}`, borderRadius:'50px', padding:'4px 12px' }}>
                   <Users size={12} color={color}/>
                   <span style={{ fontSize:'12px', color, fontWeight:600 }}>{features[0]}</span>
                 </div>
               </div>
 
-              {/* Features */}
-              <div style={{ flex:1, display:'flex', flexDirection:'column', gap:'8px', marginBottom:'18px' }}>
+              <div style={{ flex:1, display:'flex', flexDirection:'column', gap:'9px', marginBottom:'18px' }}>
                 {features.map(f => (
                   <div key={f} style={{ display:'flex', alignItems:'flex-start', gap:'9px' }}>
-                    <div style={{ marginTop:'1px', width:'17px', height:'17px', borderRadius:'50%', background:`${color}20`, border:`1px solid ${color}44`, display:'flex', alignItems:'center', justifyContent:'center', flexShrink:0 }}>
+                    <div style={{ marginTop:'1px', width:'17px', height:'17px', borderRadius:'50%', background:lightBg, border:`1px solid ${borderC}`, display:'flex', alignItems:'center', justifyContent:'center', flexShrink:0 }}>
                       <Check size={9} color={color} strokeWidth={3}/>
                     </div>
-                    <span style={{ fontSize:'13px', color:'rgba(255,255,255,0.7)', lineHeight:1.45 }}>{f}</span>
+                    <span style={{ fontSize:'13px', color:'#475569', lineHeight:1.5 }}>{f}</span>
                   </div>
                 ))}
               </div>
 
-              {/* Gift */}
               {gift && (
-                <div style={{ marginBottom:'14px', padding:'11px 13px', borderRadius:'13px', background:'rgba(52,211,153,0.1)', border:'1.5px solid rgba(52,211,153,0.3)', display:'flex', alignItems:'flex-start', gap:'9px' }}>
+                <div style={{ marginBottom:'14px', padding:'11px 13px', borderRadius:'13px', background:'#f0fdf4', border:'1.5px solid #a7f3d0', display:'flex', alignItems:'flex-start', gap:'9px' }}>
                   <span style={{ fontSize:'18px', lineHeight:1, flexShrink:0 }}>🎁</span>
-                  <div style={{ fontSize:'12px', color:'rgba(255,255,255,0.6)', lineHeight:1.5 }}>
-                    6 oylik shartnoma tuzganda — Face ID qurilmasi <strong style={{ color:'white' }}>bepul beriladi</strong>
+                  <div style={{ fontSize:'12px', color:'#475569', lineHeight:1.5 }}>
+                    6 oylik shartnoma tuzganda — Face ID qurilmasi <strong style={{ color:'#059669' }}>bepul beriladi</strong>
                   </div>
                 </div>
               )}
 
-              {/* Tugma */}
               <button onClick={openLogin} style={{
                 width:'100%', padding:'13px', borderRadius:'13px', border:'none',
-                background:color, color: name==='Biznes' ? '#1a1200' : '#fff',
+                background:color, color:'#fff',
                 fontSize:'14px', fontWeight:700, cursor:'pointer',
                 boxShadow:`0 6px 20px ${color}44`, transition:'opacity 0.2s, transform 0.15s',
               }}
@@ -344,7 +349,7 @@ export default function Login({ onLogin }) {
             </div>
           ))}
         </div>
-        <p style={{ marginTop:'24px', fontSize:'12px', color:'rgba(255,255,255,0.2)' }}>
+        <p style={{ marginTop:'28px', fontSize:'12px', color:'#94a3b8' }}>
           * Telegram xabarnomalar — tez orada · Barcha narxlar QQS siz · Korporativ tarifda 6 oylik shartnoma talab qilinadi
         </p>
       </section>
@@ -373,9 +378,6 @@ export default function Login({ onLogin }) {
       </footer>
 
       <style>{`
-        @keyframes spin    { to { transform: rotate(360deg) } }
-        @keyframes fadeIn  { from{ opacity:0 } to{ opacity:1 } }
-        @keyframes slideUp { from{ opacity:0; transform:translateY(20px) } to{ opacity:1; transform:translateY(0) } }
         @keyframes cardIn  { from{ opacity:0; transform:translateY(16px) } to{ opacity:1; transform:translateY(0) } }
         @keyframes floatUp { 0%{ transform:translateY(0) translateX(0); opacity:0 } 10%{ opacity:1 } 90%{ opacity:0.6 } 100%{ transform:translateY(-110vh) translateX(30px); opacity:0 } }
         input::placeholder { color: #cbd5e1 }
@@ -384,15 +386,12 @@ export default function Login({ onLogin }) {
         @media (max-width: 768px) {
           .cards-grid { grid-template-columns: repeat(2, 1fr) !important; }
           .hero-title  { font-size: 38px !important; letter-spacing: -1px !important; }
+          html, body { overflow-y: auto !important; height: auto !important; }
+          .landing-main { justify-content: flex-start !important; padding-top: 24px !important; }
         }
         @media (max-width: 480px) {
           .cards-grid { grid-template-columns: repeat(2, 1fr) !important; }
           .hero-title  { font-size: 32px !important; }
-          .login-modal { width: calc(100vw - 32px) !important; padding: 24px 18px !important; }
-        }
-        @media (max-width: 768px) {
-          html, body { overflow-y: auto !important; height: auto !important; }
-          .landing-main { justify-content: flex-start !important; padding-top: 24px !important; }
         }
       `}</style>
     </div>
