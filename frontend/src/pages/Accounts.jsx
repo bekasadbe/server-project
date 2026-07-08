@@ -27,10 +27,9 @@ function LinkedCheckboxes({ selected, setSelected, groups, excludeId }) {
 function RoleButtons({ value, onChange }) {
   return (
     <div className="flex gap-2">
-      {[['kadrlar','Kadrlar','#0891b2','#ecfeff'],['kuzatuvchi','Kuzatuvchi','#7c3aed','#f5f3ff']].map(([val, label, color, bg]) => (
+      {[['kadrlar','Kadrlar'],['kuzatuvchi','Kuzatuvchi']].map(([val, label]) => (
         <button key={val} type="button" onClick={() => onChange(val)}
-          className="flex-1 py-2 rounded-xl border-2 text-[13px] cursor-pointer transition-all"
-          style={{ borderColor: value === val ? color : '#e2e8f0', background: value === val ? bg : '#f8fafc', color: value === val ? color : '#64748b', fontWeight: value === val ? 600 : 400 }}>
+          className={`flex-1 py-2 rounded-lg border text-[13px] cursor-pointer transition-colors ${value === val ? 'bg-brand-50 border-brand-300 text-brand-600 font-semibold' : 'bg-slate-50 border-slate-200 text-slate-500 hover:border-slate-300'}`}>
           {label}
         </button>
       ))}
@@ -95,20 +94,21 @@ export default function Accounts({ groups, accounts, onReload }) {
       {/* Header */}
       <div className="flex items-center justify-between mb-6">
         <div>
-          <h1 className="text-[22px] font-bold text-slate-900 m-0">Akkauntlar</h1>
+          <h1 className="text-[19px] font-bold text-slate-900 m-0">Akkauntlar</h1>
           <p className="text-[13px] text-slate-400 mt-1 mb-0">Login, parol va qaysi tashkilotlarni ko'rishini boshqarish</p>
         </div>
         <button onClick={() => { setNewName(''); setNewLogin(''); setNewPass(''); setNewLinked([]); setNewError(''); setShowAdd(true) }}
-          className="flex items-center gap-1.5 px-4 py-2.5 bg-brand-600 border-none rounded-xl text-white text-[14px] font-semibold cursor-pointer hover:bg-brand-700 transition-colors">
-          <Plus size={15}/> Yangi akkaunt
+          className="flex items-center gap-1.5 px-4 py-2 bg-brand-600 border-none rounded-lg text-white text-[13px] font-semibold cursor-pointer hover:bg-brand-700 transition-colors">
+          <Plus size={14}/> Yangi akkaunt
         </button>
       </div>
 
-      <div className="bg-white rounded-2xl border border-slate-100 shadow-card overflow-hidden">
+      <div className="bg-white rounded-xl border border-slate-200 overflow-hidden">
         {accounts.length === 0 ? (
           <div className="py-12 text-center text-slate-400 text-[14px]">Hali akkaunt yo'q. "Yangi akkaunt" tugmasini bosing.</div>
         ) : (
-          <table className="w-full border-collapse">
+          <div className="overflow-x-auto">
+          <table className="w-full border-collapse" style={{minWidth:640}}>
             <thead>
               <tr className="bg-slate-50">
                 {['Akkaunt nomi', 'Login', 'Parol', 'Rol', "Ko'radigan tashkilotlar", ''].map(h => (
@@ -138,7 +138,8 @@ export default function Accounts({ groups, accounts, onReload }) {
                     </div>
                   </td>
                   <td className="px-4 py-3">
-                    <span className={`text-[11px] px-2.5 py-1 rounded-full font-semibold ${acc.role === 'kuzatuvchi' ? 'bg-purple-50 text-purple-600' : 'bg-cyan-50 text-cyan-600'}`}>
+                    <span className="inline-flex items-center gap-1.5 text-[12px] font-medium text-slate-600">
+                      <span className={`w-1.5 h-1.5 rounded-full ${acc.role === 'kuzatuvchi' ? 'bg-purple-500' : 'bg-cyan-500'}`}/>
                       {acc.role === 'kuzatuvchi' ? 'Kuzatuvchi' : 'Kadrlar'}
                     </span>
                   </td>
@@ -160,6 +161,7 @@ export default function Accounts({ groups, accounts, onReload }) {
               ))}
             </tbody>
           </table>
+          </div>
         )}
       </div>
 

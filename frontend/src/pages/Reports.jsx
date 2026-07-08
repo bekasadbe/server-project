@@ -67,7 +67,8 @@ function PodiumCard({ emp, rank, multiOrg, groups, valueNode, barH, barColor }) 
 function RankingTable({ list, multiOrg, groups, startRank, valFn }) {
   if (!list.length) return null
   return (
-    <table className="w-full border-collapse">
+    <div className="overflow-x-auto">
+    <table className="w-full border-collapse" style={{minWidth:640}}>
       <thead>
         <tr className="bg-slate-50">
           <th className="px-5 py-2.5 text-left text-[12px] text-slate-400 font-normal w-10">#</th>
@@ -106,6 +107,7 @@ function RankingTable({ list, multiOrg, groups, startRank, valFn }) {
         ))}
       </tbody>
     </table>
+    </div>
   )
 }
 
@@ -276,7 +278,7 @@ export default function Reports({ groups = [] }) {
     const podium = list.slice(0,3)
     const rest   = list.slice(3)
     return (
-      <div className="bg-white rounded-2xl border border-slate-100 shadow-card overflow-hidden mb-6">
+      <div className="bg-white rounded-xl border border-slate-200 overflow-hidden mb-6">
         <div className="flex items-center gap-3 px-5 py-4 border-b border-slate-100">
           <div className={`w-9 h-9 rounded-xl ${iconBg} flex items-center justify-center`}>
             <Icon size={17} className={iconCls}/>
@@ -295,7 +297,7 @@ export default function Reports({ groups = [] }) {
         ) : (
           <>
             {/* Podium */}
-            <div className="flex items-end justify-center gap-6 px-8 pt-8 pb-0 bg-gradient-to-b from-slate-50 to-white border-b border-slate-100">
+            <div className="flex items-end justify-center gap-2 sm:gap-6 px-2 sm:px-8 pt-8 pb-0 bg-gradient-to-b from-slate-50 to-white border-b border-slate-100 overflow-x-auto">
               {/* 2-o'rin */}
               {podium[1] && (
                 <PodiumCard emp={podium[1]} rank={2} multiOrg={multiOrg} groups={groups}
@@ -356,7 +358,7 @@ export default function Reports({ groups = [] }) {
           <button onClick={prevMonth} className="w-8 h-8 rounded-xl border border-slate-200 bg-white flex items-center justify-center text-slate-500 cursor-pointer hover:bg-slate-50 transition-colors">
             <ChevronLeft size={16}/>
           </button>
-          <h1 className="m-0 text-[22px] font-bold text-slate-900">{MONTHS[monthIdx]} {year}</h1>
+          <h1 className="m-0 text-[19px] font-bold text-slate-900">{MONTHS[monthIdx]} {year}</h1>
           <button onClick={nextMonth}
             className={`w-8 h-8 rounded-xl border border-slate-200 flex items-center justify-center transition-colors ${isCurrentMonth?'bg-slate-50 text-slate-300 cursor-not-allowed':'bg-white text-slate-500 cursor-pointer hover:bg-slate-50'}`}>
             <ChevronRight size={16}/>
@@ -382,15 +384,15 @@ export default function Reports({ groups = [] }) {
       ) : (
         <>
           {/* Stat cards */}
-          <div className="grid grid-cols-4 gap-4 mb-6">
+          <div className="grid grid-cols-2 md:grid-cols-4 gap-3 md:gap-4 mb-6">
             {STAT_CARDS.map(c => {
               const Icon = c.icon
               return (
-                <div key={c.key} className="bg-white rounded-2xl border border-slate-100 shadow-card p-5">
-                  <div className={`w-10 h-10 rounded-xl ${c.bg} ${c.border} border flex items-center justify-center mb-3`}>
-                    <Icon size={18} className={c.iconCls}/>
+                <div key={c.key} className="bg-white rounded-2xl border border-slate-100 shadow-card p-4 md:p-5">
+                  <div className={`w-9 h-9 md:w-10 md:h-10 rounded-xl ${c.bg} ${c.border} border flex items-center justify-center mb-2.5 md:mb-3`}>
+                    <Icon size={17} className={c.iconCls}/>
                   </div>
-                  <div className="text-[28px] font-extrabold text-slate-900 leading-none mb-1">{c.num(stats)}%</div>
+                  <div className="text-[24px] md:text-[28px] font-extrabold text-slate-900 leading-none mb-1">{c.num(stats)}%</div>
                   <div className="text-[13px] font-semibold text-slate-700 mb-0.5">{c.label}</div>
                   <div className="text-[12px] text-slate-400">{c.sub(stats)}</div>
                 </div>

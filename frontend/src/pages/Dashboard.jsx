@@ -3,20 +3,20 @@ import { CheckCircle, Clock, XCircle, Users, Building2, RefreshCw } from 'lucide
 import { API_URL, TOKEN } from '../config'
 
 const statusInfo = {
-  ontime: { label: "O'z vaqtida", color: 'text-green-700',  bg: 'bg-green-100' },
-  late:   { label: 'Kech keldi',  color: 'text-amber-700',  bg: 'bg-amber-100' },
-  absent: { label: 'Kelmadi',     color: 'text-red-600',    bg: 'bg-red-100'   },
+  ontime: { label: "O'z vaqtida", color: '#16a34a' },
+  late:   { label: 'Kech keldi',  color: '#d97706' },
+  absent: { label: 'Kelmadi',     color: '#dc2626' },
 }
 
 function StatCard({ icon: Icon, label, value, iconColor, iconBg }) {
   return (
-    <div className="bg-white rounded-2xl border border-slate-100 shadow-card p-5 flex items-center gap-4">
-      <div className={`${iconBg} rounded-xl p-3 flex`}>
-        <Icon size={22} className={iconColor} />
+    <div className="bg-white rounded-xl border border-slate-200 p-4 flex items-center gap-3">
+      <div className={`${iconBg} rounded-lg p-2.5 flex shrink-0`}>
+        <Icon size={19} className={iconColor} />
       </div>
       <div>
-        <div className="text-[28px] font-normal text-slate-900 leading-none">{value}</div>
-        <div className="text-[13px] text-slate-500 mt-1">{label}</div>
+        <div className="text-[22px] font-bold text-slate-900 leading-none">{value}</div>
+        <div className="text-[12px] text-slate-500 mt-0.5">{label}</div>
       </div>
     </div>
   )
@@ -47,10 +47,11 @@ export default function Dashboard({ employees = [], groups = [] }) {
     return () => clearInterval(t)
   }, [])
 
+  // Xodimning shaxsiy ish grafigi bo'lsa ustun turadi, bo'lmasa guruh sozlamasi (backend COALESCE qiladi)
   const getGroup     = (gid) => groups.find(g => g.id === gid)
-  const getWorkStart = (gid) => getGroup(gid)?.work_start    || '09:00'
-  const getWorkBegin = (gid) => getGroup(gid)?.work_begin    || '06:00'
-  const getGrace     = (gid) => getGroup(gid)?.grace_minutes ?? 0
+  const getWorkStart = (row) => row.work_start    || getGroup(row.group_id)?.work_start    || '09:00'
+  const getWorkBegin = (row) => row.work_begin    || getGroup(row.group_id)?.work_begin    || '06:00'
+  const getGrace     = (row) => row.grace_minutes ?? getGroup(row.group_id)?.grace_minutes ?? 0
 
   const addMinutes = (t, min) => {
     const [h, m] = t.split(':').map(Number)
@@ -66,13 +67,13 @@ export default function Dashboard({ employees = [], groups = [] }) {
   const getEffectiveFirstIn = (row) => {
     if (!row.first_in) return null
     const timeStr = toHHMM(row.first_in)
-    return timeStr >= getWorkBegin(row.group_id) ? row.first_in : null
+    return timeStr >= getWorkBegin(row) ? row.first_in : null
   }
 
   const getStatus = (row) => {
     const eff = getEffectiveFirstIn(row)
     if (!eff) return 'absent'
-    return toHHMM(eff) <= addMinutes(getWorkStart(row.group_id), getGrace(row.group_id)) ? 'ontime' : 'late'
+    return toHHMM(eff) <= addMinutes(getWorkStart(row), getGrace(row)) ? 'ontime' : 'late'
   }
 
   const visibleGroupIds = groups.map(g => g.id)
@@ -99,126 +100,152 @@ export default function Dashboard({ employees = [], groups = [] }) {
   return (
     <div>
       {/* Header */}
-      <div className="flex items-center justify-between mb-6">
+      <div className="flex items-center justify-between mb-5 gap-2 flex-wrap">
         <div>
-          <h1 className="text-[22px] font-bold text-slate-900 m-0">Bugungi Davomat</h1>
-          <p className="text-[13px] text-slate-400 mt-1 mb-0">{todayStr}</p>
+          <h1 className="text-[19px] font-bold text-slate-900 m-0">Bugungi Davomat</h1>
+          <p className="text-[13px] text-slate-400 mt-0.5 mb-0">{todayStr}</p>
         </div>
-        <div className="flex items-center gap-2.5">
+        <div className="flex items-center gap-2 flex-wrap">
           {multiOrg && (
-            <div className="flex gap-1.5">
+            <div className="flex gap-1.5 flex-wrap">
               {[{ id: 'all', name: 'Hammasi' }, ...groups].map(g => (
-                <button
-                  key={g.id}
-                  onClick={() => setOrgFilter(g.id)}
-                  className={`px-3.5 py-1.5 rounded-lg border text-[13px] cursor-pointer transition-colors
+                <button key={g.id} onClick={() => setOrgFilter(g.id)}
+                  className={`px-3 py-1.5 rounded-lg border text-[12px] cursor-pointer transition-colors
                     ${orgFilter === g.id
-                      ? 'bg-brand-50 border-brand-600 text-brand-600 font-semibold'
-                      : 'bg-white border-slate-200 text-slate-500 font-normal hover:border-slate-300'
-                    }`}
-                >
+                      ? 'bg-brand-50 border-brand-300 text-brand-600 font-semibold'
+                      : 'bg-white border-slate-200 text-slate-500 hover:border-slate-300'}`}>
                   {g.name}
                 </button>
               ))}
             </div>
           )}
-          <button
-            onClick={fetchAttendance}
-            className="flex items-center gap-1.5 px-3.5 py-1.5 bg-white border border-slate-200 rounded-lg text-slate-500 text-[13px] cursor-pointer hover:border-slate-300 transition-colors"
-          >
+          <button onClick={fetchAttendance}
+            className="flex items-center gap-1.5 px-3 py-1.5 bg-white border border-slate-200 rounded-lg text-slate-500 text-[13px] cursor-pointer hover:border-slate-300 transition-colors">
             <RefreshCw size={14} /> Yangilash
           </button>
         </div>
       </div>
 
-      {/* Stat cards */}
-      <div className="grid grid-cols-4 gap-3.5 mb-6">
-        <StatCard icon={Users}       label="Jami xodim"   value={loading ? '…' : filtered.length} iconColor="text-brand-600" iconBg="bg-brand-50" />
-        <StatCard icon={CheckCircle} label="O'z vaqtida"  value={loading ? '…' : ontime}          iconColor="text-green-600" iconBg="bg-green-50" />
-        <StatCard icon={Clock}       label="Kech keldi"   value={loading ? '…' : late}            iconColor="text-amber-600" iconBg="bg-amber-50" />
-        <StatCard icon={XCircle}     label="Kelmadi"      value={loading ? '…' : absent}          iconColor="text-red-500"   iconBg="bg-red-50"   />
+      {/* Stat cards — 2 col on mobile, 4 on desktop */}
+      <div className="grid grid-cols-2 md:grid-cols-4 gap-3 mb-5">
+        <StatCard icon={Users}       label="Jami xodim"  value={loading ? '…' : filtered.length} iconColor="text-brand-600" iconBg="bg-brand-50" />
+        <StatCard icon={CheckCircle} label="O'z vaqtida" value={loading ? '…' : ontime}          iconColor="text-green-600" iconBg="bg-green-50" />
+        <StatCard icon={Clock}       label="Kech keldi"  value={loading ? '…' : late}            iconColor="text-amber-600" iconBg="bg-amber-50" />
+        <StatCard icon={XCircle}     label="Kelmadi"     value={loading ? '…' : absent}          iconColor="text-red-500"   iconBg="bg-red-50"   />
       </div>
 
-      {/* Table card */}
-      <div className="bg-white rounded-2xl border border-slate-100 shadow-card overflow-hidden">
-        <div className="flex items-center gap-2 px-5 py-3.5 border-b border-slate-100">
-          <Users size={16} className="text-brand-600" />
-          <span className="text-[14px] font-semibold text-slate-800">Xodimlar holati</span>
-        </div>
+      <div className="text-[11px] font-semibold text-slate-400 tracking-wide uppercase px-1 mb-2">Xodimlar holati</div>
+
+      {/* Table */}
+      <div className="bg-white rounded-xl border border-slate-200 overflow-hidden">
 
         {loading ? (
           <div className="py-12 text-center text-slate-400 text-sm">Yuklanmoqda…</div>
         ) : (
-          <table className="w-full border-collapse">
-            <thead>
-              <tr className="bg-slate-50">
-                {['Ism Familiya', ...(multiOrg ? ['Tashkilot'] : []), 'Keldi', 'Kechikish', "Oxirgi o'tish", 'Holat'].map(h => (
-                  <th key={h} className="px-4 py-2.5 text-left text-[12px] text-slate-400 font-normal">{h}</th>
-                ))}
-              </tr>
-            </thead>
-            <tbody>
-              {sorted.map(row => {
-                const s   = statusInfo[getStatus(row)]
-                const eff = getEffectiveFirstIn(row)
+          /* Mobile: card list | Desktop: table */
+          <>
+            {/* Mobile card view */}
+            <div className="md:hidden divide-y divide-slate-50">
+              {sorted.length === 0 ? (
+                <div className="py-10 text-center text-sm text-slate-400">Ma'lumot yo'q</div>
+              ) : sorted.map(row => {
+                const s      = statusInfo[getStatus(row)]
+                const eff    = getEffectiveFirstIn(row)
                 const isLate = getStatus(row) === 'late'
-
-                let lateMin = null
+                let lateMin  = null
                 if (eff) {
-                  const threshold = addMinutes(getWorkStart(row.group_id), getGrace(row.group_id))
-                  const [wh, wm] = threshold.split(':').map(Number)
-                  const [ah, am] = toHHMM(eff).split(':').map(Number)
+                  const threshold = addMinutes(getWorkStart(row), getGrace(row))
+                  const [wh, wm]  = threshold.split(':').map(Number)
+                  const [ah, am]  = toHHMM(eff).split(':').map(Number)
                   const diff = (ah * 60 + am) - (wh * 60 + wm)
                   if (diff > 0) lateMin = diff
                 }
-
                 return (
-                  <tr key={row.employee_id} className="border-t border-slate-50 hover:bg-slate-50/50 transition-colors">
-                    <td className="px-4 py-2.5">
-                      <div className="text-[14px] font-medium text-slate-800">{row.name}</div>
-                      {row.lavozim && <div className="text-[11px] text-slate-400 mt-0.5">{row.lavozim}</div>}
-                    </td>
-                    {multiOrg && (
-                      <td className="px-4 py-2.5 text-[13px] text-slate-500">
-                        <span className="flex items-center gap-1">
-                          <Building2 size={12} /> {groupName(row.group_id)}
-                        </span>
-                      </td>
-                    )}
-                    <td className="px-4 py-2.5">
-                      {eff
-                        ? <span className={`text-[15px] font-medium ${isLate ? 'text-orange-500' : 'text-green-600'}`}>{toHHMM(eff)}</span>
-                        : <span className="text-[15px] text-slate-300">—</span>
-                      }
-                    </td>
-                    <td className="px-4 py-2.5">
-                      {lateMin
-                        ? <span className="text-[13px] font-medium text-orange-500">+{lateMin} daq</span>
-                        : <span className="text-[13px] text-slate-300">—</span>
-                      }
-                    </td>
-                    <td className="px-4 py-2.5">
-                      <span className={`text-[15px] font-normal ${row.last_out ? 'text-slate-600' : 'text-slate-300'}`}>
-                        {row.last_out ? toHHMM(row.last_out) : '—'}
+                  <div key={row.employee_id} className="flex items-center justify-between px-4 py-3 hover:bg-slate-50/50">
+                    <div className="flex-1 min-w-0 mr-3">
+                      <div className="text-[14px] font-medium text-slate-800 truncate">{row.name}</div>
+                      {row.lavozim && <div className="text-[11px] text-slate-400 mt-0.5 truncate">{row.lavozim}</div>}
+                      {multiOrg && <div className="text-[11px] text-slate-400 mt-0.5">{groupName(row.group_id)}</div>}
+                    </div>
+                    <div className="flex items-center gap-3 shrink-0">
+                      <div className="text-right">
+                        {eff
+                          ? <div className={`text-[14px] font-semibold ${isLate ? 'text-orange-500' : 'text-green-600'}`}>{toHHMM(eff)}</div>
+                          : <div className="text-[14px] text-slate-300">—</div>
+                        }
+                        {lateMin && <div className="text-[11px] text-orange-400">+{lateMin} daq</div>}
+                      </div>
+                      <span className="inline-flex items-center gap-1.5 text-[12px] font-medium whitespace-nowrap" style={{ color: s.color }}>
+                        <span className="w-1.5 h-1.5 rounded-full" style={{ background: s.color }}/> {s.label}
                       </span>
-                    </td>
-                    <td className="px-4 py-2.5">
-                      <span className={`inline-flex px-2.5 py-1 rounded-full text-[12px] font-semibold ${s.bg} ${s.color}`}>
-                        {s.label}
-                      </span>
-                    </td>
-                  </tr>
+                    </div>
+                  </div>
                 )
               })}
-              {sorted.length === 0 && (
-                <tr>
-                  <td colSpan={multiOrg ? 6 : 5} className="py-10 text-center text-sm text-slate-400">
-                    Ma'lumot yo'q
-                  </td>
+            </div>
+
+            {/* Desktop table view */}
+            <table className="w-full border-collapse hidden md:table">
+              <thead>
+                <tr className="bg-slate-50">
+                  {['Ism Familiya', ...(multiOrg ? ['Tashkilot'] : []), 'Keldi', 'Kechikish', "Oxirgi o'tish", 'Holat'].map(h => (
+                    <th key={h} className="px-4 py-2.5 text-left text-[12px] text-slate-400 font-normal">{h}</th>
+                  ))}
                 </tr>
-              )}
-            </tbody>
-          </table>
+              </thead>
+              <tbody>
+                {sorted.map(row => {
+                  const s   = statusInfo[getStatus(row)]
+                  const eff = getEffectiveFirstIn(row)
+                  const isLate = getStatus(row) === 'late'
+                  let lateMin = null
+                  if (eff) {
+                    const threshold = addMinutes(getWorkStart(row), getGrace(row))
+                    const [wh, wm]  = threshold.split(':').map(Number)
+                    const [ah, am]  = toHHMM(eff).split(':').map(Number)
+                    const diff = (ah * 60 + am) - (wh * 60 + wm)
+                    if (diff > 0) lateMin = diff
+                  }
+                  return (
+                    <tr key={row.employee_id} className="border-t border-slate-100 hover:bg-slate-50/50 transition-colors">
+                      <td className="px-4 py-3">
+                        <div className="text-[13.5px] font-medium text-slate-700">{row.name}</div>
+                        {row.lavozim && <div className="text-[11px] text-slate-400 mt-0.5">{row.lavozim}</div>}
+                      </td>
+                      {multiOrg && (
+                        <td className="px-4 py-3 text-[12px] text-slate-400">
+                          <span className="flex items-center gap-1"><Building2 size={12}/> {groupName(row.group_id)}</span>
+                        </td>
+                      )}
+                      <td className="px-4 py-3">
+                        {eff
+                          ? <span className={`text-[14px] font-medium ${isLate ? 'text-orange-500' : 'text-green-600'}`}>{toHHMM(eff)}</span>
+                          : <span className="text-[14px] text-slate-300">—</span>}
+                      </td>
+                      <td className="px-4 py-3">
+                        {lateMin
+                          ? <span className="text-[13px] font-medium text-orange-500">+{lateMin} daq</span>
+                          : <span className="text-[13px] text-slate-300">—</span>}
+                      </td>
+                      <td className="px-4 py-3">
+                        <span className={`text-[14px] font-normal ${row.last_out ? 'text-slate-600' : 'text-slate-300'}`}>
+                          {row.last_out ? toHHMM(row.last_out) : '—'}
+                        </span>
+                      </td>
+                      <td className="px-4 py-3">
+                        <span className="inline-flex items-center gap-1.5 text-[12px] font-medium" style={{ color: s.color }}>
+                          <span className="w-1.5 h-1.5 rounded-full" style={{ background: s.color }}/> {s.label}
+                        </span>
+                      </td>
+                    </tr>
+                  )
+                })}
+                {sorted.length === 0 && (
+                  <tr><td colSpan={multiOrg ? 6 : 5} className="py-10 text-center text-sm text-slate-400">Ma'lumot yo'q</td></tr>
+                )}
+              </tbody>
+            </table>
+          </>
         )}
       </div>
     </div>

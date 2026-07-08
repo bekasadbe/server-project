@@ -1,5 +1,4 @@
 import { useState, useEffect, useRef } from 'react'
-import { Wifi, WifiOff, Radio } from 'lucide-react'
 import { API_URL, TOKEN } from '../config'
 
 export default function LiveEvents({ groups = [] }) {
@@ -34,23 +33,23 @@ export default function LiveEvents({ groups = [] }) {
   return (
     <div>
       {/* Header */}
-      <div className="flex items-center justify-between mb-6">
+      <div className="flex items-center justify-between mb-5 flex-wrap gap-3">
         <div>
-          <h1 className="flex items-center gap-2.5 text-[22px] font-bold text-slate-900 m-0">
-            <Radio size={20} className="text-brand-600"/> Jonli lenta
-          </h1>
-          <p className="text-[13px] text-slate-400 mt-1 mb-0">Har 5 soniyada yangilanadi</p>
+          <h1 className="text-[19px] font-bold text-slate-900 m-0">Jonli lenta</h1>
+          <p className="text-[13px] text-slate-400 mt-0.5 mb-0">Har 5 soniyada yangilanadi</p>
         </div>
-        <div className={`flex items-center gap-2 px-4 py-2 rounded-xl border text-[13px] font-semibold ${connected ? 'bg-green-50 border-green-200 text-green-700' : 'bg-red-50 border-red-200 text-red-600'}`}>
+        <div className="flex items-center gap-1.5 px-3 py-1.5 bg-white border border-slate-200 rounded-lg text-[12px] font-medium text-slate-600">
+          <span className={`w-1.5 h-1.5 rounded-full ${connected ? 'bg-green-500' : 'bg-red-500'}`}/>
           {connected
-            ? <><Wifi size={14}/> Ulangan {lastUpdate && <span className="font-normal text-green-600 ml-1">{lastUpdate}</span>}</>
-            : <><WifiOff size={14}/> Ulanmadi</>}
+            ? <>Ulangan {lastUpdate && <span className="text-slate-400 ml-1">{lastUpdate}</span>}</>
+            : <>Ulanmadi</>}
         </div>
       </div>
 
       {/* Table */}
-      <div className="bg-white rounded-2xl border border-slate-100 shadow-card overflow-hidden">
-        <table className="w-full border-collapse">
+      <div className="bg-white rounded-xl border border-slate-200 overflow-hidden">
+        <div className="overflow-x-auto">
+        <table className="w-full border-collapse" style={{minWidth:640}}>
           <thead>
             <tr className="bg-slate-50">
               {['Vaqt', 'ID', 'Xodim', 'Tashkilot', 'Holat', 'Kamera'].map(h => (
@@ -74,14 +73,15 @@ export default function LiveEvents({ groups = [] }) {
                 <td className="px-4 py-2.5 text-[12px] text-slate-500">{groupName(e.group_id)}</td>
                 <td className="px-4 py-2.5">
                   {e.direction === 'in'
-                    ? <span className="inline-flex px-2.5 py-1 rounded-full text-[12px] font-semibold bg-green-100 text-green-700">Kirdi ↑</span>
-                    : <span className="inline-flex px-2.5 py-1 rounded-full text-[12px] font-semibold bg-amber-100 text-amber-700">Chiqdi ↓</span>}
+                    ? <span className="inline-flex items-center gap-1.5 text-[12px] font-medium text-green-600"><span className="w-1.5 h-1.5 rounded-full bg-green-500"/> Kirdi</span>
+                    : <span className="inline-flex items-center gap-1.5 text-[12px] font-medium text-amber-600"><span className="w-1.5 h-1.5 rounded-full bg-amber-500"/> Chiqdi</span>}
                 </td>
                 <td className="px-4 py-2.5 font-mono text-[11px] text-slate-400">{e.device_ip || '—'}</td>
               </tr>
             ))}
           </tbody>
         </table>
+        </div>
       </div>
     </div>
   )
