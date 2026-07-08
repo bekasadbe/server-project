@@ -17,6 +17,46 @@ import { getUser, logout } from './auth'
 
 import { apiFetch } from './config'
 
+function SplashScreen() {
+  return (
+    <div style={{
+      position: 'fixed', inset: 0, display: 'flex', flexDirection: 'column',
+      alignItems: 'center', justifyContent: 'center',
+      background: 'linear-gradient(135deg, #1a56db 0%, #1e429f 100%)',
+      zIndex: 9999,
+    }}>
+      {/* Logo */}
+      <div style={{ display: 'flex', alignItems: 'center', gap: 14, marginBottom: 36 }}>
+        <svg width="48" height="48" viewBox="0 0 48 48" fill="none">
+          <circle cx="24" cy="24" r="24" fill="rgba(255,255,255,0.15)"/>
+          <path d="M13 25L20 32L35 17" stroke="white" strokeWidth="3.5" strokeLinecap="round" strokeLinejoin="round"/>
+        </svg>
+        <div>
+          <div style={{ color: 'white', fontSize: 22, fontWeight: 700, letterSpacing: '-0.5px', lineHeight: 1.1 }}>Davomatlar.uz</div>
+          <div style={{ color: 'rgba(255,255,255,0.6)', fontSize: 12, marginTop: 2 }}>Boshqaruv tizimi</div>
+        </div>
+      </div>
+
+      {/* Animated dots */}
+      <div style={{ display: 'flex', gap: 8 }}>
+        {[0, 1, 2].map(i => (
+          <div key={i} style={{
+            width: 8, height: 8, borderRadius: '50%',
+            background: 'rgba(255,255,255,0.7)',
+            animation: `splashDot 1.2s ease-in-out ${i * 0.2}s infinite`,
+          }}/>
+        ))}
+      </div>
+
+      <style>{`
+        @keyframes splashDot {
+          0%, 80%, 100% { transform: scale(0.6); opacity: 0.4; }
+          40% { transform: scale(1); opacity: 1; }
+        }
+      `}</style>
+    </div>
+  )
+}
 
 export default function App() {
   const [user, setUser]           = useState(getUser)
@@ -26,6 +66,7 @@ export default function App() {
   const [accounts, setAccounts]         = useState([])
   const [settingsDirty, setSettingsDirty] = useState(false)
   const [sidebarOpen, setSidebarOpen]     = useState(false)
+  const [splashing, setSplashing]         = useState(false)
 
   useEffect(() => { if (user) { loadData(); setPage('dashboard') } }, [user])
 
@@ -42,7 +83,12 @@ export default function App() {
     } catch {}
   }
 
-  if (!user) return <Login onLogin={u => setUser(u)} />
+  if (splashing) return <SplashScreen />
+
+  if (!user) return <Login onLogin={u => {
+    setSplashing(true)
+    setTimeout(() => { setUser(u); setSplashing(false) }, 1800)
+  }} />
 
   const handleLogout = () => { logout(); setUser(null) }
 
