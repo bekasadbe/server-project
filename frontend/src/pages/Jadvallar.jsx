@@ -48,11 +48,8 @@ function Avatar({ name }) {
 }
 
 function Cell({ emp, day, dayData, leaves, groups }) {
-  const getWorkStart  = (gid) => groups.find(g => g.id === gid)?.work_start  || '09:00'
-  const getWorkFinish = (gid) => groups.find(g => g.id === gid)?.work_finish || '18:00'
-  const getWorkBegin  = (gid) => groups.find(g => g.id === gid)?.work_begin  || '06:00'
-  const getWorkDays   = (gid) => (groups.find(g => g.id === gid)?.work_days  || '1,2,3,4,5,6').split(',').filter(Boolean)
-  const getGrace      = (gid) => groups.find(g => g.id === gid)?.grace_minutes ?? 0
+  const getGroup       = (gid) => groups.find(g => g.id === gid)
+  const getWorkDays    = (gid) => (getGroup(gid)?.work_days || '1,2,3,4,5,6').split(',').filter(Boolean)
   const addMin = (t, min) => {
     const [h, m] = t.split(':').map(Number)
     const total = h*60+m+Number(min)
@@ -67,15 +64,19 @@ function Cell({ emp, day, dayData, leaves, groups }) {
   const leave  = leaves.find(l => l.employee_id === emp.id && l.start_date <= ds && l.end_date >= ds)
   const isWeekend = day.getDay() === 0 || day.getDay() === 6
 
-  const ws = getWorkStart(emp.group_id)
-  const wf = getWorkFinish(emp.group_id)
-  const wb = getWorkBegin(emp.group_id)
+  // Xodimning shaxsiy grafigi (backend attendance javobida allaqachon hisoblangan)
+  // yoki emp/guruh fallback
+  const g  = getGroup(emp.group_id)
+  const ws = rec?.work_start    || emp.work_start    || g?.work_start    || '09:00'
+  const wf = rec?.work_finish   || emp.work_finish    || g?.work_finish   || '18:00'
+  const wb = rec?.work_begin    || emp.work_begin    || g?.work_begin    || '06:00'
+  const grace = rec?.grace_minutes ?? emp.grace_minutes ?? g?.grace_minutes ?? 0
 
   // Ta'til / Kasallik
   if (leave) {
     const sick = leave.leave_type === 'sick'
     return (
-      <div className={`mx-0.5 my-0.5 px-2.5 py-1.5 rounded-xl border-2 min-h-[52px] flex flex-col justify-center ${sick ? 'bg-purple-50 border-purple-200' : 'bg-cyan-50 border-cyan-200'}`}>
+      <div className={`mx-0.5 my-0.5 px-2.5 py-1.5 rounded-lg border border-slate-100 min-h-[52px] flex flex-col justify-center ${sick ? 'bg-purple-50/60' : 'bg-cyan-50/60'}`}>
         <div className={`flex items-center gap-1 text-[12px] font-medium ${sick ? 'text-purple-600' : 'text-cyan-600'}`}>
           {sick ? <Stethoscope size={11}/> : <Palmtree size={11}/>}
           {sick ? 'Kasallik' : "Ta'til"}
@@ -88,15 +89,18 @@ function Cell({ emp, day, dayData, leaves, groups }) {
   if (rec && (rec.first_in || rec.last_out)) {
     const fi  = rec.first_in
     const lo  = rec.last_out
-    const lt  = addMin(ws, getGrace(emp.group_id))
+    const lt  = addMin(ws, grace)
     const eff = fi && fi >= wb ? fi : null
     const late     = eff && eff > lt
     const earlyOut = lo && lo < wf
     const inCls  = !eff ? 'text-slate-300' : late ? 'text-orange-500' : 'text-green-600'
     const outCls = earlyOut ? 'text-orange-500' : lo ? 'text-green-600' : 'text-slate-300'
     return (
-      <div className="mx-0.5 my-0.5 px-2.5 py-1.5 rounded-xl border-2 bg-cyan-50 border-cyan-200 min-h-[52px] flex flex-col justify-center">
-        <div className="text-[11px] text-slate-400 mb-0.5">{ws} — {wf}</div>
+      <div className="mx-0.5 my-0.5 px-2.5 py-1.5 rounded-lg border border-slate-100 bg-slate-50/60 min-h-[52px] flex flex-col justify-center">
+        <div className="flex items-center gap-1 text-[11px] text-slate-400 mb-0.5">
+          {rec?.has_custom_schedule ? <span className="w-1 h-1 rounded-full bg-brand-500 shrink-0" title="Shaxsiy grafik"/> : null}
+          {ws} — {wf}
+        </div>
         <div className="flex items-center gap-1 text-[13px] font-semibold">
           <span className={inCls}>{eff || '—:——'}</span>
           <span className="text-slate-300">·</span>
@@ -109,19 +113,21 @@ function Cell({ emp, day, dayData, leaves, groups }) {
   // Dam olish kuni
   if (off || (isWeekend && !rec)) {
     return (
-      <div className="mx-0.5 my-0.5 px-2.5 py-1.5 rounded-xl border-2 bg-slate-50 border-slate-100 min-h-[52px] flex flex-col justify-center">
+      <div className="mx-0.5 my-0.5 px-2.5 py-1.5 rounded-lg border border-slate-100 bg-slate-50/40 min-h-[52px] flex flex-col justify-center">
         <div className="text-[12px] text-slate-300">Dam olish</div>
       </div>
     )
   }
 
   // Kelmadi / hali yo'q / rejalashtirilgan
-  const borderCls = today ? 'border-amber-300 bg-amber-50' : future ? 'border-slate-100 bg-white' : 'border-red-200 bg-red-50'
-  const textCls   = today ? 'text-amber-500' : future ? 'text-slate-200' : 'text-red-500'
-  const label     = today ? "hali yo'q" : future ? '—' : 'kelmadi'
+  const textCls = today ? 'text-amber-500' : future ? 'text-slate-300' : 'text-red-500'
+  const label   = today ? "hali yo'q" : future ? '—' : 'kelmadi'
   return (
-    <div className={`mx-0.5 my-0.5 px-2.5 py-1.5 rounded-xl border-2 min-h-[52px] flex flex-col justify-center ${borderCls}`}>
-      <div className="text-[11px] text-slate-400 mb-0.5">{ws} — {wf}</div>
+    <div className="mx-0.5 my-0.5 px-2.5 py-1.5 rounded-lg border border-slate-100 bg-white min-h-[52px] flex flex-col justify-center">
+      <div className="flex items-center gap-1 text-[11px] text-slate-400 mb-0.5">
+        {rec?.has_custom_schedule ? <span className="w-1 h-1 rounded-full bg-brand-500 shrink-0" title="Shaxsiy grafik"/> : null}
+        {ws} — {wf}
+      </div>
       <div className={`text-[12px] font-semibold ${textCls}`}>{label}</div>
     </div>
   )
@@ -186,7 +192,7 @@ export default function Jadvallar({ groups = [], employees = [] }) {
             <ChevronLeft size={16}/>
           </button>
           <div>
-            <h1 className="m-0 text-[22px] font-bold text-slate-900">Jadvallar</h1>
+            <h1 className="m-0 text-[19px] font-bold text-slate-900">Jadvallar</h1>
             <p className="m-0 text-[12px] text-slate-400">{weekLabel()}</p>
           </div>
           <button onClick={nextWeek} className="w-8 h-8 rounded-xl border border-slate-200 bg-white flex items-center justify-center text-slate-500 cursor-pointer hover:bg-slate-50 transition-colors">
@@ -210,7 +216,7 @@ export default function Jadvallar({ groups = [], employees = [] }) {
       </div>
 
       {/* Table */}
-      <div className="bg-white rounded-2xl border border-slate-100 shadow-card overflow-hidden">
+      <div className="bg-white rounded-xl border border-slate-200 overflow-hidden">
         <div className="overflow-x-auto">
           <table className="w-full border-collapse" style={{ tableLayout: 'fixed', minWidth: '900px' }}>
             <colgroup>

@@ -1,5 +1,5 @@
 import { useState } from 'react'
-import { Plus, Trash2, Search, FolderOpen, Folder, Pencil, UserPlus, Eye, EyeOff } from 'lucide-react'
+import { Plus, Trash2, Search, FolderOpen, Folder, Pencil, UserPlus } from 'lucide-react'
 
 const inputCls = "w-full px-3 py-2.5 bg-white border border-slate-200 rounded-xl text-slate-800 text-[14px] outline-none focus:border-brand-400 transition-colors"
 const labelCls = "text-[12px] text-slate-500 font-semibold block mb-1.5"
@@ -26,12 +26,9 @@ export default function AdminPanel({ employees, groups, onAddEmployee, onDeleteE
   const [newName, setNewName] = useState('')
   const [addError, setAddError] = useState('')
 
-  const [showNewOrg, setShowNewOrg]   = useState(false)
-  const [orgName, setOrgName]         = useState('')
-  const [orgLogin, setOrgLogin]       = useState('')
-  const [orgPass, setOrgPass]         = useState('')
-  const [orgError, setOrgError]       = useState('')
-  const [showOrgPass, setShowOrgPass] = useState(false)
+  const [showNewOrg, setShowNewOrg] = useState(false)
+  const [orgName, setOrgName]       = useState('')
+  const [orgError, setOrgError]     = useState('')
 
   const [showEditEmp, setShowEditEmp]         = useState(false)
   const [editEmpId, setEditEmpId]             = useState('')
@@ -74,13 +71,11 @@ export default function AdminPanel({ employees, groups, onAddEmployee, onDeleteE
   }
 
   const handleAddOrg = () => {
-    if (!orgName.trim())  return setOrgError('Tashkilot nomi kiriting')
-    if (!orgLogin.trim()) return setOrgError('Login kiriting')
-    if (!orgPass.trim())  return setOrgError('Parol kiriting')
-    const id = orgLogin.trim().toLowerCase().replace(/\s+/g, '_')
-    if (groups.find(g => g.id === id || g.login === orgLogin)) return setOrgError('Bu login allaqachon mavjud')
-    onAddGroup({ id, name: orgName.trim(), login: orgLogin.trim(), password: orgPass.trim() })
-    setOrgName(''); setOrgLogin(''); setOrgPass(''); setOrgError(''); setShowNewOrg(false)
+    if (!orgName.trim()) return setOrgError('Tashkilot nomi kiriting')
+    const id = orgName.trim().toLowerCase().replace(/\s+/g, '_').replace(/[^a-z0-9_]/g, '') || ('org_' + Date.now())
+    if (groups.find(g => g.id === id)) return setOrgError('Bu nom bilan tashkilot allaqachon mavjud')
+    onAddGroup({ id, name: orgName.trim(), login: '', password: '' })
+    setOrgName(''); setOrgError(''); setShowNewOrg(false)
     setSelectedGroup(id)
   }
 
@@ -88,7 +83,7 @@ export default function AdminPanel({ employees, groups, onAddEmployee, onDeleteE
     <div>
       {/* Header */}
       <div className="mb-6">
-        <h1 className="text-[22px] font-bold text-slate-900 m-0">Admin panel</h1>
+        <h1 className="text-[19px] font-bold text-slate-900 m-0">Admin panel</h1>
         <p className="text-[13px] text-slate-400 mt-1 mb-0">Tashkilotlar va xodimlarni boshqarish</p>
       </div>
 
@@ -99,7 +94,7 @@ export default function AdminPanel({ employees, groups, onAddEmployee, onDeleteE
           const active = selectedGroup === g.id
           return (
             <button key={g.id} onClick={() => { setSelectedGroup(g.id); setSearch(''); setSelected(new Set()) }}
-              className={`flex items-center gap-1.5 px-4 py-2 rounded-xl border text-[13px] cursor-pointer transition-colors ${active ? 'bg-brand-50 border-brand-200 text-brand-600 font-bold' : 'bg-white border-slate-200 text-slate-500 hover:border-slate-300'}`}>
+              className={`flex items-center gap-1.5 px-4 py-2 rounded-lg border text-[13px] cursor-pointer transition-colors ${active ? 'bg-brand-50 border-brand-200 text-brand-600 font-bold' : 'bg-white border-slate-200 text-slate-500 hover:border-slate-300'}`}>
               {active ? <FolderOpen size={14}/> : <Folder size={14} className="text-slate-400"/>}
               {g.name}
               <span className={`text-[11px] px-1.5 py-0.5 rounded-full font-semibold ${active ? 'bg-brand-100 text-brand-600' : 'bg-slate-100 text-slate-400'}`}>{count}</span>
@@ -107,42 +102,43 @@ export default function AdminPanel({ employees, groups, onAddEmployee, onDeleteE
           )
         })}
         <button onClick={() => setShowNewOrg(true)}
-          className="flex items-center gap-1 px-3.5 py-2 rounded-xl border border-dashed border-slate-300 bg-transparent text-slate-400 text-[13px] cursor-pointer hover:border-slate-400 transition-colors">
+          className="flex items-center gap-1 px-3.5 py-2 rounded-lg border border-dashed border-slate-300 bg-transparent text-slate-400 text-[13px] cursor-pointer hover:border-slate-400 transition-colors">
           <Plus size={13}/> Yangi tashkilot
         </button>
       </div>
 
       {/* Employee table */}
       {currentGroup ? (
-        <div className="bg-white rounded-2xl border border-slate-100 shadow-card overflow-hidden">
+        <div className="bg-white rounded-xl border border-slate-200 overflow-hidden">
           {/* Toolbar */}
-          <div className="flex items-center gap-3 px-4 py-3.5 border-b border-slate-100">
-            <div className="flex-1 relative">
+          <div className="flex items-center gap-2.5 px-4 py-3.5 border-b border-slate-100 flex-wrap">
+            <div className="flex-1 relative min-w-[160px]">
               <Search size={15} className="absolute left-3 top-1/2 -translate-y-1/2 text-slate-400"/>
-              <input placeholder={`${currentGroup.name} xodimlarini qidirish...`}
+              <input placeholder="Qidirish..."
                 value={search} onChange={e => setSearch(e.target.value)}
-                className="w-full py-2 pl-9 pr-3 bg-slate-50 border border-slate-200 rounded-xl text-slate-800 text-[13px] outline-none focus:border-brand-400 transition-colors"/>
+                className="w-full py-2 pl-9 pr-3 bg-slate-50 border border-slate-200 rounded-lg text-slate-800 text-[13px] outline-none focus:border-brand-400 transition-colors"/>
             </div>
             {selected.size > 0 && (
               <button onClick={() => {
                 if (window.confirm(`${selected.size} ta xodimni o'chirasizmi?`)) { onDeleteEmployees([...selected]); setSelected(new Set()) }
-              }} className="flex items-center gap-1.5 px-3 py-2 bg-rose-50 border border-rose-200 rounded-xl text-rose-600 text-[13px] font-semibold cursor-pointer hover:bg-rose-100 transition-colors">
+              }} className="flex items-center gap-1.5 px-3 py-2 bg-rose-50 border border-rose-200 rounded-lg text-rose-600 text-[13px] font-semibold cursor-pointer hover:bg-rose-100 transition-colors whitespace-nowrap">
                 <Trash2 size={14}/> {selected.size} ta o'chirish
               </button>
             )}
             <button onClick={() => {
               if (window.confirm(`"${currentGroup.name}" tashkilotini o'chirasizmi?\n\nBarcha xodimlar ham o'chib ketadi!`)) onDeleteGroup(currentGroup.id)
-            }} className="p-2 bg-rose-50 border border-rose-200 rounded-xl text-rose-500 cursor-pointer hover:bg-rose-100 transition-colors" title="Tashkilotni o'chirish">
+            }} className="p-2 bg-rose-50 border border-rose-200 rounded-lg text-rose-500 cursor-pointer hover:bg-rose-100 transition-colors shrink-0" title="Tashkilotni o'chirish">
               <Trash2 size={15}/>
             </button>
             <button onClick={() => { setNewId(''); setNewName(''); setAddError(''); setShowAddEmp(true) }}
-              className="flex items-center gap-1.5 px-4 py-2 bg-brand-600 border-none rounded-xl text-white text-[13px] font-semibold cursor-pointer hover:bg-brand-700 transition-colors whitespace-nowrap">
+              className="flex items-center gap-1.5 px-4 py-2 bg-brand-600 border-none rounded-lg text-white text-[13px] font-semibold cursor-pointer hover:bg-brand-700 transition-colors whitespace-nowrap">
               <UserPlus size={14}/> Xodim qo'shish
             </button>
-            <span className="text-[12px] text-slate-400 shrink-0">{filtered.length} ta xodim</span>
+            <span className="text-[12px] text-slate-400 shrink-0 w-full sm:w-auto">{filtered.length} ta xodim</span>
           </div>
 
-          <table className="w-full border-collapse">
+          <div className="overflow-x-auto">
+          <table className="w-full border-collapse" style={{minWidth:520}}>
             <thead>
               <tr className="bg-slate-50">
                 <th className="px-4 py-2.5 w-10">
@@ -185,6 +181,7 @@ export default function AdminPanel({ employees, groups, onAddEmployee, onDeleteE
               )}
             </tbody>
           </table>
+          </div>
         </div>
       ) : (
         <div className="flex items-center justify-center h-48 bg-white rounded-2xl border border-slate-100 text-slate-400 text-[14px]">Yuqoridan tashkilot tanlang</div>
@@ -227,22 +224,12 @@ export default function AdminPanel({ employees, groups, onAddEmployee, onDeleteE
 
       {/* New org modal */}
       {showNewOrg && (
-        <Modal title="Yangi tashkilot" onClose={() => { setShowNewOrg(false); setOrgName(''); setOrgLogin(''); setOrgPass(''); setOrgError('') }}>
+        <Modal title="Yangi tashkilot" onClose={() => { setShowNewOrg(false); setOrgName(''); setOrgError('') }}>
           <div className="flex flex-col gap-3.5">
-            <div><label className={labelCls}>Tashkilot nomi</label><input value={orgName} onChange={e => { setOrgName(e.target.value); setOrgError('') }} placeholder="Masalan: IT bo'limi" className={inputCls}/></div>
-            <div><label className={labelCls}>Login</label><input value={orgLogin} onChange={e => { setOrgLogin(e.target.value); setOrgError('') }} placeholder="Masalan: itbolim" className={inputCls}/></div>
-            <div>
-              <label className={labelCls}>Parol</label>
-              <div className="relative">
-                <input type={showOrgPass ? 'text' : 'password'} value={orgPass} onChange={e => { setOrgPass(e.target.value); setOrgError('') }} placeholder="••••••••" className={`${inputCls} pr-10`}/>
-                <button type="button" onClick={() => setShowOrgPass(!showOrgPass)} className="absolute right-2.5 top-1/2 -translate-y-1/2 bg-transparent border-none cursor-pointer text-slate-400 flex">
-                  {showOrgPass ? <EyeOff size={15}/> : <Eye size={15}/>}
-                </button>
-              </div>
-            </div>
+            <div><label className={labelCls}>Tashkilot nomi</label><input value={orgName} onChange={e => { setOrgName(e.target.value); setOrgError('') }} placeholder="Masalan: IT bo'limi" className={inputCls} autoFocus/></div>
             {orgError && <div className="px-3 py-2 bg-rose-50 border border-rose-200 rounded-xl text-rose-600 text-[13px]">{orgError}</div>}
             <div className="flex gap-2 mt-1">
-              <button onClick={() => { setShowNewOrg(false); setOrgName(''); setOrgLogin(''); setOrgPass(''); setOrgError('') }}
+              <button onClick={() => { setShowNewOrg(false); setOrgName(''); setOrgError('') }}
                 className="flex-1 py-2.5 bg-slate-50 border border-slate-200 rounded-xl text-slate-600 text-[14px] cursor-pointer hover:bg-slate-100 transition-colors">Bekor</button>
               <button onClick={handleAddOrg} className="flex-1 py-2.5 bg-brand-600 border-none rounded-xl text-white text-[14px] font-semibold cursor-pointer hover:bg-brand-700 transition-colors">Yaratish</button>
             </div>

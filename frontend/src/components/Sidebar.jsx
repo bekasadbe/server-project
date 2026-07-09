@@ -1,16 +1,18 @@
-import { LayoutDashboard, Users, Clock, FileBarChart2, LogOut, Shield, ChevronRight, Radio, Settings2, Building2, KeyRound, CalendarDays, Stethoscope } from 'lucide-react'
+import { LayoutDashboard, Users, Clock, FileBarChart2, LogOut, Shield, ChevronRight, Radio, Settings2, Building2, KeyRound, CalendarDays, Stethoscope, Upload, Clock3 } from 'lucide-react'
 
 const menu = [
-  { key: 'dashboard',  label: 'Bugun',             icon: LayoutDashboard, roles: ['admin','kadrlar','kuzatuvchi'] },
-  { key: 'live',       label: 'Jonli lenta',       icon: Radio,           roles: ['admin'] },
-  { key: 'schedule',   label: 'Jadval',            icon: CalendarDays,    roles: ['kadrlar','kuzatuvchi'] },
-  { key: 'history',    label: 'Hisobot',           icon: Clock,           roles: ['kadrlar','kuzatuvchi'] },
-  { key: 'reports',    label: 'Statistika',        icon: FileBarChart2,   roles: ['kadrlar','kuzatuvchi'] },
-  { key: 'employees',  label: 'Xodimlar',          icon: Users,           roles: ['kadrlar'] },
-  { key: 'leaves',     label: "Kasallik & Ta'til", icon: Stethoscope,     roles: ['kadrlar'] },
-  { key: 'settings',   label: 'Sozlamalar',        icon: Settings2,       roles: ['kadrlar'] },
-  { key: 'admin',      label: 'Tashkilotlar',      icon: Building2,       roles: ['admin'] },
-  { key: 'accounts',   label: 'Akkauntlar',        icon: KeyRound,        roles: ['admin'] },
+  { key: 'dashboard',     label: 'Bugun',             icon: LayoutDashboard, roles: ['admin','kadrlar','kuzatuvchi'] },
+  { key: 'live',          label: 'Jonli lenta',       icon: Radio,           roles: ['admin'] },
+  { key: 'schedule',      label: 'Jadval',            icon: CalendarDays,    roles: ['kadrlar','kuzatuvchi'] },
+  { key: 'history',       label: 'Hisobot',           icon: Clock,           roles: ['kadrlar','kuzatuvchi'] },
+  { key: 'reports',       label: 'Statistika',        icon: FileBarChart2,   roles: ['kadrlar','kuzatuvchi'] },
+  { key: 'employees',     label: 'Xodimlar',          icon: Users,           roles: ['kadrlar'] },
+  { key: 'workSchedule',  label: 'Ish grafigi',       icon: Clock3,          roles: ['admin','kadrlar'] },
+  { key: 'leaves',        label: "Kasallik & Ta'til", icon: Stethoscope,     roles: ['kadrlar'] },
+  { key: 'settings',      label: 'Sozlamalar',        icon: Settings2,       roles: ['kadrlar'] },
+  { key: 'admin',         label: 'Tashkilotlar',      icon: Building2,       roles: ['admin'] },
+  { key: 'accounts',      label: 'Akkauntlar',        icon: KeyRound,        roles: ['admin'] },
+  { key: 'import',        label: 'CSV Import',        icon: Upload,          roles: ['admin'] },
 ]
 
 export default function Sidebar({ current, onChange, user, onLogout }) {

@@ -74,43 +74,44 @@ export default function Leaves({ employees = [], groups = [] }) {
   return (
     <div>
       {/* Header */}
-      <div className="flex items-center justify-between mb-6 flex-wrap gap-3">
+      <div className="flex items-center justify-between mb-5 flex-wrap gap-3">
         <div>
-          <h1 className="flex items-center gap-2.5 text-[22px] font-bold text-slate-900 m-0">
-            <Stethoscope size={22} className="text-purple-600"/> Kasallik & Ta'tillar
-          </h1>
-          <p className="text-[13px] text-slate-400 mt-1 mb-0">Xodimlarni kasallik va ta'til davrlarini boshqarish</p>
+          <h1 className="text-[19px] font-bold text-slate-900 m-0">Kasallik & Ta'tillar</h1>
+          <p className="text-[13px] text-slate-400 mt-0.5 mb-0">Xodimlarni kasallik va ta'til davrlarini boshqarish</p>
         </div>
         <button onClick={() => setShowAdd(true)}
-          className="flex items-center gap-1.5 px-4 py-2.5 bg-purple-600 border-none rounded-xl text-white text-[14px] font-semibold cursor-pointer hover:bg-purple-700 transition-colors">
-          <Plus size={16}/> Qo'shish
+          className="flex items-center gap-1.5 px-4 py-2 bg-brand-600 border-none rounded-lg text-white text-[13px] font-semibold cursor-pointer hover:bg-brand-700 transition-colors">
+          <Plus size={15}/> Qo'shish
         </button>
       </div>
 
       {/* Filters */}
-      <div className="flex gap-2.5 mb-5 flex-wrap items-center">
-        <div className="flex items-center gap-2 px-4 py-2 bg-purple-50 border border-purple-200 rounded-xl">
-          <Stethoscope size={14} className="text-purple-600"/>
-          <span className="text-[13px] font-bold text-purple-600">{sickCount} kasallik</span>
+      <div className="flex gap-2.5 mb-4 flex-wrap items-center">
+        <div className="flex items-center gap-1.5 px-3.5 py-2 bg-white border border-slate-200 rounded-lg">
+          <span className="w-2 h-2 rounded-full" style={{ background: LEAVE_TYPES[0].color }}/>
+          <span className="text-[13px] text-slate-600">{sickCount} kasallik</span>
         </div>
-        <div className="flex items-center gap-2 px-4 py-2 bg-cyan-50 border border-cyan-200 rounded-xl">
-          <Palmtree size={14} className="text-cyan-600"/>
-          <span className="text-[13px] font-bold text-cyan-600">{vacCount} ta'til</span>
+        <div className="flex items-center gap-1.5 px-3.5 py-2 bg-white border border-slate-200 rounded-lg">
+          <span className="w-2 h-2 rounded-full" style={{ background: LEAVE_TYPES[1].color }}/>
+          <span className="text-[13px] text-slate-600">{vacCount} ta'til</span>
         </div>
         <select value={month} onChange={e => setMonth(e.target.value)}
-          className="px-3 py-2 border border-slate-200 rounded-xl bg-white text-[13px] text-slate-700 cursor-pointer outline-none">
+          className="px-3 py-2 border border-slate-200 rounded-lg bg-white text-[13px] text-slate-700 cursor-pointer outline-none">
           {months.map(m => <option key={m} value={m}>{m}</option>)}
         </select>
         <div className="relative flex-1 min-w-[180px]">
           <Search size={14} className="absolute left-3 top-1/2 -translate-y-1/2 text-slate-400"/>
           <input placeholder="Xodim nomi..." value={search} onChange={e => setSearch(e.target.value)}
-            className="w-full py-2 pl-9 pr-3 border border-slate-200 rounded-xl text-[13px] outline-none focus:border-brand-400 transition-colors bg-white"/>
+            className="w-full py-2 pl-9 pr-3 border border-slate-200 rounded-lg text-[13px] outline-none focus:border-brand-400 transition-colors bg-white"/>
         </div>
       </div>
 
+      <div className="text-[11px] font-semibold text-slate-400 tracking-wide uppercase px-1 mb-2">Ro'yxat</div>
+
       {/* Table */}
-      <div className="bg-white rounded-2xl border border-slate-100 shadow-card overflow-hidden">
-        <table className="w-full border-collapse">
+      <div className="bg-white rounded-xl border border-slate-200 overflow-hidden">
+        <div className="overflow-x-auto">
+        <table className="w-full border-collapse" style={{minWidth:720}}>
           <thead>
             <tr className="bg-slate-50">
               {['Xodim', 'Tashkilot', 'Turi', 'Boshlanish', 'Tugash', 'Kun', 'Izoh', ''].map(h => (
@@ -127,23 +128,22 @@ export default function Leaves({ employees = [], groups = [] }) {
               const ti   = typeInfo(l.leave_type)
               const days = Math.round((new Date(l.end_date) - new Date(l.start_date)) / 86400000) + 1
               return (
-                <tr key={l.id} className="border-t border-slate-50 hover:bg-slate-50/50 transition-colors">
-                  <td className="px-4 py-2.5">
-                    <div className="text-[14px] font-medium text-slate-800">{getEmpName(l.employee_id)}</div>
+                <tr key={l.id} className="border-t border-slate-100 hover:bg-slate-50/50 transition-colors">
+                  <td className="px-4 py-3">
+                    <div className="text-[13.5px] font-medium text-slate-700">{getEmpName(l.employee_id)}</div>
                     {getEmpLav(l.employee_id) && <div className="text-[11px] text-slate-400">{getEmpLav(l.employee_id)}</div>}
                   </td>
-                  <td className="px-4 py-2.5 text-[12px] text-slate-500">{getGrpName(l.employee_id)}</td>
-                  <td className="px-4 py-2.5">
-                    <span className="inline-flex items-center gap-1 px-2.5 py-1 rounded-full text-[12px] font-semibold border"
-                      style={{ background: ti.bg, color: ti.color, borderColor: ti.border }}>
-                      <ti.icon size={11}/> {ti.label}
+                  <td className="px-4 py-3 text-[12px] text-slate-400">{getGrpName(l.employee_id)}</td>
+                  <td className="px-4 py-3">
+                    <span className="inline-flex items-center gap-1.5 text-[12px] font-medium" style={{ color: ti.color }}>
+                      <span className="w-1.5 h-1.5 rounded-full" style={{ background: ti.color }}/> {ti.label}
                     </span>
                   </td>
-                  <td className="px-4 py-2.5 text-[13px] text-slate-500 font-mono">{l.start_date}</td>
-                  <td className="px-4 py-2.5 text-[13px] text-slate-500 font-mono">{l.end_date}</td>
-                  <td className="px-4 py-2.5 text-[13px] font-bold" style={{ color: ti.color }}>{days} kun</td>
-                  <td className="px-4 py-2.5 text-[12px] text-slate-400">{l.note || '—'}</td>
-                  <td className="px-4 py-2.5">
+                  <td className="px-4 py-3 text-[13px] text-slate-500 font-mono">{l.start_date}</td>
+                  <td className="px-4 py-3 text-[13px] text-slate-500 font-mono">{l.end_date}</td>
+                  <td className="px-4 py-3 text-[13px] font-semibold text-slate-600">{days} kun</td>
+                  <td className="px-4 py-3 text-[12px] text-slate-400">{l.note || '—'}</td>
+                  <td className="px-4 py-3">
                     <button onClick={() => handleDelete(l.id)}
                       className="bg-transparent border-none cursor-pointer text-slate-300 hover:text-red-500 transition-colors p-1">
                       <Trash2 size={15}/>
@@ -154,6 +154,7 @@ export default function Leaves({ employees = [], groups = [] }) {
             })}
           </tbody>
         </table>
+        </div>
       </div>
 
       {/* Add Modal */}
@@ -205,7 +206,7 @@ export default function Leaves({ employees = [], groups = [] }) {
                 Bekor
               </button>
               <button onClick={handleAdd} disabled={!newEmp || saving}
-                className={`flex-[2] py-2.5 border-none rounded-xl text-white text-[14px] font-semibold transition-colors ${!newEmp || saving ? 'bg-slate-200 text-slate-400 cursor-not-allowed' : 'bg-purple-600 cursor-pointer hover:bg-purple-700'}`}>
+                className={`flex-[2] py-2.5 border-none rounded-xl text-white text-[14px] font-semibold transition-colors ${!newEmp || saving ? 'bg-slate-200 text-slate-400 cursor-not-allowed' : 'bg-brand-600 cursor-pointer hover:bg-brand-700'}`}>
                 {saving ? 'Saqlanmoqda…' : 'Saqlash'}
               </button>
             </div>

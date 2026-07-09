@@ -87,9 +87,19 @@ def init_db():
                 name     TEXT NOT NULL,
                 group_id TEXT,
                 lavozim  TEXT DEFAULT '',
+                work_start    TEXT DEFAULT NULL,
+                work_finish   TEXT DEFAULT NULL,
+                work_begin    TEXT DEFAULT NULL,
+                grace_minutes INTEGER DEFAULT NULL,
                 FOREIGN KEY (group_id) REFERENCES groups(id)
             )
         ''')
+        # Eski bazaga xodim-shaxsiy ish grafigi ustunlari (agar yo'q bo'lsa)
+        for col in ['work_start', 'work_finish', 'work_begin', 'grace_minutes']:
+            try:
+                conn.execute(f"ALTER TABLE employees ADD COLUMN {col} TEXT DEFAULT NULL")
+            except Exception:
+                pass
         # events jadvaliga direction ustuni qo'shamiz (agar yo'q bo'lsa)
         conn.execute('''
             CREATE TABLE IF NOT EXISTS events (
@@ -165,7 +175,8 @@ def get_recent_events(limit=50):
 
 
 def get_attendance(date_str):
-    """Bir kun uchun: birinchi kirish (work_begin dan keyin) + oxirgi chiqish"""
+    """Bir kun uchun: birinchi kirish (work_begin dan keyin) + oxirgi chiqish.
+    Xodimning shaxsiy ish grafigi bo'lsa, guruh sozlamasidan ustun turadi (COALESCE)."""
     with get_conn() as conn:
         rows = conn.execute('''
             SELECT
@@ -173,9 +184,16 @@ def get_attendance(date_str):
                 emp.name,
                 emp.group_id,
                 emp.lavozim,
+                COALESCE(emp.work_start, g.work_start, '09:00')     as work_start,
+                COALESCE(emp.work_finish, g.work_finish, '18:00')   as work_finish,
+                COALESCE(emp.work_begin, g.work_begin, '06:00')     as work_begin,
+                COALESCE(emp.grace_minutes, g.grace_minutes, 0)     as grace_minutes,
+                CASE WHEN emp.work_start IS NOT NULL OR emp.work_finish IS NOT NULL
+                      OR emp.work_begin IS NOT NULL OR emp.grace_minutes IS NOT NULL
+                     THEN 1 ELSE 0 END as has_custom_schedule,
                 MIN(CASE
                     WHEN e.direction = 'in'
-                     AND time(e.event_time) >= COALESCE(g.work_begin, '06:00')
+                     AND time(e.event_time) >= COALESCE(emp.work_begin, g.work_begin, '06:00')
                     THEN e.event_time
                 END) as first_in,
                 MAX(e.event_time) as last_out
@@ -279,6 +297,17 @@ def update_employee(emp_id, name, group_id, lavozim=''):
         conn.execute(
             'UPDATE employees SET name=?, group_id=?, lavozim=? WHERE id=?',
             (name, group_id, lavozim, emp_id)
+        )
+        conn.commit()
+
+
+def update_employee_schedule(emp_id, work_start=None, work_finish=None, work_begin=None, grace_minutes=None):
+    """Xodimning shaxsiy ish grafigi — None bo'lsa guruh sozlamasi ishlatiladi"""
+    with get_conn() as conn:
+        conn.execute(
+            'UPDATE employees SET work_start=?, work_finish=?, work_begin=?, grace_minutes=? WHERE id=?',
+            (work_start, work_finish, work_begin,
+             None if grace_minutes in (None, '') else int(grace_minutes), emp_id)
         )
         conn.commit()
 

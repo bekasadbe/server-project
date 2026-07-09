@@ -1,6 +1,17 @@
 import { useState } from 'react'
 import { Users, Search, Building2, Pencil, Trash2 } from 'lucide-react'
 
+const AVATAR_COLORS = ['#2B6CB0','#7c3aed','#0f766e','#b45309','#be123c','#0891b2','#4338ca']
+function Avatar({ name }) {
+  const initials = (name || '?').split(' ').map(w => w[0]).slice(0,2).join('').toUpperCase()
+  const bg = AVATAR_COLORS[(name || '').charCodeAt(0) % AVATAR_COLORS.length]
+  return (
+    <div className="w-8 h-8 rounded-full flex items-center justify-center text-white font-bold text-[12px] shrink-0" style={{ background: bg }}>
+      {initials}
+    </div>
+  )
+}
+
 export default function Employees({ employees = [], groups = [], onUpdateEmployee, onDeleteEmployee, readonly = false }) {
   const [search, setSearch]       = useState('')
   const [orgFilter, setOrgFilter] = useState('all')
@@ -36,12 +47,10 @@ export default function Employees({ employees = [], groups = [], onUpdateEmploye
   return (
     <div>
       {/* Header */}
-      <div className="flex items-center justify-between mb-6">
+      <div className="flex items-center justify-between mb-5">
         <div>
-          <h1 className="flex items-center gap-2.5 text-[22px] font-bold text-slate-900 m-0">
-            <Users size={22} className="text-brand-600"/> Xodimlar
-          </h1>
-          <p className="text-[13px] text-slate-400 mt-1 mb-0">Jami {employees.length} ta xodim</p>
+          <h1 className="text-[19px] font-bold text-slate-900 m-0">Xodimlar</h1>
+          <p className="text-[13px] text-slate-400 mt-0.5 mb-0">Jami {employees.length} ta xodim</p>
         </div>
       </div>
 
@@ -65,8 +74,9 @@ export default function Employees({ employees = [], groups = [], onUpdateEmploye
       </div>
 
       {/* Table */}
-      <div className="bg-white rounded-2xl border border-slate-100 shadow-card overflow-hidden">
-        <table className="w-full border-collapse">
+      <div className="bg-white rounded-xl border border-slate-200 overflow-hidden">
+        <div className="overflow-x-auto">
+        <table className="w-full border-collapse" style={{minWidth:560}}>
           <thead>
             <tr className="bg-slate-50">
               <th className="px-4 py-2.5 text-left text-[12px] text-slate-400 font-normal">Ism Familiya</th>
@@ -81,9 +91,7 @@ export default function Employees({ employees = [], groups = [], onUpdateEmploye
               <tr key={emp.id} className="border-t border-slate-50 hover:bg-slate-50/50 transition-colors">
                 <td className="px-4 py-2.5">
                   <div className="flex items-center gap-2.5">
-                    <div className="w-8 h-8 rounded-full bg-gradient-to-br from-brand-600 to-purple-600 flex items-center justify-center text-[13px] font-bold text-white shrink-0">
-                      {emp.name[0]}
-                    </div>
+                    <Avatar name={emp.name}/>
                     <span className="text-[14px] font-medium text-slate-800">{emp.name}</span>
                   </div>
                 </td>
@@ -111,6 +119,7 @@ export default function Employees({ employees = [], groups = [], onUpdateEmploye
             )}
           </tbody>
         </table>
+        </div>
       </div>
 
       {/* Edit Modal */}

@@ -8,13 +8,55 @@ import History from './pages/History'
 import Reports from './pages/Reports'
 import AdminPanel from './pages/AdminPanel'
 import Accounts from './pages/Accounts'
+import Import from './pages/Import'
 import Jadvallar from './pages/Jadvallar'
 import Leaves from './pages/Leaves'
+import WorkSchedule from './pages/WorkSchedule'
 import Login from './pages/Login'
 import { getUser, logout } from './auth'
 
 import { apiFetch } from './config'
 
+function SplashScreen() {
+  return (
+    <div style={{
+      position: 'fixed', inset: 0, display: 'flex', flexDirection: 'column',
+      alignItems: 'center', justifyContent: 'center',
+      background: 'linear-gradient(135deg, #1a56db 0%, #1e429f 100%)',
+      zIndex: 9999,
+    }}>
+      {/* Logo */}
+      <div style={{ display: 'flex', alignItems: 'center', gap: 14, marginBottom: 36 }}>
+        <svg width="48" height="48" viewBox="0 0 48 48" fill="none">
+          <circle cx="24" cy="24" r="24" fill="rgba(255,255,255,0.15)"/>
+          <path d="M13 25L20 32L35 17" stroke="white" strokeWidth="3.5" strokeLinecap="round" strokeLinejoin="round"/>
+        </svg>
+        <div>
+          <div style={{ color: 'white', fontSize: 22, fontWeight: 700, letterSpacing: '-0.5px', lineHeight: 1.1 }}>Davomatlar.uz</div>
+          <div style={{ color: 'rgba(255,255,255,0.6)', fontSize: 12, marginTop: 2 }}>Boshqaruv tizimi</div>
+        </div>
+      </div>
+
+      {/* Animated dots */}
+      <div style={{ display: 'flex', gap: 8 }}>
+        {[0, 1, 2].map(i => (
+          <div key={i} style={{
+            width: 8, height: 8, borderRadius: '50%',
+            background: 'rgba(255,255,255,0.7)',
+            animation: `splashDot 1.2s ease-in-out ${i * 0.2}s infinite`,
+          }}/>
+        ))}
+      </div>
+
+      <style>{`
+        @keyframes splashDot {
+          0%, 80%, 100% { transform: scale(0.6); opacity: 0.4; }
+          40% { transform: scale(1); opacity: 1; }
+        }
+      `}</style>
+    </div>
+  )
+}
 
 export default function App() {
   const [user, setUser]           = useState(getUser)
@@ -23,6 +65,8 @@ export default function App() {
   const [groups, setGroups]             = useState([])
   const [accounts, setAccounts]         = useState([])
   const [settingsDirty, setSettingsDirty] = useState(false)
+  const [sidebarOpen, setSidebarOpen]     = useState(false)
+  const [splashing, setSplashing]         = useState(false)
 
   useEffect(() => { if (user) { loadData(); setPage('dashboard') } }, [user])
 
@@ -39,7 +83,12 @@ export default function App() {
     } catch {}
   }
 
-  if (!user) return <Login onLogin={u => setUser(u)} />
+  if (splashing) return <SplashScreen />
+
+  if (!user) return <Login onLogin={u => {
+    setSplashing(true)
+    setTimeout(() => { setUser(u); setSplashing(false) }, 1800)
+  }} />
 
   const handleLogout = () => { logout(); setUser(null) }
 
@@ -119,6 +168,9 @@ export default function App() {
     schedule:  <Jadvallar  groups={visibleGrps} employees={visibleEmps} />,
     employees: <Employees  employees={visibleEmps} groups={visibleGrps} onUpdateEmployee={isViewer ? null : updateEmployee} onDeleteEmployee={isViewer ? null : deleteEmployee} readonly={isViewer} />,
     reports:   <Reports    groups={visibleGrps} />,
+    ...(!isViewer ? {
+      workSchedule: <WorkSchedule employees={visibleEmps} groups={visibleGrps} onReload={loadData} />
+    } : {}),
     ...(!isViewer && user.role !== 'admin' ? {
       settings: <Settings group={visibleGrps[0]} onUpdateGroup={updateGroup} onDirtyChange={setSettingsDirty} />,
       leaves: <Leaves employees={visibleEmps} groups={visibleGrps} />
@@ -139,22 +191,46 @@ export default function App() {
         groups={groups}
         accounts={accounts}
         onReload={loadData}
-      />
+      />,
+      import: <Import />
     } : {})
   }
 
   return (
     <div className="flex h-screen bg-slate-50 text-slate-900 overflow-hidden">
-      <Sidebar current={page} onChange={(p) => {
-        if (page === 'settings' && settingsDirty) {
-          if (!window.confirm("Saqlanmagan o'zgarishlar bor. Chiqib ketasizmi?")) return
-        }
-        setSettingsDirty(false)
-        setPage(p)
-      }} user={user} onLogout={handleLogout} />
-      <main className="flex-1 overflow-y-auto px-8 py-7 bg-slate-50">
-        {pages[page] ?? pages['dashboard']}
-      </main>
+      {/* Mobile overlay */}
+      {sidebarOpen && (
+        <div className="fixed inset-0 bg-slate-900/40 z-30 md:hidden" onClick={() => setSidebarOpen(false)}/>
+      )}
+
+      {/* Sidebar */}
+      <div className={`fixed inset-y-0 left-0 z-40 transition-transform duration-300 md:relative md:translate-x-0 md:z-auto ${sidebarOpen ? 'translate-x-0' : '-translate-x-full'}`}>
+        <Sidebar current={page} onChange={(p) => {
+          if (page === 'settings' && settingsDirty) {
+            if (!window.confirm("Saqlanmagan o'zgarishlar bor. Chiqib ketasizmi?")) return
+          }
+          setSettingsDirty(false)
+          setPage(p)
+          setSidebarOpen(false)
+        }} user={user} onLogout={handleLogout} />
+      </div>
+
+      {/* Main */}
+      <div className="flex-1 flex flex-col overflow-hidden">
+        {/* Mobile topbar */}
+        <div className="flex items-center gap-3 px-4 py-3 bg-white border-b border-slate-100 md:hidden">
+          <button onClick={() => setSidebarOpen(true)}
+            className="p-2 rounded-xl bg-slate-50 border border-slate-200 text-slate-600 cursor-pointer">
+            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round">
+              <line x1="3" y1="6" x2="21" y2="6"/><line x1="3" y1="12" x2="21" y2="12"/><line x1="3" y1="18" x2="21" y2="18"/>
+            </svg>
+          </button>
+          <span className="text-[15px] font-bold text-brand-600">Davomatlar.uz</span>
+        </div>
+        <main className="flex-1 overflow-y-auto px-4 py-5 md:px-8 md:py-7 bg-slate-50">
+          {pages[page] ?? pages['dashboard']}
+        </main>
+      </div>
     </div>
   )
 }
