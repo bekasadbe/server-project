@@ -9,7 +9,7 @@ from database import (
     get_employees, get_groups,
     add_employee, update_employee, delete_employee, update_employee_schedule,
     add_group, update_group_settings, delete_group,
-    get_accounts, add_account, update_account, delete_account,
+    get_accounts, add_account, update_account, delete_account, get_account_by_telegram_id,
     save_event, get_direction,
     hash_password, verify_password, is_hashed, get_conn,
     get_leaves, add_leave, delete_leave
@@ -207,8 +207,9 @@ def account_update(aid):
         hashed = hash_password(plain) if not is_hashed(plain) else plain
     else:
         hashed = '[[keep]]'
-    role = data.get('role', 'kadrlar')
-    update_account(aid, name, login, hashed, linked, role)
+    role        = data.get('role', 'kadrlar')
+    telegram_id = data.get('telegram_id', '').strip() or None
+    update_account(aid, name, login, hashed, linked, role, telegram_id)
     return jsonify({'ok': True})
 
 
@@ -280,6 +281,23 @@ def events_push():
     arrow = '→ KIRDI' if direction == 'in' else '← CHIQDI'
     print(f"[{datetime.now().strftime('%H:%M:%S')}] PUSH {arrow} | {employee_id} | {event_time} | {camera_ip}")
     return jsonify({'ok': True})
+
+
+@app.route('/auth/telegram', methods=['GET'])
+def auth_telegram():
+    tg_id = request.args.get('tg_id', '').strip()
+    if not tg_id:
+        return jsonify({'ok': False, 'error': 'tg_id kerak'}), 400
+    acc = get_account_by_telegram_id(tg_id)
+    if not acc:
+        return jsonify({'ok': False, 'error': 'Telegram ID biriktirilmagan'}), 404
+    linked = [x.strip() for x in (acc.get('linked_groups') or '').split(',') if x.strip()]
+    return jsonify({'ok': True, 'user': {
+        'username':      acc['login'],
+        'role':          acc.get('role', 'kadrlar'),
+        'linkedGroupIds': linked,
+        'name':          acc.get('name', ''),
+    }})
 
 
 @app.route('/auth', methods=['POST'])

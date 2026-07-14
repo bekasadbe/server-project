@@ -85,10 +85,27 @@ export default function App() {
 
   if (splashing) return <SplashScreen />
 
-  if (!user) return <Login onLogin={u => {
-    setSplashing(true)
-    setTimeout(() => { setUser(u); setSplashing(false) }, 1800)
-  }} />
+  if (!user) {
+    // Telegram bot orqali kelganda: ?tg_id=XXXXX → avtomatik login
+    const tgId = new URLSearchParams(window.location.search).get('tg_id')
+    if (tgId) {
+      fetch(`/api/auth/telegram?tg_id=${tgId}`)
+        .then(r => r.json())
+        .then(data => {
+          if (data.ok && data.user) {
+            localStorage.setItem('user', JSON.stringify(data.user))
+            setSplashing(true)
+            setTimeout(() => { setUser(data.user); setSplashing(false) }, 1200)
+          }
+        })
+        .catch(() => {})
+      return <SplashScreen />
+    }
+    return <Login onLogin={u => {
+      setSplashing(true)
+      setTimeout(() => { setUser(u); setSplashing(false) }, 1800)
+    }} />
+  }
 
   const handleLogout = () => { logout(); setUser(null) }
 

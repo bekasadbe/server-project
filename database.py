@@ -66,10 +66,14 @@ def init_db():
                 role          TEXT DEFAULT 'kadrlar'
             )
         ''')
-        try:
-            conn.execute("ALTER TABLE accounts ADD COLUMN role TEXT DEFAULT 'kadrlar'")
-        except Exception:
-            pass
+        for col, default in [
+            ("role",        "'kadrlar'"),
+            ("telegram_id", "NULL"),
+        ]:
+            try:
+                conn.execute(f"ALTER TABLE accounts ADD COLUMN {col} TEXT DEFAULT {default}")
+            except Exception:
+                pass
 
         # Eski groups jadvalidagi login/password ma'lumotlarini accounts ga ko'chirish
         try:
@@ -256,19 +260,27 @@ def add_account(aid, name, login, password, linked_groups='', role='kadrlar'):
         conn.commit()
 
 
-def update_account(aid, name, login, password, linked_groups='', role='kadrlar'):
+def update_account(aid, name, login, password, linked_groups='', role='kadrlar', telegram_id=None):
     with get_conn() as conn:
         if password and password != '[[keep]]':
             conn.execute(
-                'UPDATE accounts SET name=?, login=?, password=?, linked_groups=?, role=? WHERE id=?',
-                (name, login, password, linked_groups, role, aid)
+                'UPDATE accounts SET name=?, login=?, password=?, linked_groups=?, role=?, telegram_id=? WHERE id=?',
+                (name, login, password, linked_groups, role, telegram_id, aid)
             )
         else:
             conn.execute(
-                'UPDATE accounts SET name=?, login=?, linked_groups=?, role=? WHERE id=?',
-                (name, login, linked_groups, role, aid)
+                'UPDATE accounts SET name=?, login=?, linked_groups=?, role=?, telegram_id=? WHERE id=?',
+                (name, login, linked_groups, role, telegram_id, aid)
             )
         conn.commit()
+
+
+def get_account_by_telegram_id(tg_id):
+    with get_conn() as conn:
+        row = conn.execute(
+            'SELECT * FROM accounts WHERE telegram_id=?', (str(tg_id),)
+        ).fetchone()
+    return dict(row) if row else None
 
 
 def delete_account(aid):

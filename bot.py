@@ -28,7 +28,7 @@ from telegram.ext import (
 BOT_TOKEN  = os.environ.get('BOT_TOKEN', '8970318623:AAHWKODAnSnUcRIvxqHCD3iSEsgrv9Gn6WM')
 API_URL    = os.environ.get('API_URL',   'http://api:8001')
 API_TOKEN  = os.environ.get('API_TOKEN', 'Dav0mat@API#2026!')
-WEB_URL    = 'https://davomatlar.uz?tg=1'
+WEB_URL    = 'https://davomatlar.uz'
 
 # Bildirishnoma yuboriladigan chat IDlar (admin panel dan boshqarish mumkin)
 # Hozircha env orqali sozlanadi: CHAT_IDS="-100123456,-100789012"
@@ -63,16 +63,17 @@ def now_uzb():
     return datetime.now(TZ)
 
 # ── PASTKI PANEL TUGMALARI (har doim ko'rinadi) ───────────────────────────────
-def main_keyboard():
+def main_keyboard(tg_id=None):
+    url = f'{WEB_URL}?tg_id={tg_id}' if tg_id else f'{WEB_URL}?tg=1'
     return ReplyKeyboardMarkup(
-        [[KeyboardButton('🌐 Platformani ochish', web_app=WebAppInfo(url=WEB_URL))]],
+        [[KeyboardButton('🌐 Platformani ochish', web_app=WebAppInfo(url=url))]],
         resize_keyboard=True,
     )
 
-# Xabarlar ichidagi inline tugma (bildirishnomalar uchun)
-def open_button():
+def open_button(tg_id=None):
+    url = f'{WEB_URL}?tg_id={tg_id}' if tg_id else WEB_URL
     return InlineKeyboardMarkup([[
-        InlineKeyboardButton('🌐 Platformani ochish', url=WEB_URL)
+        InlineKeyboardButton('🌐 Platformani ochish', url=url)
     ]])
 
 # ── DAVOMAT MA'LUMOTINI TAHLIL QILISH ────────────────────────────────────────
@@ -108,7 +109,8 @@ def get_today_stats():
 
 # ── BUYRUQLAR ─────────────────────────────────────────────────────────────────
 async def cmd_start(update: Update, ctx: ContextTypes.DEFAULT_TYPE):
-    name = update.effective_user.first_name or 'Salom'
+    name  = update.effective_user.first_name or 'Salom'
+    tg_id = update.effective_user.id
     text = (
         f'👋 Salom, {name}!\n\n'
         f'🏢 <b>Davomatlar.uz</b> — xodimlar davomat tizimi\n\n'
@@ -117,7 +119,7 @@ async def cmd_start(update: Update, ctx: ContextTypes.DEFAULT_TYPE):
         f'• /kelmadi — kelmagan xodimlar ro\'yxati\n\n'
         f'⬇️ Pastdagi tugmani bosib platformani oching:'
     )
-    await update.message.reply_text(text, parse_mode='HTML', reply_markup=main_keyboard())
+    await update.message.reply_text(text, parse_mode='HTML', reply_markup=main_keyboard(tg_id))
 
 async def handle_webapp(update: Update, ctx: ContextTypes.DEFAULT_TYPE):
     """Web app ochilganda qayta ko'rsatish"""

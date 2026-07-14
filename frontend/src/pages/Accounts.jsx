@@ -45,8 +45,9 @@ export default function Accounts({ groups, accounts, onReload }) {
   const [editPass, setEditPass]     = useState('')
   const [editPassShow, setEditPassShow] = useState(false)
   const [editLinked, setEditLinked] = useState([])
-  const [editRole, setEditRole]     = useState('kadrlar')
-  const [editError, setEditError]   = useState('')
+  const [editRole, setEditRole]         = useState('kadrlar')
+  const [editTgId, setEditTgId]         = useState('')
+  const [editError, setEditError]       = useState('')
 
   const [showAdd, setShowAdd]     = useState(false)
   const [newName, setNewName]     = useState('')
@@ -61,13 +62,13 @@ export default function Accounts({ groups, accounts, onReload }) {
   const openEdit = (acc) => {
     setEditAcc(acc); setEditName(acc.name); setEditLogin(acc.login || ''); setEditPass('')
     setEditPassShow(false); setEditLinked((acc.linked_groups || '').split(',').filter(Boolean))
-    setEditRole(acc.role || 'kadrlar'); setEditError(''); setShowEdit(true)
+    setEditRole(acc.role || 'kadrlar'); setEditTgId(acc.telegram_id || ''); setEditError(''); setShowEdit(true)
   }
 
   const handleSaveEdit = async () => {
     if (!editLogin.trim()) return setEditError('Login kiriting')
     try {
-      await apiFetch(`/accounts/${editAcc.id}`, { method: 'PUT', body: JSON.stringify({ name: editName.trim(), login: editLogin.trim(), password: editPass.trim() || '[[keep]]', linked_groups: editLinked, role: editRole }) })
+      await apiFetch(`/accounts/${editAcc.id}`, { method: 'PUT', body: JSON.stringify({ name: editName.trim(), login: editLogin.trim(), password: editPass.trim() || '[[keep]]', linked_groups: editLinked, role: editRole, telegram_id: editTgId.trim() || null }) })
       setShowEdit(false); onReload()
     } catch (e) { setEditError('Saqlashda xato: ' + (e?.message || String(e))) }
   }
@@ -186,6 +187,12 @@ export default function Accounts({ groups, accounts, onReload }) {
                 <LinkedCheckboxes selected={editLinked} setSelected={setEditLinked} groups={groups}/>
               </div>
               <div><label className={labelCls}>Rol</label><RoleButtons value={editRole} onChange={setEditRole}/></div>
+              <div className="border-t border-slate-100 pt-4">
+                <label className={labelCls}>Telegram ID <span className="font-normal text-slate-400">(ixtiyoriy)</span></label>
+                <input value={editTgId} onChange={e => setEditTgId(e.target.value)} placeholder="Masalan: 1889501628"
+                  className={inputCls}/>
+                <p className="text-[11px] text-slate-400 mt-1">Bot orqali ochilganda avtomatik login bo'ladi</p>
+              </div>
               {editError && <div className="px-3 py-2 bg-rose-50 border border-rose-200 rounded-xl text-rose-600 text-[13px]">{editError}</div>}
               <div className="flex gap-2 mt-1">
                 <button onClick={() => setShowEdit(false)} className="flex-1 py-2.5 bg-slate-50 border border-slate-200 rounded-xl text-slate-600 text-[14px] cursor-pointer hover:bg-slate-100 transition-colors">Bekor</button>
