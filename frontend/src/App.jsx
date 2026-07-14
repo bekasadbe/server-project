@@ -102,7 +102,7 @@ export default function App() {
         maxWidth: 320,
       }}>
         Sizning Telegram akkauntingiz hali tizimga biriktirilmagan.<br/><br/>
-        Iltimos, <b>admin</b> bilan bog'laning va Telegram ID ingizni ularga bering.
+        Iltimos, admin bilan bog'laning.
       </div>
       <div style={{ color: 'rgba(255,255,255,0.4)', fontSize: 12, marginTop: 32 }}>
         @davomatlaruzbot
