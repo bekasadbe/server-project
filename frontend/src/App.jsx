@@ -67,6 +67,7 @@ export default function App() {
   const [settingsDirty, setSettingsDirty] = useState(false)
   const [sidebarOpen, setSidebarOpen]     = useState(false)
   const [splashing, setSplashing]         = useState(false)
+  const [tgNotLinked, setTgNotLinked]     = useState(false)
 
   useEffect(() => { if (user) { loadData(); setPage('dashboard') } }, [user])
 
@@ -85,8 +86,31 @@ export default function App() {
 
   if (splashing) return <SplashScreen />
 
+  if (tgNotLinked) return (
+    <div style={{
+      position: 'fixed', inset: 0, display: 'flex', flexDirection: 'column',
+      alignItems: 'center', justifyContent: 'center', padding: '2rem',
+      background: 'linear-gradient(135deg, #1a56db 0%, #1e429f 100%)',
+    }}>
+      <div style={{ fontSize: 56, marginBottom: 24 }}>🔒</div>
+      <div style={{ color: 'white', fontSize: 20, fontWeight: 700, marginBottom: 12, textAlign: 'center' }}>
+        Kirish huquqi yo'q
+      </div>
+      <div style={{
+        background: 'rgba(255,255,255,0.12)', borderRadius: 16, padding: '20px 28px',
+        color: 'rgba(255,255,255,0.9)', fontSize: 15, textAlign: 'center', lineHeight: 1.6,
+        maxWidth: 320,
+      }}>
+        Sizning Telegram akkauntingiz hali tizimga biriktirilmagan.<br/><br/>
+        Iltimos, <b>admin</b> bilan bog'laning va Telegram ID ingizni ularga bering.
+      </div>
+      <div style={{ color: 'rgba(255,255,255,0.4)', fontSize: 12, marginTop: 32 }}>
+        @davomatlaruzbot
+      </div>
+    </div>
+  )
+
   if (!user) {
-    // Telegram bot orqali kelganda: ?tg_id=XXXXX → avtomatik login
     const tgId = new URLSearchParams(window.location.search).get('tg_id')
     if (tgId) {
       fetch(`/api/auth/telegram?tg_id=${tgId}`)
@@ -96,9 +120,11 @@ export default function App() {
             localStorage.setItem('user', JSON.stringify(data.user))
             setSplashing(true)
             setTimeout(() => { setUser(data.user); setSplashing(false) }, 1200)
+          } else {
+            setTgNotLinked(true)
           }
         })
-        .catch(() => {})
+        .catch(() => { setTgNotLinked(true) })
       return <SplashScreen />
     }
     return <Login onLogin={u => {
