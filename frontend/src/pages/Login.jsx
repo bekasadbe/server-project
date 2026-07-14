@@ -572,11 +572,11 @@ export default function Login({ onLogin }) {
       </section>
 
       {/* CTA */}
-      <section style={{ position:'relative', zIndex:10, background:'linear-gradient(135deg,#1a56db 0%,#1e429f 100%)', padding:'64px 40px', textAlign:'center' }}>
+      <section style={{ position:'relative', zIndex:10, background:'#fff', padding:'64px 40px', textAlign:'center' }}>
         <div style={{ maxWidth:'600px', margin:'0 auto' }}>
           <div style={{ fontSize:'40px', marginBottom:'16px' }}>🚀</div>
-          <h2 style={{ margin:'0 0 12px', fontSize:'28px', fontWeight:800, color:'#fff', letterSpacing:'-0.5px' }}>Bepul konsultatsiya oling</h2>
-          <p style={{ margin:'0 0 28px', fontSize:'15px', color:'rgba(255,255,255,0.6)', lineHeight:1.7 }}>
+          <h2 style={{ margin:'0 0 12px', fontSize:'28px', fontWeight:800, color:'#0f172a', letterSpacing:'-0.5px' }}>Bepul konsultatsiya oling</h2>
+          <p style={{ margin:'0 0 28px', fontSize:'15px', color:'#64748b', lineHeight:1.7 }}>
             Tashkilotingiz uchun qaysi tarif mos ekanini birgalikda aniqlaymiz. Basic paket 3-7 kunda ishga tushadi.
           </p>
           <div style={{ display:'flex', gap:'12px', justifyContent:'center', flexWrap:'wrap' }}>
@@ -584,7 +584,7 @@ export default function Login({ onLogin }) {
               onMouseEnter={e=>e.currentTarget.style.opacity='0.85'} onMouseLeave={e=>e.currentTarget.style.opacity='1'}>
               <Send size={16}/> Telegram orqali yozish
             </a>
-            <a href="tel:+998908738963" style={{ display:'inline-flex', alignItems:'center', gap:'8px', padding:'13px 28px', borderRadius:'13px', background:'rgba(255,255,255,0.1)', border:'1px solid rgba(255,255,255,0.2)', color:'#fff', fontSize:'15px', fontWeight:600, textDecoration:'none', transition:'opacity 0.2s' }}
+            <a href="tel:+998908738963" style={{ display:'inline-flex', alignItems:'center', gap:'8px', padding:'13px 28px', borderRadius:'13px', background:'#f1f5f9', border:'1px solid #e2e8f0', color:'#0f172a', fontSize:'15px', fontWeight:600, textDecoration:'none', transition:'opacity 0.2s' }}
               onMouseEnter={e=>e.currentTarget.style.opacity='0.8'} onMouseLeave={e=>e.currentTarget.style.opacity='1'}>
               <Phone size={16}/> +998 90-873-89-63
             </a>
