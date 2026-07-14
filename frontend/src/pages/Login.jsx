@@ -522,15 +522,6 @@ export default function Login({ onLogin }) {
                 ))}
               </div>
 
-              {gift && (
-                <div style={{ marginBottom:'14px', padding:'11px 13px', borderRadius:'13px', background:'rgba(255,255,255,0.08)', border:'1.5px solid rgba(255,255,255,0.15)', display:'flex', alignItems:'flex-start', gap:'9px' }}>
-                  <span style={{ fontSize:'18px', lineHeight:1, flexShrink:0 }}>🎁</span>
-                  <div style={{ fontSize:'12px', color:'rgba(255,255,255,0.75)', lineHeight:1.5 }}>
-                    6 oylik shartnoma tuzganda — Face ID qurilmasi <strong style={{ color:'#4ade80' }}>bepul beriladi</strong>
-                  </div>
-                </div>
-              )}
-
               <a href="https://t.me/davomatlaruz" target="_blank" rel="noreferrer" style={{
                 display:'block', width:'100%', padding:'13px', borderRadius:'13px', border: isBlue ? '1.5px solid rgba(255,255,255,0.3)' : 'none',
                 background: btnBg, color: btnColor, textAlign:'center',
