@@ -277,23 +277,23 @@ export default function Login({ onLogin }) {
       </main>
 
       {/* Platforma haqida — interaktiv */}
-      <section style={{ position:'relative', zIndex:10, background:'#0f172a', padding:'80px 40px 84px' }}>
+      <section style={{ position:'relative', zIndex:10, background:'#fff', padding:'80px 40px 84px' }}>
         <div style={{ maxWidth:'1200px', margin:'0 auto' }}>
           <div style={{ textAlign:'center', maxWidth:'700px', margin:'0 auto 56px' }}>
-            <div style={{ display:'inline-flex', alignItems:'center', gap:'8px', background:'rgba(129,140,248,0.12)', border:'1px solid rgba(129,140,248,0.3)', borderRadius:'50px', padding:'6px 18px', marginBottom:'20px' }}>
-              <span style={{ fontSize:'13px', color:'#a5b4fc', fontWeight:600 }}>Platforma haqida</span>
+            <div style={{ display:'inline-flex', alignItems:'center', gap:'8px', background:'#eef2ff', border:'1px solid #c7d2fe', borderRadius:'50px', padding:'6px 18px', marginBottom:'20px' }}>
+              <span style={{ fontSize:'13px', color:'#4f46e5', fontWeight:600 }}>Platforma haqida</span>
             </div>
-            <h2 style={{ margin:'0 0 16px', fontSize:'36px', fontWeight:800, color:'#fff', letterSpacing:'-0.8px' }}>
-              Davomatlar.uz <span style={{ color:'#818cf8' }}>nima qiladi?</span>
+            <h2 style={{ margin:'0 0 16px', fontSize:'36px', fontWeight:800, color:'#0f172a', letterSpacing:'-0.8px' }}>
+              Davomatlar.uz <span style={{ color:'#4f46e5' }}>nima qiladi?</span>
             </h2>
-            <p style={{ margin:0, fontSize:'15px', color:'rgba(255,255,255,0.5)', lineHeight:1.75 }}>
+            <p style={{ margin:0, fontSize:'15px', color:'#64748b', lineHeight:1.75 }}>
               Face ID kamera xodimni tanib oladi, vaqt serverga yoziladi, siz esa hammasini bitta ekranda — real vaqtda ko'rasiz. Quyidagi bo'limlarni bosib har biri qanday ishlashini ko'ring.
             </p>
           </div>
 
-          <div className="feature-showcase" style={{ display:'grid', gridTemplateColumns:'340px 1fr', gap:'0', background:'rgba(255,255,255,0.03)', border:'1px solid rgba(255,255,255,0.08)', borderRadius:'24px', overflow:'hidden', minHeight:'380px' }}>
+          <div className="feature-showcase" style={{ display:'grid', gridTemplateColumns:'340px 1fr', gap:'0', background:'#f8fafc', border:'1px solid #e2e8f0', borderRadius:'24px', overflow:'hidden', minHeight:'380px' }}>
             {/* Tab ro'yxati */}
-            <div style={{ borderRight:'1px solid rgba(255,255,255,0.08)', padding:'12px' }}>
+            <div style={{ borderRight:'1px solid #e2e8f0', padding:'12px' }}>
               {[
                 { icon: Clock,       title:'Kelish-ketish vaqti',   short:'Aniq vaqtni avtomatik qayd etadi' },
                 { icon: ShieldCheck, title:'Face ID aniqlash',      short:"Aldash imkonsiz, faqat o'zi kirsin" },
@@ -306,44 +306,44 @@ export default function Login({ onLogin }) {
                   style={{
                     display:'flex', alignItems:'center', gap:'14px', width:'100%', textAlign:'left',
                     padding:'16px 18px', borderRadius:'14px', border:'none', cursor:'pointer',
-                    background: activeFeature===i ? 'rgba(129,140,248,0.14)' : 'transparent',
+                    background: activeFeature===i ? '#eef2ff' : 'transparent',
                     transition:'background 0.2s', marginBottom:'2px',
                   }}
-                  onMouseEnter={e=>{ if(activeFeature!==i) e.currentTarget.style.background='rgba(255,255,255,0.04)' }}
+                  onMouseEnter={e=>{ if(activeFeature!==i) e.currentTarget.style.background='#f1f5f9' }}
                   onMouseLeave={e=>{ if(activeFeature!==i) e.currentTarget.style.background='transparent' }}
                 >
                   <div style={{ width:'38px', height:'38px', borderRadius:'11px', flexShrink:0, display:'flex', alignItems:'center', justifyContent:'center',
-                    background: activeFeature===i ? '#818cf8' : 'rgba(255,255,255,0.08)' }}>
-                    <Icon size={17} color={activeFeature===i ? '#0f172a' : 'rgba(255,255,255,0.6)'} strokeWidth={2}/>
+                    background: activeFeature===i ? '#4f46e5' : '#e2e8f0' }}>
+                    <Icon size={17} color={activeFeature===i ? '#fff' : '#64748b'} strokeWidth={2}/>
                   </div>
                   <div style={{ minWidth:0 }}>
-                    <div style={{ fontSize:'14px', fontWeight:600, color: activeFeature===i ? '#fff' : 'rgba(255,255,255,0.75)', marginBottom:'2px' }}>{title}</div>
-                    <div style={{ fontSize:'12px', color:'rgba(255,255,255,0.4)', whiteSpace:'nowrap', overflow:'hidden', textOverflow:'ellipsis' }}>{short}</div>
+                    <div style={{ fontSize:'14px', fontWeight:600, color: activeFeature===i ? '#0f172a' : '#334155', marginBottom:'2px' }}>{title}</div>
+                    <div style={{ fontSize:'12px', color:'#94a3b8', whiteSpace:'nowrap', overflow:'hidden', textOverflow:'ellipsis' }}>{short}</div>
                   </div>
                 </button>
               ))}
             </div>
 
             {/* Tafsilot paneli */}
-            <div style={{ padding:'44px 48px', display:'flex', flexDirection:'column', justifyContent:'center' }}>
+            <div style={{ padding:'44px 48px', display:'flex', flexDirection:'column', justifyContent:'center', background:'#fff' }}>
               {(() => {
                 const details = [
-                  { badge:'01 · Kelish-ketish', title:'Kelish-ketish vaqti aniq qayd etiladi', color:'#f87171', bg:'rgba(248,113,113,0.12)',
+                  { badge:'01 · Kelish-ketish', title:'Kelish-ketish vaqti aniq qayd etiladi', color:'#dc2626', bg:'#fef2f2',
                     text:"Xodim kirish joyidan o'tganda tizim daqiqasigacha aniq vaqtni qayd etadi. Kim qachon keldi, qachon ketdi — hammasi avtomatik, qog'oz jurnal kerak emas.",
                     points:['0.3 soniyada aniqlanadi', "Kechikish avtomatik hisoblanadi", "Ish boshlanish vaqti sozlanadi"] },
-                  { badge:'02 · Xavfsizlik', title:"Face ID — aldash imkonsiz", color:'#fb923c', bg:'rgba(251,146,60,0.12)',
+                  { badge:'02 · Xavfsizlik', title:"Face ID — aldash imkonsiz", color:'#ea580c', bg:'#fff7ed',
                     text:"Boshqa birovning kartasini yoki parolini ishlatib bo'lmaydi. Kamera aynan xodimning yuzini taniydi — shuning uchun har bir yozuv 100% ishonchli.",
                     points:['Karta yoki kod talab qilinmaydi', "Ko'zoynak, shapka bilan ham ishlaydi", "Har bir xodim faqat o'zi uchun"] },
-                  { badge:'03 · Dashboard', title:'Real vaqt boshqaruv paneli', color:'#818cf8', bg:'rgba(129,140,248,0.12)',
+                  { badge:'03 · Dashboard', title:'Real vaqt boshqaruv paneli', color:'#4f46e5', bg:'#eef2ff',
                     text:"Kadrlar va rahbar bir ekranda bugun kim keldi, kim kelmadi, kim kechikdi — hammasini ko'radi. Filtrlash va qidiruv bilan har qanday xodimni tez topasiz.",
                     points:['Jonli yangilanadi', 'Tashkilot bo\'yicha filtrlash', 'Kechikkanlar alohida ko\'rinadi'] },
-                  { badge:'04 · Hisobotlar', title:'Bir tugmada tayyor hisobot', color:'#34d399', bg:'rgba(52,211,153,0.12)',
+                  { badge:'04 · Hisobotlar', title:'Bir tugmada tayyor hisobot', color:'#059669', bg:'#f0fdf4',
                     text:"Kunlik, haftalik, oylik hisobotlar avtomatik shakllanadi. PDF formatda yuklab olish yoki chop etish — ish haqi hisob-kitobi uchun tayyor ma'lumot.",
                     points:['PDF eksport', 'Oylik statistika va reytinglar', "Ta'til va kasallik hisobga olinadi"] },
-                  { badge:'05 · Telegram', title:'Telegram orqali avtomatik xabar', color:'#38bdf8', bg:'rgba(56,189,248,0.12)',
+                  { badge:'05 · Telegram', title:'Telegram orqali avtomatik xabar', color:'#0284c7', bg:'#ecfeff',
                     text:"Har kuni ertalab kelmagan xodimlar ro'yxati Telegram ga avtomatik yuboriladi. Bot orqali istalgan joydan platformaga bir bosishda kirasiz.",
                     points:['Kunlik kelmaganlar ro\'yxati', "Bot orqali to'g'ridan-to'g'ri kirish", 'Parolsiz avtomatik login'] },
-                  { badge:'06 · Ko\'p filial', title:"Barcha tashkilotlar — bitta joydan", color:'#c084fc', bg:'rgba(192,132,252,0.12)',
+                  { badge:'06 · Ko\'p filial', title:"Barcha tashkilotlar — bitta joydan", color:'#9333ea', bg:'#faf5ff',
                     text:"Bir nechta filial yoki tashkilotingiz bo'lsa, har biri o'z ma'lumotini ko'radi, siz esa bitta akkauntdan hammasini nazorat qilasiz.",
                     points:['Filiallar aralashmaydi', "Har bir login o'ziga tegishlisini ko'radi", 'Markazlashgan boshqaruv'] },
                 ][activeFeature]
@@ -352,15 +352,15 @@ export default function Login({ onLogin }) {
                     <div style={{ display:'inline-block', background:details.bg, borderRadius:'50px', padding:'5px 14px', fontSize:'12px', fontWeight:700, color:details.color, marginBottom:'18px' }}>
                       {details.badge}
                     </div>
-                    <h3 style={{ margin:'0 0 14px', fontSize:'24px', fontWeight:800, color:'#fff', letterSpacing:'-0.4px' }}>{details.title}</h3>
-                    <p style={{ margin:'0 0 24px', fontSize:'14.5px', color:'rgba(255,255,255,0.6)', lineHeight:1.75, maxWidth:'480px' }}>{details.text}</p>
+                    <h3 style={{ margin:'0 0 14px', fontSize:'24px', fontWeight:800, color:'#0f172a', letterSpacing:'-0.4px' }}>{details.title}</h3>
+                    <p style={{ margin:'0 0 24px', fontSize:'14.5px', color:'#64748b', lineHeight:1.75, maxWidth:'480px' }}>{details.text}</p>
                     <div style={{ display:'flex', flexDirection:'column', gap:'10px' }}>
                       {details.points.map(p => (
                         <div key={p} style={{ display:'flex', alignItems:'center', gap:'10px' }}>
                           <div style={{ width:'18px', height:'18px', borderRadius:'50%', background:details.bg, display:'flex', alignItems:'center', justifyContent:'center', flexShrink:0 }}>
                             <Check size={10} color={details.color} strokeWidth={3}/>
                           </div>
-                          <span style={{ fontSize:'13.5px', color:'rgba(255,255,255,0.8)', fontWeight:500 }}>{p}</span>
+                          <span style={{ fontSize:'13.5px', color:'#334155', fontWeight:500 }}>{p}</span>
                         </div>
                       ))}
                     </div>
