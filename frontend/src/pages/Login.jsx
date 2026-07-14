@@ -280,11 +280,11 @@ export default function Login({ onLogin }) {
       <section style={{ position:'relative', zIndex:10, background:'#fff', padding:'80px 40px 84px' }}>
         <div style={{ maxWidth:'1200px', margin:'0 auto' }}>
           <div style={{ textAlign:'center', maxWidth:'700px', margin:'0 auto 56px' }}>
-            <div style={{ display:'inline-flex', alignItems:'center', gap:'8px', background:'#eef2ff', border:'1px solid #c7d2fe', borderRadius:'50px', padding:'6px 18px', marginBottom:'20px' }}>
-              <span style={{ fontSize:'13px', color:'#4f46e5', fontWeight:600 }}>Platforma haqida</span>
+            <div style={{ display:'inline-flex', alignItems:'center', gap:'8px', background:'#eff6ff', border:'1px solid #bfdbfe', borderRadius:'50px', padding:'6px 18px', marginBottom:'20px' }}>
+              <span style={{ fontSize:'13px', color:'#2563eb', fontWeight:600 }}>Platforma haqida</span>
             </div>
             <h2 style={{ margin:'0 0 16px', fontSize:'36px', fontWeight:800, color:'#0f172a', letterSpacing:'-0.8px' }}>
-              Davomatlar.uz <span style={{ color:'#4f46e5' }}>nima qiladi?</span>
+              Davomatlar.uz <span style={{ color:'#2563eb' }}>nima qiladi?</span>
             </h2>
             <p style={{ margin:0, fontSize:'15px', color:'#64748b', lineHeight:1.75 }}>
               Face ID kamera xodimni tanib oladi, vaqt serverga yoziladi, siz esa hammasini bitta ekranda — real vaqtda ko'rasiz. Quyidagi bo'limlarni bosib har biri qanday ishlashini ko'ring.
@@ -306,14 +306,14 @@ export default function Login({ onLogin }) {
                   style={{
                     display:'flex', alignItems:'center', gap:'14px', width:'100%', textAlign:'left',
                     padding:'16px 18px', borderRadius:'14px', border:'none', cursor:'pointer',
-                    background: activeFeature===i ? '#eef2ff' : 'transparent',
+                    background: activeFeature===i ? '#eff6ff' : 'transparent',
                     transition:'background 0.2s', marginBottom:'2px',
                   }}
                   onMouseEnter={e=>{ if(activeFeature!==i) e.currentTarget.style.background='#f1f5f9' }}
                   onMouseLeave={e=>{ if(activeFeature!==i) e.currentTarget.style.background='transparent' }}
                 >
                   <div style={{ width:'38px', height:'38px', borderRadius:'11px', flexShrink:0, display:'flex', alignItems:'center', justifyContent:'center',
-                    background: activeFeature===i ? '#4f46e5' : '#e2e8f0' }}>
+                    background: activeFeature===i ? '#2563eb' : '#e2e8f0' }}>
                     <Icon size={17} color={activeFeature===i ? '#fff' : '#64748b'} strokeWidth={2}/>
                   </div>
                   <div style={{ minWidth:0 }}>
@@ -334,7 +334,7 @@ export default function Login({ onLogin }) {
                   { badge:'02 · Xavfsizlik', title:"Face ID — aldash imkonsiz", color:'#ea580c', bg:'#fff7ed',
                     text:"Boshqa birovning kartasini yoki parolini ishlatib bo'lmaydi. Kamera aynan xodimning yuzini taniydi — shuning uchun har bir yozuv 100% ishonchli.",
                     points:['Karta yoki kod talab qilinmaydi', "Ko'zoynak, shapka bilan ham ishlaydi", "Har bir xodim faqat o'zi uchun"] },
-                  { badge:'03 · Dashboard', title:'Real vaqt boshqaruv paneli', color:'#4f46e5', bg:'#eef2ff',
+                  { badge:'03 · Dashboard', title:'Real vaqt boshqaruv paneli', color:'#2563eb', bg:'#eff6ff',
                     text:"Kadrlar va rahbar bir ekranda bugun kim keldi, kim kelmadi, kim kechikdi — hammasini ko'radi. Filtrlash va qidiruv bilan har qanday xodimni tez topasiz.",
                     points:['Jonli yangilanadi', 'Tashkilot bo\'yicha filtrlash', 'Kechikkanlar alohida ko\'rinadi'] },
                   { badge:'04 · Hisobotlar', title:'Bir tugmada tayyor hisobot', color:'#059669', bg:'#f0fdf4',
