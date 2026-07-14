@@ -299,7 +299,7 @@ export default function Login({ onLogin }) {
           {[
             {
               icon: Zap, badge: null, name:'Plus', desc:'Kichik jamoa uchun ideal',
-              price:'$40', limit:'12 tagacha xodim',
+              price:'$35', limit:'12 tagacha xodim',
               theme:'light', accentColor:'#f97316',
               btnBg:'#2563eb', btnColor:'#fff',
               features:['12 tagacha xodim','1 ta filial boshqaruvi','Face ID kamera integratsiya','Real vaqt kuzatuv','Kunlik hisobotlar & PDF','Xodimlar bazasi (kadrlar)',"Ta'til va kasallik hisobi",'Kechikish nazorati'],
@@ -307,7 +307,7 @@ export default function Login({ onLogin }) {
             },
             {
               icon: Star, badge:'⭐ Eng mashhur', name:'Pro', desc:"O'rta tashkilotlar uchun",
-              price:'$120', limit:'35 tagacha xodim',
+              price:'$99', limit:'35 tagacha xodim',
               theme:'blue', accentColor:'rgba(255,255,255,0.9)',
               btnBg:'rgba(255,255,255,0.18)', btnColor:'#fff',
               features:['35 tagacha xodim','5 tagacha filial boshqaruvi','Face ID kamera integratsiya','Real vaqt kuzatuv','Kunlik + oylik hisobotlar & PDF','Xodimlar bazasi (kadrlar)',"Ta'til va kasallik hisobi","Haftalik jadval ko'rinishi",'Statistika va reytinglar','Kechikish nazorati'],
