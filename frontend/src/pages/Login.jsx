@@ -548,6 +548,30 @@ export default function Login({ onLogin }) {
         <p style={{ marginTop:'28px', fontSize:'12px', color:'#94a3b8' }}>
           * Telegram xabarnomalar — tez orada · Barcha narxlar QQS siz · Korporativ tarifda 6 oylik shartnoma talab qilinadi
         </p>
+
+        {/* Face ID izohi */}
+        <div style={{ maxWidth:'860px', margin:'40px auto 0', background:'#fff', border:'1px solid #e2e8f0', borderRadius:'18px', padding:'28px 30px', textAlign:'left' }}>
+          <div style={{ display:'flex', alignItems:'center', gap:'10px', marginBottom:'16px' }}>
+            <div style={{ width:'34px', height:'34px', borderRadius:'10px', background:'#eff6ff', display:'flex', alignItems:'center', justifyContent:'center', flexShrink:0 }}>
+              <ShieldCheck size={17} color="#2563eb"/>
+            </div>
+            <span style={{ fontSize:'15px', fontWeight:700, color:'#0f172a' }}>Face ID kamera haqida bilish kerak</span>
+          </div>
+          <div style={{ display:'grid', gridTemplateColumns:'repeat(auto-fit,minmax(240px,1fr))', gap:'18px' }}>
+            <div style={{ display:'flex', gap:'10px' }}>
+              <Check size={15} color="#2563eb" strokeWidth={2.5} style={{ flexShrink:0, marginTop:'2px' }}/>
+              <span style={{ fontSize:'13.5px', color:'#475569', lineHeight:1.65 }}>Platforma Face ID kamerasi bor tashkilotlarga to'liq imkoniyat beradi — avtomatik aniqlash, aldash imkonsiz.</span>
+            </div>
+            <div style={{ display:'flex', gap:'10px' }}>
+              <Check size={15} color="#2563eb" strokeWidth={2.5} style={{ flexShrink:0, marginTop:'2px' }}/>
+              <span style={{ fontSize:'13.5px', color:'#475569', lineHeight:1.65 }}>Kamera yo'q bo'lsa — uni sotib olish va o'rnatish buyurtmachi zimmasida. Kamerani sozlash va platformaga ulash — bizning ishimiz.</span>
+            </div>
+            <div style={{ display:'flex', gap:'10px' }}>
+              <Check size={15} color="#2563eb" strokeWidth={2.5} style={{ flexShrink:0, marginTop:'2px' }}/>
+              <span style={{ fontSize:'13.5px', color:'#475569', lineHeight:1.65 }}><strong style={{ color:'#0f172a' }}>Faqat Ultra tarifda</strong> — 6 oylik shartnoma bilan Face ID qurilmasi bepul beriladi.</span>
+            </div>
+          </div>
+        </div>
       </section>
 
       {/* CTA */}
