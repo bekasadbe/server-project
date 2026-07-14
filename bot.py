@@ -14,9 +14,14 @@ import logging
 from datetime import datetime, timezone, timedelta, time as dtime
 
 import requests
-from telegram import Bot, InlineKeyboardButton, InlineKeyboardMarkup, Update
+from telegram import (
+    Bot, Update,
+    InlineKeyboardButton, InlineKeyboardMarkup,
+    ReplyKeyboardMarkup, KeyboardButton, WebAppInfo
+)
 from telegram.ext import (
-    Application, CommandHandler, ContextTypes, CallbackQueryHandler
+    Application, CommandHandler, MessageHandler,
+    ContextTypes, filters
 )
 
 # ── SOZLAMALAR ────────────────────────────────────────────────────────────────
@@ -57,7 +62,15 @@ def today_str():
 def now_uzb():
     return datetime.now(TZ)
 
-# ── PLATFORMA TUGMASI ─────────────────────────────────────────────────────────
+# ── PASTKI PANEL TUGMALARI (har doim ko'rinadi) ───────────────────────────────
+def main_keyboard():
+    return ReplyKeyboardMarkup(
+        [[KeyboardButton('🌐 Platformani ochish', web_app=WebAppInfo(url=WEB_URL))]],
+        resize_keyboard=True,
+        persistent=True,
+    )
+
+# Xabarlar ichidagi inline tugma (bildirishnomalar uchun)
 def open_button():
     return InlineKeyboardMarkup([[
         InlineKeyboardButton('🌐 Platformani ochish', url=WEB_URL)
@@ -103,9 +116,13 @@ async def cmd_start(update: Update, ctx: ContextTypes.DEFAULT_TYPE):
         f'📋 Buyruqlar:\n'
         f'• /davomat — bugungi umumiy holat\n'
         f'• /kelmadi — kelmagan xodimlar ro\'yxati\n\n'
-        f'Yoki quyidagi tugmani bosib platformani oching:'
+        f'⬇️ Pastdagi tugmani bosib platformani oching:'
     )
-    await update.message.reply_text(text, parse_mode='HTML', reply_markup=open_button())
+    await update.message.reply_text(text, parse_mode='HTML', reply_markup=main_keyboard())
+
+async def handle_webapp(update: Update, ctx: ContextTypes.DEFAULT_TYPE):
+    """Web app ochilganda qayta ko'rsatish"""
+    await update.message.reply_text('✅ Platforma ochildi!', reply_markup=main_keyboard())
 
 async def cmd_davomat(update: Update, ctx: ContextTypes.DEFAULT_TYPE):
     st = get_today_stats()
@@ -227,6 +244,7 @@ async def main():
     app.add_handler(CommandHandler('start',   cmd_start))
     app.add_handler(CommandHandler('davomat', cmd_davomat))
     app.add_handler(CommandHandler('kelmadi', cmd_kelmadi))
+    app.add_handler(MessageHandler(filters.StatusUpdate.WEB_APP_DATA, handle_webapp))
 
     log.info('Bot ishga tushdi...')
 
