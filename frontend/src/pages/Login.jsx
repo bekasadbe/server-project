@@ -283,7 +283,7 @@ export default function Login({ onLogin }) {
             <div style={{ display:'inline-flex', alignItems:'center', gap:'8px', background:'#eff6ff', border:'1px solid #bfdbfe', borderRadius:'50px', padding:'6px 18px', marginBottom:'20px' }}>
               <span style={{ fontSize:'13px', color:'#2563eb', fontWeight:600 }}>Platforma haqida</span>
             </div>
-            <h2 style={{ margin:'0 0 16px', fontSize:'36px', fontWeight:800, color:'#0f172a', letterSpacing:'-0.8px' }}>
+            <h2 style={{ margin:'0 0 16px', fontSize:'32px', fontWeight:800, color:'#0f172a', letterSpacing:'-0.8px' }}>
               Davomatlar.uz <span style={{ color:'#2563eb' }}>nima qiladi?</span>
             </h2>
             <p style={{ margin:0, fontSize:'15px', color:'#64748b', lineHeight:1.75 }}>
@@ -416,7 +416,7 @@ export default function Login({ onLogin }) {
           <Zap size={13} color="#f97316"/>
           <span style={{ fontSize:'13px', color:'#ea580c', fontWeight:600 }}>Qulay narxlar</span>
         </div>
-        <h2 style={{ margin:'0 0 10px', fontSize:'36px', fontWeight:800, color:'#0f172a', letterSpacing:'-1px' }}>
+        <h2 style={{ margin:'0 0 10px', fontSize:'32px', fontWeight:800, color:'#0f172a', letterSpacing:'-0.8px' }}>
           Biznesingizga mos tarif
         </h2>
         <p className="pricing-sub" style={{ margin:'0 auto 44px', fontSize:'15px', color:'#64748b', maxWidth:'520px', lineHeight:1.7, whiteSpace:'nowrap' }}>
@@ -566,7 +566,7 @@ export default function Login({ onLogin }) {
       <section style={{ position:'relative', zIndex:10, background:'#fff', padding:'64px 40px', textAlign:'center' }}>
         <div style={{ maxWidth:'600px', margin:'0 auto' }}>
           <div style={{ fontSize:'40px', marginBottom:'16px' }}>🚀</div>
-          <h2 style={{ margin:'0 0 12px', fontSize:'28px', fontWeight:800, color:'#0f172a', letterSpacing:'-0.5px' }}>Bepul konsultatsiya oling</h2>
+          <h2 style={{ margin:'0 0 12px', fontSize:'32px', fontWeight:800, color:'#0f172a', letterSpacing:'-0.8px' }}>Bepul konsultatsiya oling</h2>
           <p style={{ margin:'0 0 28px', fontSize:'15px', color:'#64748b', lineHeight:1.7 }}>
             Tashkilotingiz uchun qaysi tarif mos ekanini birgalikda aniqlaymiz. Basic paket 3-7 kunda ishga tushadi.
           </p>
