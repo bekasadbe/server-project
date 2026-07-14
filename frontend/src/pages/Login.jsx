@@ -343,7 +343,7 @@ export default function Login({ onLogin }) {
               position:'relative', overflow:'hidden',
               background: cardBg,
               border: borderStyle,
-              borderRadius:'22px', padding:'20px 20px 18px',
+              borderRadius:'22px', padding:'26px 22px 22px',
               textAlign:'left', display:'flex', flexDirection:'column',
               boxShadow: cardShadow,
               transition:'transform 0.25s, box-shadow 0.25s',
@@ -353,46 +353,46 @@ export default function Login({ onLogin }) {
               onMouseLeave={e=>{e.currentTarget.style.transform='translateY(0)'}}
             >
               {/* Badge + Icon row */}
-              <div style={{ display:'flex', alignItems:'center', justifyContent:'space-between', marginBottom:'14px' }}>
-                <div style={{ width:'40px', height:'40px', borderRadius:'11px', background:iconBg, display:'flex', alignItems:'center', justifyContent:'center' }}>
-                  <Icon size={18} color={iconColor}/>
+              <div style={{ display:'flex', alignItems:'center', justifyContent:'space-between', marginBottom:'18px' }}>
+                <div style={{ width:'46px', height:'46px', borderRadius:'13px', background:iconBg, display:'flex', alignItems:'center', justifyContent:'center' }}>
+                  <Icon size={21} color={iconColor}/>
                 </div>
-                {badge && <div style={{ background:badgeBg, borderRadius:'50px', padding:'4px 10px', fontSize:'11.5px', color:badgeColor, fontWeight:500 }}>{badge}</div>}
+                {badge && <div style={{ background:badgeBg, borderRadius:'50px', padding:'5px 12px', fontSize:'12px', color:badgeColor, fontWeight:500, letterSpacing:'0.01em' }}>{badge}</div>}
               </div>
 
-              <div style={{ fontSize:'18px', fontWeight:700, color:titleColor, marginBottom:'3px', letterSpacing:'-0.3px' }}>{name}</div>
-              <div style={{ fontSize:'12.5px', color:subColor, marginBottom:'12px', fontWeight:500, lineHeight:1.4 }}>{desc}</div>
+              <div style={{ fontSize:'19px', fontWeight:700, color:titleColor, marginBottom:'4px', letterSpacing:'-0.3px' }}>{name}</div>
+              <div style={{ fontSize:'13px', color:subColor, marginBottom:'16px', fontWeight:400, lineHeight:1.5 }}>{desc}</div>
 
               {/* Dotted divider */}
-              <div style={{ borderTop:`1.5px dashed ${dividerColor}`, marginBottom:'12px' }}/>
+              <div style={{ borderTop:`1.5px dashed ${dividerColor}`, marginBottom:'16px' }}/>
 
-              <div style={{ marginBottom:'12px' }}>
-                <div style={{ display:'flex', alignItems:'baseline', gap:'4px', marginBottom:'8px' }}>
-                  <span style={{ fontSize:'28px', fontWeight:700, color:priceColor, letterSpacing:'-1px' }}>{price}</span>
-                  <span style={{ fontSize:'12px', color:subColor, fontWeight:500 }}>/oy</span>
+              <div style={{ marginBottom:'16px' }}>
+                <div style={{ display:'flex', alignItems:'baseline', gap:'4px', marginBottom:'10px' }}>
+                  <span style={{ fontSize:'30px', fontWeight:700, color:priceColor, letterSpacing:'-1px' }}>{price}</span>
+                  <span style={{ fontSize:'13px', color:subColor, fontWeight:400 }}>/oy</span>
                 </div>
-                <div style={{ display:'inline-flex', alignItems:'center', gap:'5px', background:limitBg, borderRadius:'50px', padding:'3px 10px' }}>
-                  <Users size={11} color={limitColor}/>
-                  <span style={{ fontSize:'11.5px', color:limitColor, fontWeight:500 }}>{limit}</span>
+                <div style={{ display:'inline-flex', alignItems:'center', gap:'6px', background:limitBg, borderRadius:'50px', padding:'4px 12px' }}>
+                  <Users size={12} color={limitColor}/>
+                  <span style={{ fontSize:'12px', color:limitColor, fontWeight:500 }}>{limit}</span>
                 </div>
               </div>
 
               {/* Dotted divider */}
-              <div style={{ borderTop:`1.5px dashed ${dividerColor}`, marginBottom:'12px' }}/>
+              <div style={{ borderTop:`1.5px dashed ${dividerColor}`, marginBottom:'16px' }}/>
 
-              <div style={{ flex:1, display:'flex', flexDirection:'column', gap:'7px', marginBottom:'14px' }}>
+              <div style={{ flex:1, display:'flex', flexDirection:'column', gap:'9px', marginBottom:'18px' }}>
                 {features.map(f => (
-                  <div key={f} style={{ display:'flex', alignItems:'flex-start', gap:'8px' }}>
-                    <div style={{ marginTop:'2px', width:'15px', height:'15px', borderRadius:'50%', background:checkBg, display:'flex', alignItems:'center', justifyContent:'center', flexShrink:0 }}>
-                      <Check size={8} color={checkColor} strokeWidth={2.5}/>
+                  <div key={f} style={{ display:'flex', alignItems:'flex-start', gap:'9px' }}>
+                    <div style={{ marginTop:'2px', width:'16px', height:'16px', borderRadius:'50%', background:checkBg, display:'flex', alignItems:'center', justifyContent:'center', flexShrink:0 }}>
+                      <Check size={9} color={checkColor} strokeWidth={2.5}/>
                     </div>
-                    <span style={{ fontSize:'12.5px', color:featColor, lineHeight:1.45, fontWeight:500 }}>{f}</span>
+                    <span style={{ fontSize:'13px', color:featColor, lineHeight:1.55, fontWeight:400 }}>{f}</span>
                   </div>
                 ))}
               </div>
 
               {gift && (
-                <div style={{ marginBottom:'10px', padding:'9px 11px', borderRadius:'11px', background:'rgba(255,255,255,0.08)', border:'1.5px solid rgba(255,255,255,0.15)', display:'flex', alignItems:'flex-start', gap:'9px' }}>
+                <div style={{ marginBottom:'14px', padding:'11px 13px', borderRadius:'13px', background:'rgba(255,255,255,0.08)', border:'1.5px solid rgba(255,255,255,0.15)', display:'flex', alignItems:'flex-start', gap:'9px' }}>
                   <span style={{ fontSize:'18px', lineHeight:1, flexShrink:0 }}>🎁</span>
                   <div style={{ fontSize:'12px', color:'rgba(255,255,255,0.75)', lineHeight:1.5 }}>
                     6 oylik shartnoma tuzganda — Face ID qurilmasi <strong style={{ color:'#4ade80' }}>bepul beriladi</strong>
@@ -401,7 +401,7 @@ export default function Login({ onLogin }) {
               )}
 
               <a href="https://t.me/davomatlaruz" target="_blank" rel="noreferrer" style={{
-                display:'block', width:'100%', padding:'11px', borderRadius:'11px', border: isBlue ? '1.5px solid rgba(255,255,255,0.3)' : 'none',
+                display:'block', width:'100%', padding:'13px', borderRadius:'13px', border: isBlue ? '1.5px solid rgba(255,255,255,0.3)' : 'none',
                 background: btnBg, color: btnColor, textAlign:'center',
                 fontSize:'14px', fontWeight:400, cursor:'pointer', textDecoration:'none',
                 backdropFilter: 'none',
