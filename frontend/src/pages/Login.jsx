@@ -1,6 +1,6 @@
 import { useState, useEffect, useRef } from 'react'
 import { loginAsync } from '../auth'
-import { Eye, EyeOff, CheckCircle, CheckCircle2, Clock, Users, TrendingUp, Phone, MapPin, Send, BarChart3, ShieldCheck, ArrowLeft, Zap, Star, Building2, Check } from 'lucide-react'
+import { Eye, EyeOff, CheckCircle, CheckCircle2, Clock, Users, TrendingUp, Phone, MapPin, Send, BarChart3, ShieldCheck, ArrowLeft, Zap, Star, Building2, Check, Factory, GraduationCap, Stethoscope, ShoppingCart, Landmark } from 'lucide-react'
 
 const LOGIN_FEATURES = [
   { icon: Clock,       text: 'Kelish-ketish vaqtini real vaqtda kuzatish' },
@@ -373,27 +373,29 @@ export default function Login({ onLogin }) {
       </section>
 
       {/* Kimlar uchun */}
-      <section style={{ position:'relative', zIndex:10, background:'#fff', padding:'72px 40px 64px', textAlign:'center' }}>
+      <section style={{ position:'relative', zIndex:10, background:'#f8fafc', padding:'72px 40px 64px', textAlign:'center' }}>
         <div style={{ maxWidth:'1200px', margin:'0 auto' }}>
           <div style={{ display:'inline-flex', alignItems:'center', gap:'8px', background:'#eff6ff', border:'1px solid #bfdbfe', borderRadius:'50px', padding:'6px 18px', marginBottom:'20px' }}>
-            <span style={{ fontSize:'13px', color:'#2563eb', fontWeight:600 }}>🏢 Maqsadli mijozlar</span>
+            <span style={{ fontSize:'13px', color:'#2563eb', fontWeight:600 }}>Maqsadli mijozlar</span>
           </div>
           <h2 style={{ margin:'0 0 10px', fontSize:'32px', fontWeight:800, color:'#0f172a', letterSpacing:'-0.8px' }}>Kimlar uchun mos?</h2>
           <p style={{ margin:'0 auto 44px', fontSize:'15px', color:'#64748b', maxWidth:'440px', lineHeight:1.7 }}>Har qanday tashkilot xodimlar davomatini nazorat qilishi kerak</p>
-          <div style={{ display:'grid', gridTemplateColumns:'repeat(auto-fit,minmax(240px,1fr))', gap:'16px' }}>
+          <div style={{ display:'grid', gridTemplateColumns:'repeat(auto-fit,minmax(280px,1fr))', gap:'16px' }}>
             {[
-              { icon:'🏢', title:'Ofis va kompaniyalar', desc:"Kechikish nazorati, moslashuvchan jadval, ish soatlari asosida ish haqi hisoblash" },
-              { icon:'🏭', title:'Ishlab chiqarish', desc:'Smenali jadval, ko\'p kirish nuqtasi, ko\'p xodimni bir vaqtda nazorat' },
-              { icon:'🎓', title:"Maktab va o'quv markazlari", desc:"O'quvchilar va o'qituvchilar davomati, sinflar bo'yicha hisobot" },
-              { icon:'🏥', title:'Klinika va tibbiyot', desc:"Navbatchi shifokorlar, smena jadvali, aniq ish soatlari hisoblash" },
-              { icon:'🛒', title:'Savdo tarmoqlari', desc:"Ko'p filial — har biri o'z jamoasini ko'radi, markaz hammasini ko'radi" },
-              { icon:'🏛️', title:"Davlat tashkilotlari", desc:"To'liq mahalliy server, ma'lumotlar tashqariga chiqmaydi, internet bo'lmasa ham ishlaydi" },
-            ].map(({ icon, title, desc }) => (
-              <div key={title} style={{ background:'#f8fafc', borderRadius:'16px', padding:'24px 20px', textAlign:'left', border:'1px solid #e2e8f0', transition:'transform 0.2s' }}
-                onMouseEnter={e=>e.currentTarget.style.transform='translateY(-4px)'}
-                onMouseLeave={e=>e.currentTarget.style.transform='translateY(0)'}
+              { Icon: Building2,      color:'#2563eb', bg:'#eff6ff', title:'Ofis va kompaniyalar', desc:"Kechikish nazorati, moslashuvchan jadval, ish soatlari asosida ish haqi hisoblash" },
+              { Icon: Factory,        color:'#ea580c', bg:'#fff7ed', title:'Ishlab chiqarish', desc:"Smenali jadval, ko'p kirish nuqtasi, ko'p xodimni bir vaqtda nazorat" },
+              { Icon: GraduationCap,  color:'#7c3aed', bg:'#f5f3ff', title:"Maktab va o'quv markazlari", desc:"O'quvchilar va o'qituvchilar davomati, sinflar bo'yicha hisobot" },
+              { Icon: Stethoscope,    color:'#dc2626', bg:'#fef2f2', title:'Klinika va tibbiyot', desc:"Navbatchi shifokorlar, smena jadvali, aniq ish soatlari hisoblash" },
+              { Icon: ShoppingCart,   color:'#059669', bg:'#f0fdf4', title:'Savdo tarmoqlari', desc:"Ko'p filial — har biri o'z jamoasini ko'radi, markaz hammasini ko'radi" },
+              { Icon: Landmark,       color:'#0891b2', bg:'#ecfeff', title:"Davlat tashkilotlari", desc:"To'liq mahalliy server, ma'lumotlar tashqariga chiqmaydi, internet bo'lmasa ham ishlaydi" },
+            ].map(({ Icon, color, bg, title, desc }) => (
+              <div key={title} style={{ background:'#fff', borderRadius:'16px', padding:'24px 22px', textAlign:'left', border:'1px solid #e2e8f0', transition:'transform 0.2s, box-shadow 0.2s' }}
+                onMouseEnter={e=>{ e.currentTarget.style.transform='translateY(-4px)'; e.currentTarget.style.boxShadow=`0 12px 32px ${color}18` }}
+                onMouseLeave={e=>{ e.currentTarget.style.transform='translateY(0)'; e.currentTarget.style.boxShadow='none' }}
               >
-                <div style={{ fontSize:'32px', marginBottom:'12px' }}>{icon}</div>
+                <div style={{ width:'44px', height:'44px', borderRadius:'12px', background:bg, display:'flex', alignItems:'center', justifyContent:'center', marginBottom:'14px' }}>
+                  <Icon size={20} color={color} strokeWidth={1.8}/>
+                </div>
                 <div style={{ fontSize:'15px', fontWeight:700, color:'#0f172a', marginBottom:'6px' }}>{title}</div>
                 <div style={{ fontSize:'13px', color:'#64748b', lineHeight:1.6 }}>{desc}</div>
               </div>
@@ -403,10 +405,10 @@ export default function Login({ onLogin }) {
       </section>
 
       {/* Imkoniyatlar */}
-      <section style={{ position:'relative', zIndex:10, background:'#f8fafc', padding:'72px 40px 64px', textAlign:'center' }}>
+      <section style={{ position:'relative', zIndex:10, background:'#fff', padding:'72px 40px 64px', textAlign:'center' }}>
         <div style={{ maxWidth:'1200px', margin:'0 auto' }}>
           <div style={{ display:'inline-flex', alignItems:'center', gap:'8px', background:'#f0fdf4', border:'1px solid #a7f3d0', borderRadius:'50px', padding:'6px 18px', marginBottom:'20px' }}>
-            <span style={{ fontSize:'13px', color:'#059669', fontWeight:600 }}>✅ Platforma imkoniyatlari</span>
+            <span style={{ fontSize:'13px', color:'#059669', fontWeight:600 }}>Platforma imkoniyatlari</span>
           </div>
           <h2 style={{ margin:'0 0 10px', fontSize:'32px', fontWeight:800, color:'#0f172a', letterSpacing:'-0.8px' }}>Nima qila oladi?</h2>
           <p style={{ margin:'0 auto 44px', fontSize:'15px', color:'#64748b', maxWidth:'440px', lineHeight:1.7 }}>Davomatlar.uz — faqat qayd etish emas, to'liq boshqaruv tizimi</p>
@@ -419,7 +421,7 @@ export default function Login({ onLogin }) {
               { icon:'⏱️', color:'#dc2626', bg:'#fef2f2', title:'Kechikish nazorati', desc:"Ish boshlanish vaqti sozlanadi. Har bir kechikish aniq daqiqagacha qayd etiladi." },
               { icon:'🏢', color:'#0891b2', bg:'#ecfeff', title:"Ko'p filial boshqaruvi", desc:"Bir akkauntdan barcha filiallarni ko'rasiz. Har filial o'z ma'lumotlarini ko'radi." },
             ].map(({ icon, color, bg, title, desc }) => (
-              <div key={title} style={{ background:'#fff', borderRadius:'16px', padding:'24px 20px', textAlign:'left', border:'1px solid #e2e8f0', transition:'transform 0.2s, box-shadow 0.2s' }}
+              <div key={title} style={{ background:'#f8fafc', borderRadius:'16px', padding:'24px 20px', textAlign:'left', border:'1px solid #e2e8f0', transition:'transform 0.2s, box-shadow 0.2s' }}
                 onMouseEnter={e=>{e.currentTarget.style.transform='translateY(-4px)';e.currentTarget.style.boxShadow=`0 8px 30px ${color}18`}}
                 onMouseLeave={e=>{e.currentTarget.style.transform='translateY(0)';e.currentTarget.style.boxShadow='none'}}
               >
