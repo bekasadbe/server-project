@@ -404,35 +404,6 @@ export default function Login({ onLogin }) {
         </div>
       </section>
 
-      {/* Imkoniyatlar */}
-      <section style={{ position:'relative', zIndex:10, background:'#fff', padding:'72px 40px 64px', textAlign:'center' }}>
-        <div style={{ maxWidth:'1200px', margin:'0 auto' }}>
-          <div style={{ display:'inline-flex', alignItems:'center', gap:'8px', background:'#f0fdf4', border:'1px solid #a7f3d0', borderRadius:'50px', padding:'6px 18px', marginBottom:'20px' }}>
-            <span style={{ fontSize:'13px', color:'#059669', fontWeight:600 }}>Platforma imkoniyatlari</span>
-          </div>
-          <h2 style={{ margin:'0 0 10px', fontSize:'32px', fontWeight:800, color:'#0f172a', letterSpacing:'-0.8px' }}>Nima qila oladi?</h2>
-          <p style={{ margin:'0 auto 44px', fontSize:'15px', color:'#64748b', maxWidth:'440px', lineHeight:1.7 }}>Davomatlar.uz — faqat qayd etish emas, to'liq boshqaruv tizimi</p>
-          <div style={{ display:'grid', gridTemplateColumns:'repeat(auto-fit,minmax(260px,1fr))', gap:'16px' }}>
-            {[
-              { icon:'📷', color:'#2563eb', bg:'#eff6ff', title:'Face ID kamera integratsiya', desc:"Xodim kameradan o'tganda avtomatik aniqlanadi. Aldash imkonsiz, tezlik 0.3 soniya." },
-              { icon:'🖥️', color:'#7c3aed', bg:'#f5f3ff', title:'Real vaqt dashboard', desc:'Kim keldi, kim kelmadi, kim kechikdi — hammasini bir sahifada ko\'rasiz.' },
-              { icon:'📄', color:'#059669', bg:'#f0fdf4', title:'Hisobotlar va PDF', desc:'Kunlik, haftalik, oylik hisobotlar. Bir tugma — PDF tayyor, print qilishga tayyor.' },
-              { icon:'📱', color:'#ea580c', bg:'#fff7ed', title:'Telegram xabarnomalar', desc:"Har kuni ertalab kelmagan xodimlar ro'yxati. Kechikish bo'lsa — darhol xabar." },
-              { icon:'⏱️', color:'#dc2626', bg:'#fef2f2', title:'Kechikish nazorati', desc:"Ish boshlanish vaqti sozlanadi. Har bir kechikish aniq daqiqagacha qayd etiladi." },
-              { icon:'🏢', color:'#0891b2', bg:'#ecfeff', title:"Ko'p filial boshqaruvi", desc:"Bir akkauntdan barcha filiallarni ko'rasiz. Har filial o'z ma'lumotlarini ko'radi." },
-            ].map(({ icon, color, bg, title, desc }) => (
-              <div key={title} style={{ background:'#f8fafc', borderRadius:'16px', padding:'24px 20px', textAlign:'left', border:'1px solid #e2e8f0', transition:'transform 0.2s, box-shadow 0.2s' }}
-                onMouseEnter={e=>{e.currentTarget.style.transform='translateY(-4px)';e.currentTarget.style.boxShadow=`0 8px 30px ${color}18`}}
-                onMouseLeave={e=>{e.currentTarget.style.transform='translateY(0)';e.currentTarget.style.boxShadow='none'}}
-              >
-                <div style={{ width:'44px', height:'44px', borderRadius:'12px', background:bg, display:'flex', alignItems:'center', justifyContent:'center', fontSize:'20px', marginBottom:'14px' }}>{icon}</div>
-                <div style={{ fontSize:'15px', fontWeight:700, color:'#0f172a', marginBottom:'6px' }}>{title}</div>
-                <div style={{ fontSize:'13px', color:'#64748b', lineHeight:1.6 }}>{desc}</div>
-              </div>
-            ))}
-          </div>
-        </div>
-      </section>
 
       {/* Tariflar */}
       <section ref={pricingRef} style={{
