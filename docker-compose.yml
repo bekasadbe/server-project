@@ -41,5 +41,20 @@ services:
     depends_on:
       - api
 
+  bot:
+    build:
+      context: .
+      dockerfile: Dockerfile.bot
+    restart: always
+    volumes:
+      - db_data:/app/data
+    environment:
+      - BOT_TOKEN=8970318623:AAHWKODAnSnUcRIvxqHCD3iSEsgrv9Gn6WM
+      - API_URL=http://api:8001
+      - API_TOKEN=Dav0mat@API#2026!
+      - CHAT_IDS=1889501628
+    depends_on:
+      - api
+
 volumes:
   db_data:
