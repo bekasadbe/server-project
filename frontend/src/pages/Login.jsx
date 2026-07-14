@@ -278,25 +278,46 @@ export default function Login({ onLogin }) {
       <section style={{ position:'relative', zIndex:10, background:'#fff', padding:'72px 40px 64px', textAlign:'center' }}>
         <div style={{ maxWidth:'1200px', margin:'0 auto' }}>
           <div style={{ display:'inline-flex', alignItems:'center', gap:'8px', background:'#fef2f2', border:'1px solid #fecaca', borderRadius:'50px', padding:'6px 18px', marginBottom:'20px' }}>
-            <span style={{ fontSize:'13px', color:'#dc2626', fontWeight:600 }}>⚠️ Uchta asosiy muammo</span>
+            <span style={{ fontSize:'13px', color:'#dc2626', fontWeight:600 }}>Uchta asosiy muammo</span>
           </div>
           <h2 style={{ margin:'0 0 10px', fontSize:'32px', fontWeight:800, color:'#0f172a', letterSpacing:'-0.8px' }}>Tizim qanday muammolarni hal qiladi?</h2>
-          <p style={{ margin:'0 auto 44px', fontSize:'15px', color:'#64748b', maxWidth:'460px', lineHeight:1.7 }}>
+          <p style={{ margin:'0 auto 48px', fontSize:'15px', color:'#64748b', maxWidth:'460px', lineHeight:1.7 }}>
             Ko'pchilik tashkilotlarda bu muammolar har kuni takrorlanadi
           </p>
-          <div style={{ display:'grid', gridTemplateColumns:'repeat(auto-fit,minmax(280px,1fr))', gap:'20px' }}>
+          <div style={{ display:'grid', gridTemplateColumns:'repeat(auto-fit,minmax(300px,1fr))', gap:'20px' }}>
             {[
-              { emoji:'😴', problem:'Kechikish aniqlanmaydi', desc:"Xodim 20 daqiqa kech keladi, lekin hech kim bilmaydi. Oylik maosh to'liq to'lanadi.", fix:'Face ID kamera aniq vaqtni qayd etadi. Kechikish bo\'lsa kadrlar va rahbar darhol Telegram da biladi.' },
-              { emoji:'🔄', problem:"Boshqasi o'rniga kiradi", desc:"Bitta xodim boshqa birovning kartasini yoki imzosini qo'yib qo'ya oladi.", fix:"Yuz orqali aniqlanadi — aldash imkonsiz. Har bir xodim faqat o'zi kiradi." },
-              { emoji:'📊', problem:"Qo'lda hisoblash xatolari", desc:"HR soatlab jadvallar bilan shug'ullanadi, Excel da xatoliklar ko'p, hisobotlar kech tayyor bo'ladi.", fix:'Tizim avtomatik hisoblaydi. Bir tugma bilan PDF hisobot tayyor, ish haqi uchun ma\'lumotlar aniq.' },
-            ].map(({ emoji, problem, desc, fix }) => (
-              <div key={problem} style={{ background:'#f8fafc', borderRadius:'18px', padding:'28px 24px', textAlign:'left', border:'1px solid #e2e8f0' }}>
-                <div style={{ fontSize:'36px', marginBottom:'14px' }}>{emoji}</div>
-                <div style={{ fontSize:'17px', fontWeight:700, color:'#0f172a', marginBottom:'8px' }}>{problem}</div>
-                <div style={{ fontSize:'13px', color:'#94a3b8', lineHeight:1.6, marginBottom:'16px' }}>{desc}</div>
-                <div style={{ borderTop:'1px dashed #e2e8f0', paddingTop:'14px', display:'flex', gap:'8px' }}>
-                  <span style={{ color:'#22c55e', fontSize:'15px', flexShrink:0 }}>✓</span>
-                  <span style={{ fontSize:'13px', color:'#16a34a', lineHeight:1.6, fontWeight:500 }}>{fix}</span>
+              { num:'01', Icon: Clock, color:'#ef4444', bg:'#fef2f2', border:'#fecaca', problem:'Kechikish aniqlanmaydi', desc:"Xodim 20 daqiqa kech keladi, lekin hech kim bilmaydi. Oylik maosh to'liq to'lanadi.", fix:"Face ID kamera aniq vaqtni qayd etadi. Kechikish bo'lsa kadrlar va rahbar darhol Telegram da biladi." },
+              { num:'02', Icon: Users, color:'#f97316', bg:'#fff7ed', border:'#fed7aa', problem:"Boshqasi o'rniga kiradi", desc:"Bitta xodim boshqa birovning kartasini yoki imzosini qo'yib qo'ya oladi.", fix:"Yuz orqali aniqlanadi — aldash imkonsiz. Har bir xodim faqat o'zi kiradi." },
+              { num:'03', Icon: BarChart3, color:'#8b5cf6', bg:'#f5f3ff', border:'#ddd6fe', problem:"Qo'lda hisoblash xatolari", desc:"HR soatlab jadvallar bilan shug'ullanadi, Excel da xatoliklar ko'p, hisobotlar kech tayyor bo'ladi.", fix:"Tizim avtomatik hisoblaydi. Bir tugma bilan PDF hisobot tayyor, ish haqi uchun ma'lumotlar aniq." },
+            ].map(({ num, Icon, color, bg, border, problem, desc, fix }) => (
+              <div key={num}
+                className="problem-card"
+                style={{ background:'#fff', borderRadius:'20px', padding:'0', textAlign:'left', border:'1.5px solid #f1f5f9', overflow:'hidden', transition:'transform 0.25s, box-shadow 0.25s', cursor:'default' }}
+                onMouseEnter={e=>{ e.currentTarget.style.transform='translateY(-6px)'; e.currentTarget.style.boxShadow=`0 20px 50px ${color}18`; e.currentTarget.style.borderColor=border }}
+                onMouseLeave={e=>{ e.currentTarget.style.transform='translateY(0)'; e.currentTarget.style.boxShadow='none'; e.currentTarget.style.borderColor='#f1f5f9' }}
+              >
+                {/* Top accent bar */}
+                <div style={{ height:'4px', background:`linear-gradient(90deg,${color},${color}66)` }}/>
+                <div style={{ padding:'26px 24px' }}>
+                  {/* Number + icon */}
+                  <div style={{ display:'flex', alignItems:'center', justifyContent:'space-between', marginBottom:'20px' }}>
+                    <span style={{ fontSize:'13px', fontWeight:700, color:'#cbd5e1', letterSpacing:'1px' }}>{num}</span>
+                    <div style={{ width:'42px', height:'42px', borderRadius:'12px', background:bg, display:'flex', alignItems:'center', justifyContent:'center' }}>
+                      <Icon size={19} color={color} strokeWidth={1.8}/>
+                    </div>
+                  </div>
+                  {/* Problem */}
+                  <div style={{ fontSize:'16px', fontWeight:700, color:'#0f172a', marginBottom:'8px' }}>{problem}</div>
+                  <div style={{ fontSize:'13px', color:'#94a3b8', lineHeight:1.65, marginBottom:'20px' }}>{desc}</div>
+                  {/* Divider */}
+                  <div style={{ height:'1px', background:'#f1f5f9', marginBottom:'16px' }}/>
+                  {/* Solution */}
+                  <div style={{ display:'flex', gap:'10px', alignItems:'flex-start' }}>
+                    <div style={{ width:'20px', height:'20px', borderRadius:'50%', background:bg, border:`1.5px solid ${border}`, display:'flex', alignItems:'center', justifyContent:'center', flexShrink:0, marginTop:'1px' }}>
+                      <Check size={10} color={color} strokeWidth={3}/>
+                    </div>
+                    <span style={{ fontSize:'13px', color:'#475569', lineHeight:1.65, fontWeight:500 }}>{fix}</span>
+                  </div>
                 </div>
               </div>
             ))}
