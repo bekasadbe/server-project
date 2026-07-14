@@ -21,7 +21,7 @@ export default function Sidebar({ current, onChange, user, onLogout }) {
   const roleColor = user?.role === 'admin' ? 'bg-brand-600' : isViewer ? 'bg-purple-600' : 'bg-cyan-600'
 
   return (
-    <aside className="flex flex-col w-60 min-w-[240px] bg-white border-r border-slate-100 shadow-[1px_0_0_#f1f5f9]">
+    <aside className="flex flex-col w-60 min-w-[240px] h-full min-h-screen bg-white border-r border-slate-100 shadow-[1px_0_0_#f1f5f9]">
 
       {/* Logo */}
       <div className="flex items-center gap-3 px-5 py-6 border-b border-slate-100">
