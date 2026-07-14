@@ -302,7 +302,7 @@ export default function Login({ onLogin }) {
               price:'$35', limit:'12 tagacha xodim',
               theme:'light', accentColor:'#f97316',
               btnBg:'#2563eb', btnColor:'#fff',
-              features:['12 tagacha xodim','1 ta filial boshqaruvi','Face ID kamera integratsiya','Real vaqt kuzatuv','Kunlik hisobotlar & PDF','Xodimlar bazasi (kadrlar)',"Ta'til va kasallik hisobi",'Kechikish nazorati'],
+              features:['12 tagacha xodim','1 ta tashkilot','1 ta foydalanuvchi (login)','Face ID kamera integratsiya','Real vaqt kuzatuv','Kunlik hisobot (PDF siz)','Xodimlar bazasi (kadrlar)','Kechikish nazorati'],
               gift: null,
             },
             {
@@ -310,7 +310,7 @@ export default function Login({ onLogin }) {
               price:'$99', limit:'35 tagacha xodim',
               theme:'blue', accentColor:'rgba(255,255,255,0.9)',
               btnBg:'rgba(255,255,255,0.18)', btnColor:'#fff',
-              features:['35 tagacha xodim','3 tagacha tashkilot','Face ID kamera integratsiya','Real vaqt kuzatuv','Kunlik + oylik hisobotlar & PDF','Xodimlar bazasi (kadrlar)',"Ta'til va kasallik hisobi","Haftalik jadval ko'rinishi",'Statistika va reytinglar','Kechikish nazorati','Telegram xabarnomalar'],
+              features:['35 tagacha xodim','3 tagacha tashkilot','3 ta foydalanuvchi (login)','Face ID kamera integratsiya','Real vaqt kuzatuv','Kunlik + oylik hisobotlar & PDF','Xodimlar bazasi (kadrlar)',"Ta'til va kasallik hisobi","Haftalik jadval ko'rinishi",'Statistika va reytinglar','Kechikish nazorati','Telegram xabarnomalar'],
               gift: null,
             },
             {
