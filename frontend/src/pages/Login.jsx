@@ -541,16 +541,16 @@ export default function Login({ onLogin }) {
             <div style={{ width:'34px', height:'34px', borderRadius:'10px', background:'#eff6ff', display:'flex', alignItems:'center', justifyContent:'center', flexShrink:0 }}>
               <ShieldCheck size={17} color="#2563eb"/>
             </div>
-            <span style={{ fontSize:'15px', fontWeight:700, color:'#0f172a' }}>Platformaga ulanish uchun Face ID kamera kerak</span>
+            <span style={{ fontSize:'15px', fontWeight:700, color:'#0f172a' }}>Platformaga ulanish uchun Face ID qurilma kerak</span>
           </div>
           <div style={{ display:'grid', gridTemplateColumns:'repeat(auto-fit,minmax(240px,1fr))', gap:'18px' }}>
             <div style={{ display:'flex', gap:'10px' }}>
               <Check size={15} color="#2563eb" strokeWidth={2.5} style={{ flexShrink:0, marginTop:'2px' }}/>
-              <span style={{ fontSize:'13.5px', color:'#475569', lineHeight:1.65 }}>Tizim ishlashi uchun Face ID kamera zarur — u orqali xodimlar avtomatik aniqlanadi.</span>
+              <span style={{ fontSize:'13.5px', color:'#475569', lineHeight:1.65 }}>Tizim ishlashi uchun Face ID qurilma zarur — u orqali xodimlar avtomatik aniqlanadi.</span>
             </div>
             <div style={{ display:'flex', gap:'10px' }}>
               <Check size={15} color="#2563eb" strokeWidth={2.5} style={{ flexShrink:0, marginTop:'2px' }}/>
-              <span style={{ fontSize:'13.5px', color:'#475569', lineHeight:1.65 }}>Kamerangiz yo'q bo'lsa — muammo emas. Qo'shimcha to'lov evaziga o'rnatib, sozlab, platformaga ulab beramiz.</span>
+              <span style={{ fontSize:'13.5px', color:'#475569', lineHeight:1.65 }}>Qurilmangiz yo'q bo'lsa — muammo emas. Qo'shimcha to'lov evaziga o'rnatib, sozlab, platformaga ulab beramiz.</span>
             </div>
             <div style={{ display:'flex', gap:'10px' }}>
               <Check size={15} color="#2563eb" strokeWidth={2.5} style={{ flexShrink:0, marginTop:'2px' }}/>
