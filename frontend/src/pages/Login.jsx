@@ -299,7 +299,7 @@ export default function Login({ onLogin }) {
           {[
             {
               icon: Zap, badge: null, name:'Plus', desc:'Kichik jamoa uchun ideal',
-              price:'1 000 000', limit:'12 tagacha xodim',
+              price:'$40', limit:'12 tagacha xodim',
               theme:'light', accentColor:'#f97316',
               btnBg:'#2563eb', btnColor:'#fff',
               features:['12 tagacha xodim','1 ta filial boshqaruvi','Face ID kamera integratsiya','Real vaqt kuzatuv','Kunlik hisobotlar & PDF','Xodimlar bazasi (kadrlar)',"Ta'til va kasallik hisobi",'Kechikish nazorati'],
@@ -307,7 +307,7 @@ export default function Login({ onLogin }) {
             },
             {
               icon: Star, badge:'⭐ Eng mashhur', name:'Pro', desc:"O'rta tashkilotlar uchun",
-              price:'2 500 000', limit:'35 tagacha xodim',
+              price:'$120', limit:'35 tagacha xodim',
               theme:'blue', accentColor:'rgba(255,255,255,0.9)',
               btnBg:'rgba(255,255,255,0.18)', btnColor:'#fff',
               features:['35 tagacha xodim','5 tagacha filial boshqaruvi','Face ID kamera integratsiya','Real vaqt kuzatuv','Kunlik + oylik hisobotlar & PDF','Xodimlar bazasi (kadrlar)',"Ta'til va kasallik hisobi","Haftalik jadval ko'rinishi",'Statistika va reytinglar','Kechikish nazorati'],
@@ -315,7 +315,7 @@ export default function Login({ onLogin }) {
             },
             {
               icon: Building2, badge:"🎁 Sovg'a bor", name:'Ultra', desc:'Yirik tashkilotlar uchun',
-              price:'4 000 000', limit:'100 tagacha xodim',
+              price:'$250', limit:'100 tagacha xodim',
               theme:'dark', accentColor:'rgba(255,255,255,0.85)',
               btnBg:'#2563eb', btnColor:'#fff',
               features:['100 tagacha xodim','Cheksiz filiallar boshqaruvi','Face ID kamera — sotib olish shart emas','Real vaqt kuzatuv',"To'liq hisobotlar paketi & PDF",'Xodimlar bazasi (kadrlar)',"Ta'til va kasallik hisobi","Haftalik jadval ko'rinishi",'Statistika va reytinglar','Kechikish nazorati','Telegram xabarnomalar*','Ustuvor texnik yordam'],
@@ -372,7 +372,7 @@ export default function Login({ onLogin }) {
               <div style={{ marginBottom:'16px' }}>
                 <div style={{ display:'flex', alignItems:'baseline', gap:'6px', marginBottom:'10px' }}>
                   <span style={{ fontSize:'32px', fontWeight:800, color:priceColor, letterSpacing:'-1.5px' }}>{price}</span>
-                  <span style={{ fontSize:'13px', color:subColor }}>so'm / oy</span>
+                  <span style={{ fontSize:'13px', color:subColor }}>/oy</span>
                 </div>
                 <div style={{ display:'inline-flex', alignItems:'center', gap:'6px', background:limitBg, borderRadius:'50px', padding:'4px 12px' }}>
                   <Users size={12} color={limitColor}/>
