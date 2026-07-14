@@ -545,9 +545,6 @@ export default function Login({ onLogin }) {
             </div>
           )})}
         </div>
-        <p style={{ marginTop:'28px', fontSize:'12px', color:'#94a3b8' }}>
-          * Telegram xabarnomalar — tez orada · Barcha narxlar QQS siz · Korporativ tarifda 6 oylik shartnoma talab qilinadi
-        </p>
 
         {/* Face ID izohi */}
         <div style={{ maxWidth:'860px', margin:'40px auto 0', background:'#fff', border:'1px solid #e2e8f0', borderRadius:'18px', padding:'28px 30px', textAlign:'left' }}>
