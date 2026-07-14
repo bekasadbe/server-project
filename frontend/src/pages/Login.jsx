@@ -310,15 +310,15 @@ export default function Login({ onLogin }) {
               price:'$99', limit:'35 tagacha xodim',
               theme:'blue', accentColor:'rgba(255,255,255,0.9)',
               btnBg:'rgba(255,255,255,0.18)', btnColor:'#fff',
-              features:['35 tagacha xodim','5 tagacha filial boshqaruvi','Face ID kamera integratsiya','Real vaqt kuzatuv','Kunlik + oylik hisobotlar & PDF','Xodimlar bazasi (kadrlar)',"Ta'til va kasallik hisobi","Haftalik jadval ko'rinishi",'Statistika va reytinglar','Kechikish nazorati'],
+              features:['35 tagacha xodim','3 tagacha tashkilot','Face ID kamera integratsiya','Real vaqt kuzatuv','Kunlik + oylik hisobotlar & PDF','Xodimlar bazasi (kadrlar)',"Ta'til va kasallik hisobi","Haftalik jadval ko'rinishi",'Statistika va reytinglar','Kechikish nazorati','Telegram xabarnomalar'],
               gift: null,
             },
             {
               icon: Building2, badge:"🎁 Sovg'a bor", name:'Ultra', desc:'Yirik tashkilotlar uchun',
-              price:'$250', limit:'100 tagacha xodim',
+              price:'$250', limit:'80 tagacha xodim',
               theme:'dark', accentColor:'rgba(255,255,255,0.85)',
               btnBg:'#2563eb', btnColor:'#fff',
-              features:['100 tagacha xodim','Cheksiz filiallar boshqaruvi','Face ID kamera — sotib olish shart emas','Real vaqt kuzatuv',"To'liq hisobotlar paketi & PDF",'Xodimlar bazasi (kadrlar)',"Ta'til va kasallik hisobi","Haftalik jadval ko'rinishi",'Statistika va reytinglar','Kechikish nazorati','Telegram xabarnomalar*','Ustuvor texnik yordam'],
+              features:['80 tagacha xodim','5 tagacha tashkilot','5 ta foydalanuvchi (login)','Face ID kamera — sotib olish shart emas','Real vaqt kuzatuv',"To'liq hisobotlar paketi & PDF",'Xodimlar bazasi (kadrlar)',"Ta'til va kasallik hisobi","Haftalik jadval ko'rinishi",'Statistika va reytinglar','Kechikish nazorati','Telegram xabarnomalar','Ustuvor texnik yordam'],
               gift: true,
             },
           ].map(({ icon:Icon, badge, name, desc, price, limit, theme, accentColor, btnBg, btnColor, features, gift }, i) => {
