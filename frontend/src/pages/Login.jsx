@@ -541,7 +541,7 @@ export default function Login({ onLogin }) {
             <div style={{ width:'34px', height:'34px', borderRadius:'10px', background:'#eff6ff', display:'flex', alignItems:'center', justifyContent:'center', flexShrink:0 }}>
               <ShieldCheck size={17} color="#2563eb"/>
             </div>
-            <span style={{ fontSize:'15px', fontWeight:700, color:'#0f172a' }}>Platformaga ulanish uchun Face ID qurilma kerak</span>
+            <span style={{ fontSize:'15px', fontWeight:700, color:'#0f172a' }}>Platformaga ulanish uchun Face ID qurilmasi kerak</span>
           </div>
           <div style={{ display:'grid', gridTemplateColumns:'repeat(auto-fit,minmax(240px,1fr))', gap:'18px' }}>
             <div style={{ display:'flex', gap:'10px' }}>
