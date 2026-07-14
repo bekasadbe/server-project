@@ -188,9 +188,6 @@ export default function Login({ onLogin }) {
     }}>
       {/* Fon effektlari */}
       <div style={{ position:'absolute', inset:0, overflow:'hidden', pointerEvents:'none' }}>
-        <div style={{ position:'absolute', top:'-10%', left:'-5%', width:'700px', height:'600px', borderRadius:'50%', background:'rgba(255,255,255,0.25)', filter:'blur(90px)' }}/>
-        <div style={{ position:'absolute', top:'5%', right:'10%', width:'350px', height:'350px', borderRadius:'50%', background:'rgba(255,255,255,0.2)', filter:'blur(60px)' }}/>
-        <div style={{ position:'absolute', bottom:'-5%', right:'-5%', width:'500px', height:'400px', borderRadius:'50%', background:'rgba(10,30,150,0.5)', filter:'blur(80px)' }}/>
         <div style={{ position:'absolute', inset:0, backgroundImage:'linear-gradient(rgba(255,255,255,0.04) 1px, transparent 1px), linear-gradient(90deg, rgba(255,255,255,0.04) 1px, transparent 1px)', backgroundSize:'60px 60px' }}/>
         {Array.from({length:22}).map((_,i) => {
           const size  = 4 + (i*7)%14
@@ -406,14 +403,14 @@ export default function Login({ onLogin }) {
               <a href="https://t.me/davomatlaruz" target="_blank" rel="noreferrer" style={{
                 display:'block', width:'100%', padding:'13px', borderRadius:'13px', border: isBlue ? '1.5px solid rgba(255,255,255,0.3)' : 'none',
                 background: btnBg, color: btnColor, textAlign:'center',
-                fontSize:'14px', fontWeight:700, cursor:'pointer', textDecoration:'none',
-                backdropFilter: isBlue ? 'blur(10px)' : 'none',
+                fontSize:'14px', fontWeight:400, cursor:'pointer', textDecoration:'none',
+                backdropFilter: 'none',
                 boxShadow: isBlue ? 'none' : isDark ? '0 4px 16px rgba(37,99,235,0.5)' : '0 4px 16px rgba(37,99,235,0.3)',
                 transition:'opacity 0.2s',
               }}
                 onMouseEnter={e=>e.currentTarget.style.opacity='0.85'}
                 onMouseLeave={e=>e.currentTarget.style.opacity='1'}
-              >Bog'lanish →</a>
+              >Sotib olish →</a>
             </div>
           )})}
         </div>
