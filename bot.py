@@ -66,7 +66,7 @@ def now_uzb():
 def main_keyboard(tg_id=None):
     url = f'{WEB_URL}?tg_id={tg_id}' if tg_id else f'{WEB_URL}?tg=1'
     return ReplyKeyboardMarkup(
-        [[KeyboardButton('🌐 Platformani ochish', web_app=WebAppInfo(url=url))]],
+        [[KeyboardButton('✅ Platformani ochish', web_app=WebAppInfo(url=url))]],
         resize_keyboard=True,
     )
 
