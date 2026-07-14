@@ -111,14 +111,7 @@ def get_today_stats():
 async def cmd_start(update: Update, ctx: ContextTypes.DEFAULT_TYPE):
     name  = update.effective_user.first_name or 'Salom'
     tg_id = update.effective_user.id
-    text = (
-        f'👋 Salom, {name}!\n\n'
-        f'🏢 <b>Davomatlar.uz</b> — xodimlar davomat tizimi\n\n'
-        f'📋 Buyruqlar:\n'
-        f'• /davomat — bugungi umumiy holat\n'
-        f'• /kelmadi — kelmagan xodimlar ro\'yxati\n\n'
-        f'⬇️ Pastdagi tugmani bosib platformani oching:'
-    )
+    text  = f'👋 Salom, {name}!\n\n🏢 <b>Davomatlar.uz</b> — xodimlar davomat tizimi\n\n⬇️ Pastdagi tugmani bosib platformani oching:'
     await update.message.reply_text(text, parse_mode='HTML', reply_markup=main_keyboard(tg_id))
 
 async def handle_webapp(update: Update, ctx: ContextTypes.DEFAULT_TYPE):
@@ -242,9 +235,7 @@ async def scheduler(bot: Bot):
 async def main():
     app = Application.builder().token(BOT_TOKEN).build()
 
-    app.add_handler(CommandHandler('start',   cmd_start))
-    app.add_handler(CommandHandler('davomat', cmd_davomat))
-    app.add_handler(CommandHandler('kelmadi', cmd_kelmadi))
+    app.add_handler(CommandHandler('start', cmd_start))
     app.add_handler(MessageHandler(filters.StatusUpdate.WEB_APP_DATA, handle_webapp))
 
     log.info('Bot ishga tushdi...')
