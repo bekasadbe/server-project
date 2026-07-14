@@ -360,23 +360,23 @@ export default function Login({ onLogin }) {
                 <div style={{ width:'46px', height:'46px', borderRadius:'13px', background:iconBg, display:'flex', alignItems:'center', justifyContent:'center' }}>
                   <Icon size={21} color={iconColor}/>
                 </div>
-                {badge && <div style={{ background:badgeBg, borderRadius:'50px', padding:'5px 12px', fontSize:'12px', color:badgeColor, fontWeight:700 }}>{badge}</div>}
+                {badge && <div style={{ background:badgeBg, borderRadius:'50px', padding:'5px 12px', fontSize:'12px', color:badgeColor, fontWeight:500, letterSpacing:'0.01em' }}>{badge}</div>}
               </div>
 
-              <div style={{ fontSize:'21px', fontWeight:800, color:titleColor, marginBottom:'3px' }}>{name}</div>
-              <div style={{ fontSize:'13px', color:subColor, marginBottom:'16px' }}>{desc}</div>
+              <div style={{ fontSize:'19px', fontWeight:700, color:titleColor, marginBottom:'4px', letterSpacing:'-0.3px' }}>{name}</div>
+              <div style={{ fontSize:'13px', color:subColor, marginBottom:'16px', fontWeight:400, lineHeight:1.5 }}>{desc}</div>
 
               {/* Dotted divider */}
               <div style={{ borderTop:`1.5px dashed ${dividerColor}`, marginBottom:'16px' }}/>
 
               <div style={{ marginBottom:'16px' }}>
-                <div style={{ display:'flex', alignItems:'baseline', gap:'6px', marginBottom:'10px' }}>
-                  <span style={{ fontSize:'32px', fontWeight:800, color:priceColor, letterSpacing:'-1.5px' }}>{price}</span>
-                  <span style={{ fontSize:'13px', color:subColor }}>/oy</span>
+                <div style={{ display:'flex', alignItems:'baseline', gap:'4px', marginBottom:'10px' }}>
+                  <span style={{ fontSize:'30px', fontWeight:700, color:priceColor, letterSpacing:'-1px' }}>{price}</span>
+                  <span style={{ fontSize:'13px', color:subColor, fontWeight:400 }}>/oy</span>
                 </div>
                 <div style={{ display:'inline-flex', alignItems:'center', gap:'6px', background:limitBg, borderRadius:'50px', padding:'4px 12px' }}>
                   <Users size={12} color={limitColor}/>
-                  <span style={{ fontSize:'12px', color:limitColor, fontWeight:600 }}>{limit}</span>
+                  <span style={{ fontSize:'12px', color:limitColor, fontWeight:500 }}>{limit}</span>
                 </div>
               </div>
 
@@ -386,10 +386,10 @@ export default function Login({ onLogin }) {
               <div style={{ flex:1, display:'flex', flexDirection:'column', gap:'9px', marginBottom:'18px' }}>
                 {features.map(f => (
                   <div key={f} style={{ display:'flex', alignItems:'flex-start', gap:'9px' }}>
-                    <div style={{ marginTop:'1px', width:'17px', height:'17px', borderRadius:'50%', background:checkBg, display:'flex', alignItems:'center', justifyContent:'center', flexShrink:0 }}>
-                      <Check size={9} color={checkColor} strokeWidth={3}/>
+                    <div style={{ marginTop:'2px', width:'16px', height:'16px', borderRadius:'50%', background:checkBg, display:'flex', alignItems:'center', justifyContent:'center', flexShrink:0 }}>
+                      <Check size={9} color={checkColor} strokeWidth={2.5}/>
                     </div>
-                    <span style={{ fontSize:'13px', color:featColor, lineHeight:1.5 }}>{f}</span>
+                    <span style={{ fontSize:'13px', color:featColor, lineHeight:1.55, fontWeight:400 }}>{f}</span>
                   </div>
                 ))}
               </div>
