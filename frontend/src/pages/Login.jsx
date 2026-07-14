@@ -229,7 +229,7 @@ export default function Login({ onLogin }) {
       </header>
 
       {/* Hero */}
-      <main className="landing-main" style={{ minHeight:'calc(100vh - 65px)', position:'relative', zIndex:10, display:'flex', flexDirection:'column', alignItems:'center', justifyContent:'center', textAlign:'center', padding:'40px 20px 60px' }}>
+      <main className="landing-main" style={{ minHeight:'calc(100vh - 65px)', position:'relative', zIndex:10, display:'flex', flexDirection:'column', alignItems:'center', justifyContent:'center', textAlign:'center', padding:'40px 40px 60px' }}>
         <div style={{ display:'inline-flex', alignItems:'center', gap:'8px', background:'rgba(255,255,255,0.1)', backdropFilter:'blur(10px)', border:'1px solid rgba(255,255,255,0.15)', borderRadius:'50px', padding:'6px 18px', marginBottom:'24px' }}>
           <div style={{ width:'8px', height:'8px', borderRadius:'50%', background:'#4ade80', boxShadow:'0 0 8px #4ade80', flexShrink:0 }}/>
           <span style={{ fontSize:'13px', color:'rgba(255,255,255,0.9)', fontWeight:500 }}>Real vaqt davomat tizimi</span>
@@ -244,7 +244,7 @@ export default function Login({ onLogin }) {
           Face ID qurilmalar bilan integratsiya, real vaqt hisobotlar va tashkilotlar bo'yicha boshqaruv tizimi.
         </p>
 
-        <div className="cards-grid" style={{ display:'grid', gap:'16px', width:'100%', maxWidth:'980px' }}>
+        <div className="cards-grid" style={{ display:'grid', gap:'16px', width:'100%', maxWidth:'1200px' }}>
           {[
             { icon: Clock,       color:'#f87171', grad:'#f87171,#fb923c', title:'Kelish-ketish vaqti',  desc:"Aniq kirish va chiqish vaqtini avtomatik qayd etish" },
             { icon: TrendingUp,  color:'#a78bfa', grad:'#a78bfa,#818cf8', title:'Ish soatlari hisobi',  desc:'Kunlik, haftalik, oylik grafiklar va tahlil' },
@@ -276,7 +276,7 @@ export default function Login({ onLogin }) {
 
       {/* Tariflar */}
       <section ref={pricingRef} style={{
-        position:'relative', zIndex:10, padding:'72px 20px 60px', textAlign:'center',
+        position:'relative', zIndex:10, padding:'72px 40px 60px', textAlign:'center',
         background:'#f8fafc',
         opacity: pricingVisible ? 1 : 0, transform: pricingVisible ? 'translateY(0)' : 'translateY(40px)',
         transition:'opacity 0.7s ease, transform 0.7s ease',
@@ -292,7 +292,7 @@ export default function Login({ onLogin }) {
           Xodimlar soniga qarab eng qulay tarifni tanlang. Har oyda bekor qilish mumkin.
         </p>
 
-        <div style={{ display:'grid', gridTemplateColumns:'repeat(auto-fit,minmax(290px,1fr))', gap:'20px', maxWidth:'980px', margin:'0 auto' }}>
+        <div style={{ display:'grid', gridTemplateColumns:'repeat(auto-fit,minmax(290px,1fr))', gap:'20px', maxWidth:'1200px', margin:'0 auto' }}>
           {[
             {
               icon: Zap, badge: null, name:'Plus', desc:'Kichik jamoa uchun ideal',
