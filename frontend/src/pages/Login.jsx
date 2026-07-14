@@ -380,7 +380,7 @@ export default function Login({ onLogin }) {
           </div>
           <h2 style={{ margin:'0 0 10px', fontSize:'32px', fontWeight:800, color:'#0f172a', letterSpacing:'-0.8px' }}>Kimlar uchun mos?</h2>
           <p style={{ margin:'0 auto 44px', fontSize:'15px', color:'#64748b', maxWidth:'440px', lineHeight:1.7 }}>Har qanday tashkilot xodimlar davomatini nazorat qilishi kerak</p>
-          <div style={{ display:'grid', gridTemplateColumns:'repeat(auto-fit,minmax(280px,1fr))', gap:'16px' }}>
+          <div className="who-grid" style={{ display:'grid', gridTemplateColumns:'repeat(3,1fr)', gap:'16px' }}>
             {[
               { Icon: Building2,      color:'#2563eb', bg:'#eff6ff', title:'Ofis va kompaniyalar', desc:"Kechikish nazorati, moslashuvchan jadval, ish soatlari asosida ish haqi hisoblash" },
               { Icon: Factory,        color:'#ea580c', bg:'#fff7ed', title:'Ishlab chiqarish', desc:"Smenali jadval, ko'p kirish nuqtasi, ko'p xodimni bir vaqtda nazorat" },
@@ -620,10 +620,12 @@ export default function Login({ onLogin }) {
           .landing-main { padding-top: 40px !important; padding-bottom: 40px !important; }
           .feature-showcase { grid-template-columns: 1fr !important; }
           .pricing-sub { white-space: normal !important; max-width: 400px !important; }
+          .who-grid { grid-template-columns: repeat(2, 1fr) !important; }
         }
         @media (max-width: 480px) {
           .cards-grid { grid-template-columns: repeat(2, 1fr) !important; }
           .hero-title  { font-size: 32px !important; }
+          .who-grid { grid-template-columns: 1fr !important; }
         }
       `}</style>
     </div>
