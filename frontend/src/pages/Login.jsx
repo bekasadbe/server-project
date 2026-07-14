@@ -274,6 +274,124 @@ export default function Login({ onLogin }) {
         </div>
       </main>
 
+      {/* 3 Muammo */}
+      <section style={{ position:'relative', zIndex:10, background:'#fff', padding:'72px 40px 64px', textAlign:'center' }}>
+        <div style={{ maxWidth:'1200px', margin:'0 auto' }}>
+          <div style={{ display:'inline-flex', alignItems:'center', gap:'8px', background:'#fef2f2', border:'1px solid #fecaca', borderRadius:'50px', padding:'6px 18px', marginBottom:'20px' }}>
+            <span style={{ fontSize:'13px', color:'#dc2626', fontWeight:600 }}>⚠️ Uchta asosiy muammo</span>
+          </div>
+          <h2 style={{ margin:'0 0 10px', fontSize:'32px', fontWeight:800, color:'#0f172a', letterSpacing:'-0.8px' }}>Tizim qanday muammolarni hal qiladi?</h2>
+          <p style={{ margin:'0 auto 44px', fontSize:'15px', color:'#64748b', maxWidth:'460px', lineHeight:1.7 }}>
+            Ko'pchilik tashkilotlarda bu muammolar har kuni takrorlanadi
+          </p>
+          <div style={{ display:'grid', gridTemplateColumns:'repeat(auto-fit,minmax(280px,1fr))', gap:'20px' }}>
+            {[
+              { emoji:'😴', problem:'Kechikish aniqlanmaydi', desc:"Xodim 20 daqiqa kech keladi, lekin hech kim bilmaydi. Oylik maosh to'liq to'lanadi.", fix:'Face ID kamera aniq vaqtni qayd etadi. Kechikish bo\'lsa kadrlar va rahbar darhol Telegram da biladi.' },
+              { emoji:'🔄', problem:"Boshqasi o'rniga kiradi", desc:"Bitta xodim boshqa birovning kartasini yoki imzosini qo'yib qo'ya oladi.", fix:"Yuz orqali aniqlanadi — aldash imkonsiz. Har bir xodim faqat o'zi kiradi." },
+              { emoji:'📊', problem:"Qo'lda hisoblash xatolari", desc:"HR soatlab jadvallar bilan shug'ullanadi, Excel da xatoliklar ko'p, hisobotlar kech tayyor bo'ladi.", fix:'Tizim avtomatik hisoblaydi. Bir tugma bilan PDF hisobot tayyor, ish haqi uchun ma\'lumotlar aniq.' },
+            ].map(({ emoji, problem, desc, fix }) => (
+              <div key={problem} style={{ background:'#f8fafc', borderRadius:'18px', padding:'28px 24px', textAlign:'left', border:'1px solid #e2e8f0' }}>
+                <div style={{ fontSize:'36px', marginBottom:'14px' }}>{emoji}</div>
+                <div style={{ fontSize:'17px', fontWeight:700, color:'#0f172a', marginBottom:'8px' }}>{problem}</div>
+                <div style={{ fontSize:'13px', color:'#94a3b8', lineHeight:1.6, marginBottom:'16px' }}>{desc}</div>
+                <div style={{ borderTop:'1px dashed #e2e8f0', paddingTop:'14px', display:'flex', gap:'8px' }}>
+                  <span style={{ color:'#22c55e', fontSize:'15px', flexShrink:0 }}>✓</span>
+                  <span style={{ fontSize:'13px', color:'#16a34a', lineHeight:1.6, fontWeight:500 }}>{fix}</span>
+                </div>
+              </div>
+            ))}
+          </div>
+        </div>
+      </section>
+
+      {/* Qanday ishlaydi */}
+      <section style={{ position:'relative', zIndex:10, background:'linear-gradient(135deg,#1a56db 0%,#1e429f 100%)', padding:'72px 40px 64px', textAlign:'center' }}>
+        <div style={{ maxWidth:'1200px', margin:'0 auto' }}>
+          <div style={{ display:'inline-flex', alignItems:'center', gap:'8px', background:'rgba(255,255,255,0.12)', border:'1px solid rgba(255,255,255,0.2)', borderRadius:'50px', padding:'6px 18px', marginBottom:'20px' }}>
+            <span style={{ fontSize:'13px', color:'rgba(255,255,255,0.9)', fontWeight:600 }}>⚡ Avtomatik jarayon</span>
+          </div>
+          <h2 style={{ margin:'0 0 10px', fontSize:'32px', fontWeight:800, color:'#fff', letterSpacing:'-0.8px' }}>Qanday ishlaydi?</h2>
+          <p style={{ margin:'0 auto 52px', fontSize:'15px', color:'rgba(255,255,255,0.65)', maxWidth:'420px', lineHeight:1.7 }}>To'rt qadam — hammasi avtomatik, hech qanday qo'lda kiritish shart emas</p>
+          <div style={{ display:'grid', gridTemplateColumns:'repeat(auto-fit,minmax(220px,1fr))', gap:'16px' }}>
+            {[
+              { num:'01', icon:'📷', title:'Kameradan o\'tadi', desc:'Xodim kirish joyida Face ID kamera oldidan o\'tadi. 0.3 soniyada aniqlanadi.' },
+              { num:'02', icon:'💾', title:'Serverga qayd etiladi', desc:'Aniq vaqt bilan server ga saqlanadi. Internet yo\'q bo\'lsa — mahalliy xotirada.' },
+              { num:'03', icon:'🖥️', title:'Dashboard da ko\'rinadi', desc:'Kadrlar real vaqtda kim keldi, kim kelmadi, kim kechikdi — hammasi bir ekranda.' },
+              { num:'04', icon:'📱', title:'Telegram ga xabar', desc:'Har kun kechikuvchilar va kelmaganlar ro\'yxati Telegram ga avtomatik yuboriladi.' },
+            ].map(({ num, icon, title, desc }) => (
+              <div key={num} style={{ background:'rgba(255,255,255,0.08)', border:'1px solid rgba(255,255,255,0.12)', borderRadius:'18px', padding:'26px 20px', textAlign:'left' }}>
+                <div style={{ display:'flex', alignItems:'center', gap:'10px', marginBottom:'16px' }}>
+                  <div style={{ width:'32px', height:'32px', borderRadius:'50%', background:'rgba(255,255,255,0.15)', display:'flex', alignItems:'center', justifyContent:'center', fontSize:'12px', fontWeight:700, color:'rgba(255,255,255,0.7)', flexShrink:0 }}>{num}</div>
+                  <span style={{ fontSize:'24px' }}>{icon}</span>
+                </div>
+                <div style={{ fontSize:'16px', fontWeight:700, color:'#fff', marginBottom:'8px' }}>{title}</div>
+                <div style={{ fontSize:'13px', color:'rgba(255,255,255,0.6)', lineHeight:1.6 }}>{desc}</div>
+              </div>
+            ))}
+          </div>
+        </div>
+      </section>
+
+      {/* Kimlar uchun */}
+      <section style={{ position:'relative', zIndex:10, background:'#fff', padding:'72px 40px 64px', textAlign:'center' }}>
+        <div style={{ maxWidth:'1200px', margin:'0 auto' }}>
+          <div style={{ display:'inline-flex', alignItems:'center', gap:'8px', background:'#eff6ff', border:'1px solid #bfdbfe', borderRadius:'50px', padding:'6px 18px', marginBottom:'20px' }}>
+            <span style={{ fontSize:'13px', color:'#2563eb', fontWeight:600 }}>🏢 Maqsadli mijozlar</span>
+          </div>
+          <h2 style={{ margin:'0 0 10px', fontSize:'32px', fontWeight:800, color:'#0f172a', letterSpacing:'-0.8px' }}>Kimlar uchun mos?</h2>
+          <p style={{ margin:'0 auto 44px', fontSize:'15px', color:'#64748b', maxWidth:'440px', lineHeight:1.7 }}>Har qanday tashkilot xodimlar davomatini nazorat qilishi kerak</p>
+          <div style={{ display:'grid', gridTemplateColumns:'repeat(auto-fit,minmax(240px,1fr))', gap:'16px' }}>
+            {[
+              { icon:'🏢', title:'Ofis va kompaniyalar', desc:"Kechikish nazorati, moslashuvchan jadval, ish soatlari asosida ish haqi hisoblash" },
+              { icon:'🏭', title:'Ishlab chiqarish', desc:'Smenali jadval, ko\'p kirish nuqtasi, ko\'p xodimni bir vaqtda nazorat' },
+              { icon:'🎓', title:"Maktab va o'quv markazlari", desc:"O'quvchilar va o'qituvchilar davomati, sinflar bo'yicha hisobot" },
+              { icon:'🏥', title:'Klinika va tibbiyot', desc:"Navbatchi shifokorlar, smena jadvali, aniq ish soatlari hisoblash" },
+              { icon:'🛒', title:'Savdo tarmoqlari', desc:"Ko'p filial — har biri o'z jamoasini ko'radi, markaz hammasini ko'radi" },
+              { icon:'🏛️', title:"Davlat tashkilotlari", desc:"To'liq mahalliy server, ma'lumotlar tashqariga chiqmaydi, internet bo'lmasa ham ishlaydi" },
+            ].map(({ icon, title, desc }) => (
+              <div key={title} style={{ background:'#f8fafc', borderRadius:'16px', padding:'24px 20px', textAlign:'left', border:'1px solid #e2e8f0', transition:'transform 0.2s' }}
+                onMouseEnter={e=>e.currentTarget.style.transform='translateY(-4px)'}
+                onMouseLeave={e=>e.currentTarget.style.transform='translateY(0)'}
+              >
+                <div style={{ fontSize:'32px', marginBottom:'12px' }}>{icon}</div>
+                <div style={{ fontSize:'15px', fontWeight:700, color:'#0f172a', marginBottom:'6px' }}>{title}</div>
+                <div style={{ fontSize:'13px', color:'#64748b', lineHeight:1.6 }}>{desc}</div>
+              </div>
+            ))}
+          </div>
+        </div>
+      </section>
+
+      {/* Imkoniyatlar */}
+      <section style={{ position:'relative', zIndex:10, background:'#f8fafc', padding:'72px 40px 64px', textAlign:'center' }}>
+        <div style={{ maxWidth:'1200px', margin:'0 auto' }}>
+          <div style={{ display:'inline-flex', alignItems:'center', gap:'8px', background:'#f0fdf4', border:'1px solid #a7f3d0', borderRadius:'50px', padding:'6px 18px', marginBottom:'20px' }}>
+            <span style={{ fontSize:'13px', color:'#059669', fontWeight:600 }}>✅ Platforma imkoniyatlari</span>
+          </div>
+          <h2 style={{ margin:'0 0 10px', fontSize:'32px', fontWeight:800, color:'#0f172a', letterSpacing:'-0.8px' }}>Nima qila oladi?</h2>
+          <p style={{ margin:'0 auto 44px', fontSize:'15px', color:'#64748b', maxWidth:'440px', lineHeight:1.7 }}>Davomatlar.uz — faqat qayd etish emas, to'liq boshqaruv tizimi</p>
+          <div style={{ display:'grid', gridTemplateColumns:'repeat(auto-fit,minmax(260px,1fr))', gap:'16px' }}>
+            {[
+              { icon:'📷', color:'#2563eb', bg:'#eff6ff', title:'Face ID kamera integratsiya', desc:"Xodim kameradan o'tganda avtomatik aniqlanadi. Aldash imkonsiz, tezlik 0.3 soniya." },
+              { icon:'🖥️', color:'#7c3aed', bg:'#f5f3ff', title:'Real vaqt dashboard', desc:'Kim keldi, kim kelmadi, kim kechikdi — hammasini bir sahifada ko\'rasiz.' },
+              { icon:'📄', color:'#059669', bg:'#f0fdf4', title:'Hisobotlar va PDF', desc:'Kunlik, haftalik, oylik hisobotlar. Bir tugma — PDF tayyor, print qilishga tayyor.' },
+              { icon:'📱', color:'#ea580c', bg:'#fff7ed', title:'Telegram xabarnomalar', desc:"Har kuni ertalab kelmagan xodimlar ro'yxati. Kechikish bo'lsa — darhol xabar." },
+              { icon:'⏱️', color:'#dc2626', bg:'#fef2f2', title:'Kechikish nazorati', desc:"Ish boshlanish vaqti sozlanadi. Har bir kechikish aniq daqiqagacha qayd etiladi." },
+              { icon:'🏢', color:'#0891b2', bg:'#ecfeff', title:"Ko'p filial boshqaruvi", desc:"Bir akkauntdan barcha filiallarni ko'rasiz. Har filial o'z ma'lumotlarini ko'radi." },
+            ].map(({ icon, color, bg, title, desc }) => (
+              <div key={title} style={{ background:'#fff', borderRadius:'16px', padding:'24px 20px', textAlign:'left', border:'1px solid #e2e8f0', transition:'transform 0.2s, box-shadow 0.2s' }}
+                onMouseEnter={e=>{e.currentTarget.style.transform='translateY(-4px)';e.currentTarget.style.boxShadow=`0 8px 30px ${color}18`}}
+                onMouseLeave={e=>{e.currentTarget.style.transform='translateY(0)';e.currentTarget.style.boxShadow='none'}}
+              >
+                <div style={{ width:'44px', height:'44px', borderRadius:'12px', background:bg, display:'flex', alignItems:'center', justifyContent:'center', fontSize:'20px', marginBottom:'14px' }}>{icon}</div>
+                <div style={{ fontSize:'15px', fontWeight:700, color:'#0f172a', marginBottom:'6px' }}>{title}</div>
+                <div style={{ fontSize:'13px', color:'#64748b', lineHeight:1.6 }}>{desc}</div>
+              </div>
+            ))}
+          </div>
+        </div>
+      </section>
+
       {/* Tariflar */}
       <section ref={pricingRef} style={{
         position:'relative', zIndex:10, padding:'72px 40px 60px', textAlign:'center',
@@ -417,6 +535,27 @@ export default function Login({ onLogin }) {
         <p style={{ marginTop:'28px', fontSize:'12px', color:'#94a3b8' }}>
           * Telegram xabarnomalar — tez orada · Barcha narxlar QQS siz · Korporativ tarifda 6 oylik shartnoma talab qilinadi
         </p>
+      </section>
+
+      {/* CTA */}
+      <section style={{ position:'relative', zIndex:10, background:'linear-gradient(135deg,#0f172a 0%,#1e3a5f 100%)', padding:'64px 40px', textAlign:'center' }}>
+        <div style={{ maxWidth:'600px', margin:'0 auto' }}>
+          <div style={{ fontSize:'40px', marginBottom:'16px' }}>🚀</div>
+          <h2 style={{ margin:'0 0 12px', fontSize:'28px', fontWeight:800, color:'#fff', letterSpacing:'-0.5px' }}>Bepul konsultatsiya oling</h2>
+          <p style={{ margin:'0 0 28px', fontSize:'15px', color:'rgba(255,255,255,0.6)', lineHeight:1.7 }}>
+            Tashkilotingiz uchun qaysi tarif mos ekanini birgalikda aniqlaymiz. Basic paket 3-7 kunda ishga tushadi.
+          </p>
+          <div style={{ display:'flex', gap:'12px', justifyContent:'center', flexWrap:'wrap' }}>
+            <a href="https://t.me/acsham" target="_blank" rel="noreferrer" style={{ display:'inline-flex', alignItems:'center', gap:'8px', padding:'13px 28px', borderRadius:'13px', background:'#2563eb', color:'#fff', fontSize:'15px', fontWeight:600, textDecoration:'none', transition:'opacity 0.2s' }}
+              onMouseEnter={e=>e.currentTarget.style.opacity='0.85'} onMouseLeave={e=>e.currentTarget.style.opacity='1'}>
+              <Send size={16}/> Telegram orqali yozish
+            </a>
+            <a href="tel:+998908738963" style={{ display:'inline-flex', alignItems:'center', gap:'8px', padding:'13px 28px', borderRadius:'13px', background:'rgba(255,255,255,0.1)', border:'1px solid rgba(255,255,255,0.2)', color:'#fff', fontSize:'15px', fontWeight:600, textDecoration:'none', transition:'opacity 0.2s' }}
+              onMouseEnter={e=>e.currentTarget.style.opacity='0.8'} onMouseLeave={e=>e.currentTarget.style.opacity='1'}>
+              <Phone size={16}/> +998 90-873-89-63
+            </a>
+          </div>
+        </div>
       </section>
 
       {/* Footer */}
