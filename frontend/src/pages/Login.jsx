@@ -299,89 +299,123 @@ export default function Login({ onLogin }) {
           {[
             {
               icon: Zap, badge: null, name:'Plus', desc:'Kichik jamoa uchun ideal',
-              price:'1 000 000', color:'#f97316', lightBg:'#fff7ed', borderC:'#fed7aa',
-              gift: null,
+              price:'1 000 000', limit:'12 tagacha xodim',
+              theme:'light', accentColor:'#f97316',
+              btnBg:'#2563eb', btnColor:'#fff',
               features:['12 tagacha xodim','1 ta filial boshqaruvi','Face ID kamera integratsiya','Real vaqt kuzatuv','Kunlik hisobotlar & PDF','Xodimlar bazasi (kadrlar)',"Ta'til va kasallik hisobi",'Kechikish nazorati'],
+              gift: null,
             },
             {
               icon: Star, badge:'⭐ Eng mashhur', name:'Pro', desc:"O'rta tashkilotlar uchun",
-              price:'2 500 000', color:'#2563eb', lightBg:'#eff6ff', borderC:'#bfdbfe',
-              gift: null,
+              price:'2 500 000', limit:'35 tagacha xodim',
+              theme:'blue', accentColor:'rgba(255,255,255,0.9)',
+              btnBg:'rgba(255,255,255,0.18)', btnColor:'#fff',
               features:['35 tagacha xodim','5 tagacha filial boshqaruvi','Face ID kamera integratsiya','Real vaqt kuzatuv','Kunlik + oylik hisobotlar & PDF','Xodimlar bazasi (kadrlar)',"Ta'til va kasallik hisobi","Haftalik jadval ko'rinishi",'Statistika va reytinglar','Kechikish nazorati'],
+              gift: null,
             },
             {
               icon: Building2, badge:"🎁 Sovg'a bor", name:'Ultra', desc:'Yirik tashkilotlar uchun',
-              price:'4 000 000', color:'#059669', lightBg:'#f0fdf4', borderC:'#a7f3d0',
-              gift: true,
+              price:'4 000 000', limit:'100 tagacha xodim',
+              theme:'dark', accentColor:'rgba(255,255,255,0.85)',
+              btnBg:'#2563eb', btnColor:'#fff',
               features:['100 tagacha xodim','Cheksiz filiallar boshqaruvi','Face ID kamera — sotib olish shart emas','Real vaqt kuzatuv',"To'liq hisobotlar paketi & PDF",'Xodimlar bazasi (kadrlar)',"Ta'til va kasallik hisobi","Haftalik jadval ko'rinishi",'Statistika va reytinglar','Kechikish nazorati','Telegram xabarnomalar*','Ustuvor texnik yordam'],
+              gift: true,
             },
-          ].map(({ icon:Icon, badge, name, desc, price, color, lightBg, borderC, gift, features }, i) => (
+          ].map(({ icon:Icon, badge, name, desc, price, limit, theme, accentColor, btnBg, btnColor, features, gift }, i) => {
+            const isBlue = theme === 'blue'
+            const isDark = theme === 'dark'
+            const cardBg = isBlue ? 'linear-gradient(145deg,#2563eb,#1e40af)' : isDark ? '#1e293b' : '#ffffff'
+            const titleColor = (isBlue || isDark) ? '#ffffff' : '#0f172a'
+            const subColor = isBlue ? 'rgba(255,255,255,0.65)' : isDark ? 'rgba(255,255,255,0.5)' : '#94a3b8'
+            const priceColor = (isBlue || isDark) ? '#ffffff' : '#0f172a'
+            const featColor = isBlue ? 'rgba(255,255,255,0.82)' : isDark ? 'rgba(255,255,255,0.7)' : '#475569'
+            const dividerColor = isBlue ? 'rgba(255,255,255,0.15)' : isDark ? 'rgba(255,255,255,0.1)' : '#f1f5f9'
+            const checkBg = isBlue ? 'rgba(255,255,255,0.18)' : isDark ? 'rgba(255,255,255,0.12)' : '#f1f5f9'
+            const checkColor = isBlue ? '#93c5fd' : isDark ? '#60a5fa' : '#2563eb'
+            const iconBg = isBlue ? 'rgba(255,255,255,0.18)' : isDark ? 'rgba(255,255,255,0.1)' : '#eff6ff'
+            const iconColor = isBlue ? '#fff' : isDark ? '#93c5fd' : '#2563eb'
+            const badgeBg = isBlue ? 'rgba(255,255,255,0.2)' : isDark ? 'rgba(255,255,255,0.12)' : '#fff3e0'
+            const badgeColor = isBlue ? '#fff' : isDark ? '#fbbf24' : '#f97316'
+            const limitBg = isBlue ? 'rgba(255,255,255,0.18)' : isDark ? 'rgba(255,255,255,0.1)' : '#eff6ff'
+            const limitColor = isBlue ? '#fff' : isDark ? '#93c5fd' : '#2563eb'
+            const cardShadow = isBlue ? '0 20px 60px rgba(37,99,235,0.5)' : isDark ? '0 8px 32px rgba(0,0,0,0.3)' : '0 4px 24px rgba(0,0,0,0.06)'
+            const borderStyle = isBlue ? 'none' : isDark ? '1.5px solid rgba(255,255,255,0.1)' : '1.5px solid #e2e8f0'
+
+            return (
             <div key={name} style={{
               position:'relative', overflow:'hidden',
-              background:'#ffffff',
-              border:`1.5px solid ${borderC}`,
+              background: cardBg,
+              border: borderStyle,
               borderRadius:'22px', padding:'26px 22px 22px',
               textAlign:'left', display:'flex', flexDirection:'column',
-              boxShadow:'0 4px 24px rgba(0,0,0,0.06)',
+              boxShadow: cardShadow,
               transition:'transform 0.25s, box-shadow 0.25s',
               animation:`cardIn 0.5s ${i*0.12}s both`,
             }}
-              onMouseEnter={e=>{e.currentTarget.style.transform='translateY(-6px)';e.currentTarget.style.boxShadow=`0 16px 48px ${color}22`}}
-              onMouseLeave={e=>{e.currentTarget.style.transform='translateY(0)';e.currentTarget.style.boxShadow='0 4px 24px rgba(0,0,0,0.06)'}}
+              onMouseEnter={e=>{e.currentTarget.style.transform='translateY(-6px)'}}
+              onMouseLeave={e=>{e.currentTarget.style.transform='translateY(0)'}}
             >
-              <div style={{ position:'absolute', top:0, left:0, right:0, height:'4px', background:`linear-gradient(90deg,${color},${color}88)`, borderRadius:'22px 22px 0 0' }}/>
-
-              {/* Badge + Icon */}
+              {/* Badge + Icon row */}
               <div style={{ display:'flex', alignItems:'center', justifyContent:'space-between', marginBottom:'18px' }}>
-                <div style={{ width:'46px', height:'46px', borderRadius:'13px', background:lightBg, border:`1.5px solid ${borderC}`, display:'flex', alignItems:'center', justifyContent:'center' }}>
-                  <Icon size={21} color={color}/>
+                <div style={{ width:'46px', height:'46px', borderRadius:'13px', background:iconBg, display:'flex', alignItems:'center', justifyContent:'center' }}>
+                  <Icon size={21} color={iconColor}/>
                 </div>
-                {badge && <div style={{ background:lightBg, border:`1px solid ${borderC}`, borderRadius:'50px', padding:'4px 12px', fontSize:'12px', color, fontWeight:700 }}>{badge}</div>}
+                {badge && <div style={{ background:badgeBg, borderRadius:'50px', padding:'5px 12px', fontSize:'12px', color:badgeColor, fontWeight:700 }}>{badge}</div>}
               </div>
 
-              <div style={{ fontSize:'21px', fontWeight:800, color:'#0f172a', marginBottom:'3px' }}>{name}</div>
-              <div style={{ fontSize:'13px', color:'#94a3b8', marginBottom:'18px' }}>{desc}</div>
+              <div style={{ fontSize:'21px', fontWeight:800, color:titleColor, marginBottom:'3px' }}>{name}</div>
+              <div style={{ fontSize:'13px', color:subColor, marginBottom:'16px' }}>{desc}</div>
 
-              <div style={{ marginBottom:'16px', paddingBottom:'16px', borderBottom:`1px solid #f1f5f9` }}>
-                <span style={{ fontSize:'34px', fontWeight:800, color:'#0f172a', letterSpacing:'-1.5px' }}>{price}</span>
-                <span style={{ fontSize:'13px', color:'#94a3b8', marginLeft:'6px' }}>so'm / oy</span>
-                <div style={{ marginTop:'10px', display:'inline-flex', alignItems:'center', gap:'6px', background:lightBg, border:`1px solid ${borderC}`, borderRadius:'50px', padding:'4px 12px' }}>
-                  <Users size={12} color={color}/>
-                  <span style={{ fontSize:'12px', color, fontWeight:600 }}>{features[0]}</span>
+              {/* Dotted divider */}
+              <div style={{ borderTop:`1.5px dashed ${dividerColor}`, marginBottom:'16px' }}/>
+
+              <div style={{ marginBottom:'16px' }}>
+                <div style={{ display:'flex', alignItems:'baseline', gap:'6px', marginBottom:'10px' }}>
+                  <span style={{ fontSize:'32px', fontWeight:800, color:priceColor, letterSpacing:'-1.5px' }}>{price}</span>
+                  <span style={{ fontSize:'13px', color:subColor }}>so'm / oy</span>
+                </div>
+                <div style={{ display:'inline-flex', alignItems:'center', gap:'6px', background:limitBg, borderRadius:'50px', padding:'4px 12px' }}>
+                  <Users size={12} color={limitColor}/>
+                  <span style={{ fontSize:'12px', color:limitColor, fontWeight:600 }}>{limit}</span>
                 </div>
               </div>
+
+              {/* Dotted divider */}
+              <div style={{ borderTop:`1.5px dashed ${dividerColor}`, marginBottom:'16px' }}/>
 
               <div style={{ flex:1, display:'flex', flexDirection:'column', gap:'9px', marginBottom:'18px' }}>
                 {features.map(f => (
                   <div key={f} style={{ display:'flex', alignItems:'flex-start', gap:'9px' }}>
-                    <div style={{ marginTop:'1px', width:'17px', height:'17px', borderRadius:'50%', background:lightBg, border:`1px solid ${borderC}`, display:'flex', alignItems:'center', justifyContent:'center', flexShrink:0 }}>
-                      <Check size={9} color={color} strokeWidth={3}/>
+                    <div style={{ marginTop:'1px', width:'17px', height:'17px', borderRadius:'50%', background:checkBg, display:'flex', alignItems:'center', justifyContent:'center', flexShrink:0 }}>
+                      <Check size={9} color={checkColor} strokeWidth={3}/>
                     </div>
-                    <span style={{ fontSize:'13px', color:'#475569', lineHeight:1.5 }}>{f}</span>
+                    <span style={{ fontSize:'13px', color:featColor, lineHeight:1.5 }}>{f}</span>
                   </div>
                 ))}
               </div>
 
               {gift && (
-                <div style={{ marginBottom:'14px', padding:'11px 13px', borderRadius:'13px', background:'#f0fdf4', border:'1.5px solid #a7f3d0', display:'flex', alignItems:'flex-start', gap:'9px' }}>
+                <div style={{ marginBottom:'14px', padding:'11px 13px', borderRadius:'13px', background:'rgba(255,255,255,0.08)', border:'1.5px solid rgba(255,255,255,0.15)', display:'flex', alignItems:'flex-start', gap:'9px' }}>
                   <span style={{ fontSize:'18px', lineHeight:1, flexShrink:0 }}>🎁</span>
-                  <div style={{ fontSize:'12px', color:'#475569', lineHeight:1.5 }}>
-                    6 oylik shartnoma tuzganda — Face ID qurilmasi <strong style={{ color:'#059669' }}>bepul beriladi</strong>
+                  <div style={{ fontSize:'12px', color:'rgba(255,255,255,0.75)', lineHeight:1.5 }}>
+                    6 oylik shartnoma tuzganda — Face ID qurilmasi <strong style={{ color:'#4ade80' }}>bepul beriladi</strong>
                   </div>
                 </div>
               )}
 
               <a href="https://t.me/davomatlaruz" target="_blank" rel="noreferrer" style={{
-                display:'block', width:'100%', padding:'13px', borderRadius:'13px', border:'none',
-                background:color, color:'#fff', textAlign:'center',
+                display:'block', width:'100%', padding:'13px', borderRadius:'13px', border: isBlue ? '1.5px solid rgba(255,255,255,0.3)' : 'none',
+                background: btnBg, color: btnColor, textAlign:'center',
                 fontSize:'14px', fontWeight:700, cursor:'pointer', textDecoration:'none',
-                boxShadow:`0 6px 20px ${color}44`, transition:'opacity 0.2s, transform 0.15s',
+                backdropFilter: isBlue ? 'blur(10px)' : 'none',
+                boxShadow: isBlue ? 'none' : isDark ? '0 4px 16px rgba(37,99,235,0.5)' : '0 4px 16px rgba(37,99,235,0.3)',
+                transition:'opacity 0.2s',
               }}
-                onMouseEnter={e=>{e.currentTarget.style.opacity='0.88';e.currentTarget.style.transform='scale(0.99)'}}
-                onMouseLeave={e=>{e.currentTarget.style.opacity='1';e.currentTarget.style.transform='scale(1)'}}
+                onMouseEnter={e=>e.currentTarget.style.opacity='0.85'}
+                onMouseLeave={e=>e.currentTarget.style.opacity='1'}
               >Bog'lanish →</a>
             </div>
-          ))}
+          )})
         </div>
         <p style={{ marginTop:'28px', fontSize:'12px', color:'#94a3b8' }}>
           * Telegram xabarnomalar — tez orada · Barcha narxlar QQS siz · Korporativ tarifda 6 oylik shartnoma talab qilinadi
