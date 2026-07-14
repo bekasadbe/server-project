@@ -67,7 +67,6 @@ def main_keyboard():
     return ReplyKeyboardMarkup(
         [[KeyboardButton('🌐 Platformani ochish', web_app=WebAppInfo(url=WEB_URL))]],
         resize_keyboard=True,
-        persistent=True,
     )
 
 # Xabarlar ichidagi inline tugma (bildirishnomalar uchun)
