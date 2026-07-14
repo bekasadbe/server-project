@@ -419,7 +419,7 @@ export default function Login({ onLogin }) {
         <h2 style={{ margin:'0 0 10px', fontSize:'36px', fontWeight:800, color:'#0f172a', letterSpacing:'-1px' }}>
           Biznesingizga mos tarif
         </h2>
-        <p style={{ margin:'0 auto 44px', fontSize:'15px', color:'#64748b', maxWidth:'400px', lineHeight:1.7 }}>
+        <p className="pricing-sub" style={{ margin:'0 auto 44px', fontSize:'15px', color:'#64748b', maxWidth:'520px', lineHeight:1.7, whiteSpace:'nowrap' }}>
           Xodimlar soniga qarab eng qulay tarifni tanlang. Har oyda bekor qilish mumkin.
         </p>
 
@@ -607,6 +607,7 @@ export default function Login({ onLogin }) {
           html, body { overflow-y: auto !important; height: auto !important; }
           .landing-main { padding-top: 40px !important; padding-bottom: 40px !important; }
           .feature-showcase { grid-template-columns: 1fr !important; }
+          .pricing-sub { white-space: normal !important; max-width: 400px !important; }
         }
         @media (max-width: 480px) {
           .cards-grid { grid-template-columns: repeat(2, 1fr) !important; }
