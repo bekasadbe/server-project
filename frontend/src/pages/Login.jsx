@@ -409,8 +409,6 @@ export default function Login({ onLogin }) {
       <section ref={pricingRef} style={{
         position:'relative', zIndex:10, padding:'72px 40px 60px', textAlign:'center',
         background:'#f8fafc',
-        opacity: pricingVisible ? 1 : 0, transform: pricingVisible ? 'translateY(0)' : 'translateY(40px)',
-        transition:'opacity 0.7s ease, transform 0.7s ease',
       }}>
         <div style={{ display:'inline-flex', alignItems:'center', gap:'8px', background:'#fff3e0', border:'1px solid #fed7aa', borderRadius:'50px', padding:'6px 18px', marginBottom:'20px' }}>
           <Zap size={13} color="#f97316"/>
