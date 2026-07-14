@@ -17,7 +17,8 @@ import requests
 from telegram import (
     Bot, Update,
     InlineKeyboardButton, InlineKeyboardMarkup,
-    ReplyKeyboardMarkup, KeyboardButton, WebAppInfo
+    ReplyKeyboardMarkup, KeyboardButton, WebAppInfo,
+    MenuButtonWebApp,
 )
 from telegram.ext import (
     Application, CommandHandler, MessageHandler,
@@ -239,6 +240,15 @@ async def main():
     app.add_handler(MessageHandler(filters.StatusUpdate.WEB_APP_DATA, handle_webapp))
 
     log.info('Bot ishga tushdi...')
+
+    # Xabar maydonining yonida "Ilova" tugmasini o'rnatish
+    try:
+        await app.bot.set_chat_menu_button(
+            menu_button=MenuButtonWebApp(text='Ilova', web_app=WebAppInfo(url=WEB_URL))
+        )
+        log.info('Menu button (Ilova) o\'rnatildi')
+    except Exception as e:
+        log.warning(f'Menu button o\'rnatishda xato: {e}')
 
     # Scheduler ni fon da ishlatamiz
     async with app:

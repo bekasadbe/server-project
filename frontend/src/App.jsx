@@ -112,6 +112,7 @@ export default function App() {
 
   if (!user) {
     const tgId = new URLSearchParams(window.location.search).get('tg_id')
+      || window.Telegram?.WebApp?.initDataUnsafe?.user?.id
     if (tgId) {
       fetch(`/api/auth/telegram?tg_id=${tgId}`)
         .then(r => r.json())
