@@ -466,7 +466,7 @@ export default function Login({ onLogin }) {
             const badgeColor = isBlue ? '#fff' : isDark ? '#fbbf24' : '#f97316'
             const limitBg = isBlue ? 'rgba(255,255,255,0.18)' : isDark ? 'rgba(255,255,255,0.1)' : '#eff6ff'
             const limitColor = isBlue ? '#fff' : isDark ? '#93c5fd' : '#2563eb'
-            const cardShadow = isBlue ? '0 20px 60px rgba(37,99,235,0.5)' : isDark ? '0 8px 32px rgba(0,0,0,0.3)' : '0 4px 24px rgba(0,0,0,0.06)'
+            const cardShadow = isBlue ? '0 8px 24px rgba(37,99,235,0.18)' : isDark ? '0 8px 32px rgba(0,0,0,0.3)' : '0 4px 24px rgba(0,0,0,0.06)'
             const borderStyle = isBlue ? 'none' : isDark ? '1.5px solid rgba(255,255,255,0.1)' : '1.5px solid #e2e8f0'
 
             return (
