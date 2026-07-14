@@ -415,7 +415,7 @@ export default function Login({ onLogin }) {
                 onMouseLeave={e=>e.currentTarget.style.opacity='1'}
               >Bog'lanish →</a>
             </div>
-          )})
+          )})}
         </div>
         <p style={{ marginTop:'28px', fontSize:'12px', color:'#94a3b8' }}>
           * Telegram xabarnomalar — tez orada · Barcha narxlar QQS siz · Korporativ tarifda 6 oylik shartnoma talab qilinadi
