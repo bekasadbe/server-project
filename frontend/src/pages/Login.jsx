@@ -274,6 +274,23 @@ export default function Login({ onLogin }) {
         </div>
       </main>
 
+      {/* Davomat tizimi nima? */}
+      <section style={{ position:'relative', zIndex:10, background:'#0f172a', padding:'80px 40px 72px', textAlign:'center' }}>
+        <div style={{ maxWidth:'860px', margin:'0 auto' }}>
+          <h2 style={{ margin:'0 0 36px', fontSize:'36px', fontWeight:800, color:'#fff', letterSpacing:'-0.8px' }}>
+            Davomat tizimi <span style={{ color:'#818cf8' }}>nima?</span>
+          </h2>
+          <div style={{ background:'rgba(255,255,255,0.05)', border:'1px solid rgba(255,255,255,0.1)', borderRadius:'16px', padding:'32px 36px', marginBottom:'24px', textAlign:'left' }}>
+            <p style={{ margin:0, fontSize:'16px', color:'rgba(255,255,255,0.85)', lineHeight:1.8, fontWeight:400 }}>
+              Davomat tizimi — xodimlarning ishga kelish va ketish vaqtini avtomatik qayd etadigan dasturiy-texnik yechim. Yuzni aniqlash kamerasi xodimni identifikatsiya qiladi, ma'lumot serverga yoziladi, rahbar esa dashboard va Telegram bot orqali kim keldi, kim kechikdi, kim kelmaganini real vaqtda ko'radi. Qog'oz jurnal va qo'lda hisob-kitobning o'rnini to'liq bosadi.
+            </p>
+          </div>
+          <p style={{ margin:0, fontSize:'14px', color:'rgba(255,255,255,0.4)', lineHeight:1.8, textAlign:'left' }}>
+            Davomat nazorati uchta muammoni hal qiladi: kechikishlar sezilmay qolishi, "do'st uchun belgilash" (bir xodim boshqasining o'rniga qayd etishi) va oy oxirida ish haqi uchun soatlarni qo'lda hisoblash. Yuzni aniqlash texnologiyasida karta yoki kod almashib bo'lmaydi — kamera aynan shaxsning o'zini taniydi, shuning uchun natijalar ishonchli hisoblanadi.
+          </p>
+        </div>
+      </section>
+
       {/* 3 Muammo */}
       <section style={{ position:'relative', zIndex:10, background:'#fff', padding:'72px 40px 64px', textAlign:'center' }}>
         <div style={{ maxWidth:'1200px', margin:'0 auto' }}>
