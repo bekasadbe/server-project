@@ -28,7 +28,7 @@ from telegram.ext import (
 BOT_TOKEN  = os.environ.get('BOT_TOKEN', '8970318623:AAHWKODAnSnUcRIvxqHCD3iSEsgrv9Gn6WM')
 API_URL    = os.environ.get('API_URL',   'http://api:8001')
 API_TOKEN  = os.environ.get('API_TOKEN', 'Dav0mat@API#2026!')
-WEB_URL    = 'https://davomatlar.uz'
+WEB_URL    = 'https://davomatlar.uz?tg=1'
 
 # Bildirishnoma yuboriladigan chat IDlar (admin panel dan boshqarish mumkin)
 # Hozircha env orqali sozlanadi: CHAT_IDS="-100123456,-100789012"

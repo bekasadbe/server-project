@@ -10,7 +10,10 @@ const LOGIN_FEATURES = [
 ]
 
 export default function Login({ onLogin }) {
-  const [showLogin, setShowLogin] = useState(false)
+  // Telegram bot orqali kelganda to'g'ridan login formasi
+  const fromTelegram = new URLSearchParams(window.location.search).get('tg') === '1'
+    || typeof window.Telegram?.WebApp?.initData === 'string' && window.Telegram.WebApp.initData.length > 0
+  const [showLogin, setShowLogin] = useState(fromTelegram)
   const [username, setUsername]   = useState('')
   const [password, setPassword]   = useState('')
   const [showPass, setShowPass]   = useState(false)
