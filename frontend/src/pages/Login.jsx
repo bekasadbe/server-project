@@ -275,65 +275,65 @@ export default function Login({ onLogin }) {
       </main>
 
       {/* Davomat tizimi nima? */}
-      <section style={{ position:'relative', zIndex:10, background:'#0f172a', padding:'80px 40px 72px', textAlign:'center' }}>
-        <div style={{ maxWidth:'860px', margin:'0 auto' }}>
-          <h2 style={{ margin:'0 0 36px', fontSize:'36px', fontWeight:800, color:'#fff', letterSpacing:'-0.8px' }}>
-            Davomat tizimi <span style={{ color:'#818cf8' }}>nima?</span>
-          </h2>
-          <div style={{ background:'rgba(255,255,255,0.05)', border:'1px solid rgba(255,255,255,0.1)', borderRadius:'16px', padding:'32px 36px', marginBottom:'24px', textAlign:'left' }}>
-            <p style={{ margin:0, fontSize:'16px', color:'rgba(255,255,255,0.85)', lineHeight:1.8, fontWeight:400 }}>
-              Davomat tizimi — xodimlarning ishga kelish va ketish vaqtini avtomatik qayd etadigan dasturiy-texnik yechim. Yuzni aniqlash kamerasi xodimni identifikatsiya qiladi, ma'lumot serverga yoziladi, rahbar esa dashboard va Telegram bot orqali kim keldi, kim kechikdi, kim kelmaganini real vaqtda ko'radi. Qog'oz jurnal va qo'lda hisob-kitobning o'rnini to'liq bosadi.
+      <section style={{ position:'relative', zIndex:10, background:'#0f172a', padding:'80px 40px 84px' }}>
+        <div style={{ maxWidth:'1200px', margin:'0 auto' }}>
+          {/* Tavsif */}
+          <div style={{ textAlign:'center', maxWidth:'860px', margin:'0 auto 60px' }}>
+            <h2 style={{ margin:'0 0 32px', fontSize:'36px', fontWeight:800, color:'#fff', letterSpacing:'-0.8px' }}>
+              Davomat tizimi <span style={{ color:'#818cf8' }}>nima?</span>
+            </h2>
+            <div style={{ background:'rgba(255,255,255,0.05)', border:'1px solid rgba(255,255,255,0.1)', borderRadius:'16px', padding:'32px 36px', marginBottom:'20px', textAlign:'left' }}>
+              <p style={{ margin:0, fontSize:'16px', color:'rgba(255,255,255,0.85)', lineHeight:1.8, fontWeight:400 }}>
+                Davomat tizimi — xodimlarning ishga kelish va ketish vaqtini avtomatik qayd etadigan dasturiy-texnik yechim. Yuzni aniqlash kamerasi xodimni identifikatsiya qiladi, ma'lumot serverga yoziladi, rahbar esa dashboard va Telegram bot orqali kim keldi, kim kechikdi, kim kelmaganini real vaqtda ko'radi. Qog'oz jurnal va qo'lda hisob-kitobning o'rnini to'liq bosadi.
+              </p>
+            </div>
+            <p style={{ margin:0, fontSize:'14px', color:'rgba(255,255,255,0.4)', lineHeight:1.8, textAlign:'left' }}>
+              Davomat nazorati uchta muammoni hal qiladi: kechikishlar sezilmay qolishi, "do'st uchun belgilash" (bir xodim boshqasining o'rniga qayd etishi) va oy oxirida ish haqi uchun soatlarni qo'lda hisoblash. Yuzni aniqlash texnologiyasida karta yoki kod almashib bo'lmaydi — kamera aynan shaxsning o'zini taniydi, shuning uchun natijalar ishonchli hisoblanadi.
             </p>
           </div>
-          <p style={{ margin:0, fontSize:'14px', color:'rgba(255,255,255,0.4)', lineHeight:1.8, textAlign:'left' }}>
-            Davomat nazorati uchta muammoni hal qiladi: kechikishlar sezilmay qolishi, "do'st uchun belgilash" (bir xodim boshqasining o'rniga qayd etishi) va oy oxirida ish haqi uchun soatlarni qo'lda hisoblash. Yuzni aniqlash texnologiyasida karta yoki kod almashib bo'lmaydi — kamera aynan shaxsning o'zini taniydi, shuning uchun natijalar ishonchli hisoblanadi.
-          </p>
-        </div>
-      </section>
 
-      {/* 3 Muammo */}
-      <section style={{ position:'relative', zIndex:10, background:'#fff', padding:'72px 40px 64px', textAlign:'center' }}>
-        <div style={{ maxWidth:'1200px', margin:'0 auto' }}>
-          <div style={{ display:'inline-flex', alignItems:'center', gap:'8px', background:'#fef2f2', border:'1px solid #fecaca', borderRadius:'50px', padding:'6px 18px', marginBottom:'20px' }}>
-            <span style={{ fontSize:'13px', color:'#dc2626', fontWeight:600 }}>Uchta asosiy muammo</span>
+          {/* 3 Muammo */}
+          <div style={{ textAlign:'center', marginBottom:'40px' }}>
+            <div style={{ display:'inline-flex', alignItems:'center', gap:'8px', background:'rgba(239,68,68,0.12)', border:'1px solid rgba(239,68,68,0.25)', borderRadius:'50px', padding:'6px 18px', marginBottom:'20px' }}>
+              <span style={{ fontSize:'13px', color:'#fca5a5', fontWeight:600 }}>Uchta asosiy muammo</span>
+            </div>
+            <h3 style={{ margin:'0 0 10px', fontSize:'28px', fontWeight:800, color:'#fff', letterSpacing:'-0.6px' }}>Tizim qanday muammolarni hal qiladi?</h3>
+            <p style={{ margin:'0 auto', fontSize:'14.5px', color:'rgba(255,255,255,0.45)', maxWidth:'460px', lineHeight:1.7 }}>
+              Ko'pchilik tashkilotlarda bu muammolar har kuni takrorlanadi
+            </p>
           </div>
-          <h2 style={{ margin:'0 0 10px', fontSize:'32px', fontWeight:800, color:'#0f172a', letterSpacing:'-0.8px' }}>Tizim qanday muammolarni hal qiladi?</h2>
-          <p style={{ margin:'0 auto 48px', fontSize:'15px', color:'#64748b', maxWidth:'460px', lineHeight:1.7 }}>
-            Ko'pchilik tashkilotlarda bu muammolar har kuni takrorlanadi
-          </p>
           <div style={{ display:'grid', gridTemplateColumns:'repeat(auto-fit,minmax(300px,1fr))', gap:'20px' }}>
             {[
-              { num:'01', Icon: Clock, color:'#ef4444', bg:'#fef2f2', border:'#fecaca', problem:'Kechikish aniqlanmaydi', desc:"Xodim 20 daqiqa kech keladi, lekin hech kim bilmaydi. Oylik maosh to'liq to'lanadi.", fix:"Face ID kamera aniq vaqtni qayd etadi. Kechikish bo'lsa kadrlar va rahbar darhol Telegram da biladi." },
-              { num:'02', Icon: Users, color:'#f97316', bg:'#fff7ed', border:'#fed7aa', problem:"Boshqasi o'rniga kiradi", desc:"Bitta xodim boshqa birovning kartasini yoki imzosini qo'yib qo'ya oladi.", fix:"Yuz orqali aniqlanadi — aldash imkonsiz. Har bir xodim faqat o'zi kiradi." },
-              { num:'03', Icon: BarChart3, color:'#8b5cf6', bg:'#f5f3ff', border:'#ddd6fe', problem:"Qo'lda hisoblash xatolari", desc:"HR soatlab jadvallar bilan shug'ullanadi, Excel da xatoliklar ko'p, hisobotlar kech tayyor bo'ladi.", fix:"Tizim avtomatik hisoblaydi. Bir tugma bilan PDF hisobot tayyor, ish haqi uchun ma'lumotlar aniq." },
+              { num:'01', Icon: Clock, color:'#f87171', bg:'rgba(248,113,113,0.12)', border:'rgba(248,113,113,0.3)', problem:'Kechikish aniqlanmaydi', desc:"Xodim 20 daqiqa kech keladi, lekin hech kim bilmaydi. Oylik maosh to'liq to'lanadi.", fix:"Face ID kamera aniq vaqtni qayd etadi. Kechikish bo'lsa kadrlar va rahbar darhol Telegram da biladi." },
+              { num:'02', Icon: Users, color:'#fb923c', bg:'rgba(251,146,60,0.12)', border:'rgba(251,146,60,0.3)', problem:"Boshqasi o'rniga kiradi", desc:"Bitta xodim boshqa birovning kartasini yoki imzosini qo'yib qo'ya oladi.", fix:"Yuz orqali aniqlanadi — aldash imkonsiz. Har bir xodim faqat o'zi kiradi." },
+              { num:'03', Icon: BarChart3, color:'#a78bfa', bg:'rgba(167,139,250,0.12)', border:'rgba(167,139,250,0.3)', problem:"Qo'lda hisoblash xatolari", desc:"HR soatlab jadvallar bilan shug'ullanadi, Excel da xatoliklar ko'p, hisobotlar kech tayyor bo'ladi.", fix:"Tizim avtomatik hisoblaydi. Bir tugma bilan PDF hisobot tayyor, ish haqi uchun ma'lumotlar aniq." },
             ].map(({ num, Icon, color, bg, border, problem, desc, fix }) => (
               <div key={num}
-                className="problem-card"
-                style={{ background:'#fff', borderRadius:'20px', padding:'0', textAlign:'left', border:'1.5px solid #f1f5f9', overflow:'hidden', transition:'transform 0.25s, box-shadow 0.25s', cursor:'default' }}
-                onMouseEnter={e=>{ e.currentTarget.style.transform='translateY(-6px)'; e.currentTarget.style.boxShadow=`0 20px 50px ${color}18`; e.currentTarget.style.borderColor=border }}
-                onMouseLeave={e=>{ e.currentTarget.style.transform='translateY(0)'; e.currentTarget.style.boxShadow='none'; e.currentTarget.style.borderColor='#f1f5f9' }}
+                style={{ background:'rgba(255,255,255,0.04)', borderRadius:'20px', padding:'0', textAlign:'left', border:'1.5px solid rgba(255,255,255,0.08)', overflow:'hidden', transition:'transform 0.25s, box-shadow 0.25s, border-color 0.25s', cursor:'default' }}
+                onMouseEnter={e=>{ e.currentTarget.style.transform='translateY(-6px)'; e.currentTarget.style.boxShadow=`0 20px 50px ${color}22`; e.currentTarget.style.borderColor=border }}
+                onMouseLeave={e=>{ e.currentTarget.style.transform='translateY(0)'; e.currentTarget.style.boxShadow='none'; e.currentTarget.style.borderColor='rgba(255,255,255,0.08)' }}
               >
                 {/* Top accent bar */}
                 <div style={{ height:'4px', background:`linear-gradient(90deg,${color},${color}66)` }}/>
                 <div style={{ padding:'26px 24px' }}>
                   {/* Number + icon */}
                   <div style={{ display:'flex', alignItems:'center', justifyContent:'space-between', marginBottom:'20px' }}>
-                    <span style={{ fontSize:'13px', fontWeight:700, color:'#cbd5e1', letterSpacing:'1px' }}>{num}</span>
+                    <span style={{ fontSize:'13px', fontWeight:700, color:'rgba(255,255,255,0.25)', letterSpacing:'1px' }}>{num}</span>
                     <div style={{ width:'42px', height:'42px', borderRadius:'12px', background:bg, display:'flex', alignItems:'center', justifyContent:'center' }}>
                       <Icon size={19} color={color} strokeWidth={1.8}/>
                     </div>
                   </div>
                   {/* Problem */}
-                  <div style={{ fontSize:'16px', fontWeight:700, color:'#0f172a', marginBottom:'8px' }}>{problem}</div>
-                  <div style={{ fontSize:'13px', color:'#94a3b8', lineHeight:1.65, marginBottom:'20px' }}>{desc}</div>
+                  <div style={{ fontSize:'16px', fontWeight:700, color:'#fff', marginBottom:'8px' }}>{problem}</div>
+                  <div style={{ fontSize:'13px', color:'rgba(255,255,255,0.45)', lineHeight:1.65, marginBottom:'20px' }}>{desc}</div>
                   {/* Divider */}
-                  <div style={{ height:'1px', background:'#f1f5f9', marginBottom:'16px' }}/>
+                  <div style={{ height:'1px', background:'rgba(255,255,255,0.08)', marginBottom:'16px' }}/>
                   {/* Solution */}
                   <div style={{ display:'flex', gap:'10px', alignItems:'flex-start' }}>
                     <div style={{ width:'20px', height:'20px', borderRadius:'50%', background:bg, border:`1.5px solid ${border}`, display:'flex', alignItems:'center', justifyContent:'center', flexShrink:0, marginTop:'1px' }}>
                       <Check size={10} color={color} strokeWidth={3}/>
                     </div>
-                    <span style={{ fontSize:'13px', color:'#475569', lineHeight:1.65, fontWeight:500 }}>{fix}</span>
+                    <span style={{ fontSize:'13px', color:'rgba(255,255,255,0.7)', lineHeight:1.65, fontWeight:500 }}>{fix}</span>
                   </div>
                 </div>
               </div>
