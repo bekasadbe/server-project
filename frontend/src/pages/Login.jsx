@@ -551,7 +551,7 @@ export default function Login({ onLogin }) {
       </section>
 
       {/* CTA */}
-      <section style={{ position:'relative', zIndex:10, background:'linear-gradient(135deg,#0f172a 0%,#1e3a5f 100%)', padding:'64px 40px', textAlign:'center' }}>
+      <section style={{ position:'relative', zIndex:10, background:'linear-gradient(135deg,#1a56db 0%,#1e429f 100%)', padding:'64px 40px', textAlign:'center' }}>
         <div style={{ maxWidth:'600px', margin:'0 auto' }}>
           <div style={{ fontSize:'40px', marginBottom:'16px' }}>🚀</div>
           <h2 style={{ margin:'0 0 12px', fontSize:'28px', fontWeight:800, color:'#fff', letterSpacing:'-0.5px' }}>Bepul konsultatsiya oling</h2>
