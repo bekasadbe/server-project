@@ -521,7 +521,7 @@ export default function Login({ onLogin }) {
                 ))}
               </div>
 
-              <a href="https://t.me/davomatlaruz" target="_blank" rel="noreferrer" style={{
+              <a href="https://t.me/acsham" target="_blank" rel="noreferrer" style={{
                 display:'block', width:'100%', padding:'13px', borderRadius:'13px', border: isBlue ? '1.5px solid rgba(255,255,255,0.3)' : 'none',
                 background: btnBg, color: btnColor, textAlign:'center',
                 fontSize:'14px', fontWeight:400, cursor:'pointer', textDecoration:'none',
