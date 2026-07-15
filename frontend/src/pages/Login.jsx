@@ -562,10 +562,12 @@ export default function Login({ onLogin }) {
       </section>
 
       {/* CTA */}
-      <section style={{ position:'relative', zIndex:10, background:'#fff', padding:'64px 40px', textAlign:'center' }}>
-        <div style={{ maxWidth:'600px', margin:'0 auto' }}>
-          <div style={{ fontSize:'40px', marginBottom:'16px' }}>🚀</div>
-          <h2 style={{ margin:'0 0 12px', fontSize:'32px', fontWeight:800, color:'#0f172a', letterSpacing:'-0.8px' }}>Bepul konsultatsiya oling</h2>
+      <section style={{ position:'relative', zIndex:10, background:'#fff', padding:'48px 40px 64px', textAlign:'center' }}>
+        <div style={{ maxWidth:'800px', margin:'0 auto', background:'#eff6ff', border:'1px solid #dbeafe', borderRadius:'24px', padding:'48px 40px' }}>
+          <div style={{ width:'52px', height:'52px', borderRadius:'50%', border:'2px solid #2563eb', display:'flex', alignItems:'center', justifyContent:'center', margin:'0 auto 20px' }}>
+            <Check size={24} color="#2563eb" strokeWidth={3}/>
+          </div>
+          <h2 style={{ margin:'0 0 12px', fontSize:'28px', fontWeight:700, color:'#0f172a', letterSpacing:'-0.5px' }}>Bepul konsultatsiya oling</h2>
           <p style={{ margin:'0 0 28px', fontSize:'15px', color:'#64748b', lineHeight:1.7 }}>
             Tashkilotingiz uchun qaysi tarif mos ekanini birgalikda aniqlaymiz. Basic paket 3-7 kunda ishga tushadi.
           </p>
@@ -574,7 +576,7 @@ export default function Login({ onLogin }) {
               onMouseEnter={e=>e.currentTarget.style.opacity='0.85'} onMouseLeave={e=>e.currentTarget.style.opacity='1'}>
               <Send size={16}/> Telegram orqali yozish
             </a>
-            <a href="tel:+998908738963" style={{ display:'inline-flex', alignItems:'center', gap:'8px', padding:'13px 28px', borderRadius:'13px', background:'#f1f5f9', border:'1px solid #e2e8f0', color:'#0f172a', fontSize:'15px', fontWeight:600, textDecoration:'none', transition:'opacity 0.2s' }}
+            <a href="tel:+998908738963" style={{ display:'inline-flex', alignItems:'center', gap:'8px', padding:'13px 28px', borderRadius:'13px', background:'#fff', border:'1px solid #dbeafe', color:'#0f172a', fontSize:'15px', fontWeight:600, textDecoration:'none', transition:'opacity 0.2s' }}
               onMouseEnter={e=>e.currentTarget.style.opacity='0.8'} onMouseLeave={e=>e.currentTarget.style.opacity='1'}>
               <Phone size={16}/> +998 90-873-89-63
             </a>
