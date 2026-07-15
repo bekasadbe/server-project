@@ -244,7 +244,7 @@ async def main():
     # Xabar maydonining yonida "Ilova" tugmasini o'rnatish
     try:
         await app.bot.set_chat_menu_button(
-            menu_button=MenuButtonWebApp(text='Ilova', web_app=WebAppInfo(url=WEB_URL))
+            menu_button=MenuButtonWebApp(text='Davomatlar.uz', web_app=WebAppInfo(url=WEB_URL))
         )
         log.info('Menu button (Ilova) o\'rnatildi')
     except Exception as e:
