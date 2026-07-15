@@ -563,7 +563,7 @@ export default function Login({ onLogin }) {
 
       {/* CTA */}
       <section style={{ position:'relative', zIndex:10, background:'#fff', padding:'48px 40px 64px', textAlign:'center' }}>
-        <div style={{ maxWidth:'800px', margin:'0 auto', background:'#eff6ff', border:'1px solid #dbeafe', borderRadius:'24px', padding:'48px 40px' }}>
+        <div style={{ maxWidth:'1200px', margin:'0 auto', background:'#eff6ff', border:'1px solid #dbeafe', borderRadius:'24px', padding:'48px 40px' }}>
           <div style={{ width:'52px', height:'52px', borderRadius:'50%', border:'2px solid #2563eb', display:'flex', alignItems:'center', justifyContent:'center', margin:'0 auto 20px' }}>
             <Check size={24} color="#2563eb" strokeWidth={3}/>
           </div>
