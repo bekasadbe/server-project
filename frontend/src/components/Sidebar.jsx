@@ -12,7 +12,6 @@ const menu = [
   { key: 'settings',      label: 'Sozlamalar',        icon: Settings2,       roles: ['kadrlar'] },
   { key: 'admin',         label: 'Tashkilotlar',      icon: Building2,       roles: ['admin'] },
   { key: 'accounts',      label: 'Akkauntlar',        icon: KeyRound,        roles: ['admin'] },
-  { key: 'import',        label: 'CSV Import',        icon: Upload,          roles: ['admin'] },
 ]
 
 export default function Sidebar({ current, onChange, user, onLogout }) {

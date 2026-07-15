@@ -8,7 +8,6 @@ import History from './pages/History'
 import Reports from './pages/Reports'
 import AdminPanel from './pages/AdminPanel'
 import Accounts from './pages/Accounts'
-import Import from './pages/Import'
 import Jadvallar from './pages/Jadvallar'
 import Leaves from './pages/Leaves'
 import WorkSchedule from './pages/WorkSchedule'
@@ -236,7 +235,6 @@ export default function App() {
         accounts={accounts}
         onReload={loadData}
       />,
-      import: <Import />
     } : {})
   }
 
