@@ -216,18 +216,31 @@ export default function Login({ onLogin }) {
           </div>
           <span style={{ fontSize:'18px', fontWeight:700, letterSpacing:'-0.5px', color:'#ffffff' }}>Davomatlar.uz</span>
         </div>
-        <button onClick={openLogin} style={{
-          display:'flex', alignItems:'center', gap:'6px',
-          background:'rgba(255,255,255,0.12)', backdropFilter:'blur(12px)',
-          border:'1px solid rgba(255,255,255,0.2)', borderRadius:'50px',
-          padding:'9px 20px', color:'white', fontSize:'14px', fontWeight:600,
-          cursor:'pointer', transition:'all 0.2s', flexShrink:0,
-        }}
-          onMouseEnter={e => e.currentTarget.style.background='rgba(255,255,255,0.2)'}
-          onMouseLeave={e => e.currentTarget.style.background='rgba(255,255,255,0.12)'}
-        >
-          Kirish →
-        </button>
+        <div style={{ display:'flex', alignItems:'center', gap:'10px' }}>
+          <a href="https://t.me/davomatlaruzbot" target="_blank" rel="noreferrer" className="tg-login-btn" style={{
+            display:'flex', alignItems:'center', gap:'6px',
+            background:'transparent', border:'1px solid rgba(255,255,255,0.2)', borderRadius:'50px',
+            padding:'9px 18px', color:'rgba(255,255,255,0.85)', fontSize:'14px', fontWeight:600,
+            cursor:'pointer', transition:'all 0.2s', flexShrink:0, textDecoration:'none',
+          }}
+            onMouseEnter={e => { e.currentTarget.style.background='rgba(255,255,255,0.1)'; e.currentTarget.style.color='#fff' }}
+            onMouseLeave={e => { e.currentTarget.style.background='transparent'; e.currentTarget.style.color='rgba(255,255,255,0.85)' }}
+          >
+            <Send size={14}/> <span className="tg-login-text">Telegram orqali kirish</span>
+          </a>
+          <button onClick={openLogin} style={{
+            display:'flex', alignItems:'center', gap:'6px',
+            background:'rgba(255,255,255,0.12)', backdropFilter:'blur(12px)',
+            border:'1px solid rgba(255,255,255,0.2)', borderRadius:'50px',
+            padding:'9px 20px', color:'white', fontSize:'14px', fontWeight:600,
+            cursor:'pointer', transition:'all 0.2s', flexShrink:0,
+          }}
+            onMouseEnter={e => e.currentTarget.style.background='rgba(255,255,255,0.2)'}
+            onMouseLeave={e => e.currentTarget.style.background='rgba(255,255,255,0.12)'}
+          >
+            Kirish →
+          </button>
+        </div>
       </header>
 
       {/* Hero */}
@@ -631,6 +644,8 @@ export default function Login({ onLogin }) {
           .cards-grid { grid-template-columns: repeat(2, 1fr) !important; }
           .hero-title  { font-size: 32px !important; }
           .who-grid { grid-template-columns: 1fr !important; }
+          .tg-login-text { display: none; }
+          .tg-login-btn { padding: 9px !important; }
         }
       `}</style>
     </div>
