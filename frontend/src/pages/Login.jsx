@@ -618,7 +618,7 @@ export default function Login({ onLogin }) {
           html, body { overflow-y: auto !important; height: auto !important; }
           .landing-main { padding-top: 40px !important; padding-bottom: 40px !important; }
           .feature-showcase { grid-template-columns: 1fr !important; }
-          .detail-img { position: static !important; display: block !important; max-height: none !important; width: 220px !important; margin: 24px auto 0 !important; right: auto !important; bottom: auto !important; order: 2; }
+          .detail-img { position: static !important; display: block !important; max-height: none !important; width: 320px !important; max-width: 90% !important; margin: 24px auto 0 !important; right: auto !important; bottom: auto !important; order: 2; }
           .detail-content { order: 1; }
           .pricing-sub { white-space: normal !important; max-width: 400px !important; }
           .who-grid { grid-template-columns: repeat(2, 1fr) !important; }
