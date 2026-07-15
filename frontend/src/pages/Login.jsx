@@ -354,7 +354,7 @@ export default function Login({ onLogin }) {
                       {details.badge}
                     </div>
                     <h3 style={{ margin:'0 0 14px', fontSize:'24px', fontWeight:800, color:'#0f172a', letterSpacing:'-0.4px', maxWidth:'340px' }}>{details.title}</h3>
-                    <p style={{ margin:'0 0 24px', fontSize:'14.5px', color:'#64748b', lineHeight:1.75, maxWidth:'480px' }}>{details.text}</p>
+                    <p style={{ margin:'0 0 24px', fontSize:'14.5px', color:'#64748b', lineHeight:1.75, maxWidth:'340px' }}>{details.text}</p>
                     <div style={{ display:'flex', flexDirection:'column', gap:'10px' }}>
                       {details.points.map(p => (
                         <div key={p} style={{ display:'flex', alignItems:'center', gap:'10px' }}>
