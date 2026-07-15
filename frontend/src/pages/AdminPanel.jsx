@@ -1,5 +1,5 @@
 import { useState } from 'react'
-import { Plus, Trash2, Search, FolderOpen, Folder, Pencil, UserPlus } from 'lucide-react'
+import { Plus, Trash2, Search, Building2, Pencil, UserPlus, Users, Inbox } from 'lucide-react'
 
 const inputCls = "w-full px-3 py-2.5 bg-white border border-slate-200 rounded-xl text-slate-800 text-[14px] outline-none focus:border-brand-400 transition-colors"
 const labelCls = "text-[12px] text-slate-500 font-semibold block mb-1.5"
@@ -87,105 +87,146 @@ export default function AdminPanel({ employees, groups, onAddEmployee, onDeleteE
         <p className="text-[13px] text-slate-400 mt-1 mb-0">Tashkilotlar va xodimlarni boshqarish</p>
       </div>
 
-      {/* Org tabs */}
-      <div className="flex items-center gap-2 mb-4 flex-wrap">
-        {groups.map(g => {
-          const count  = employees.filter(e => e.group === g.id).length
-          const active = selectedGroup === g.id
-          return (
-            <button key={g.id} onClick={() => { setSelectedGroup(g.id); setSearch(''); setSelected(new Set()) }}
-              className={`flex items-center gap-1.5 px-4 py-2 rounded-lg border text-[13px] cursor-pointer transition-colors ${active ? 'bg-brand-50 border-brand-200 text-brand-600 font-bold' : 'bg-white border-slate-200 text-slate-500 hover:border-slate-300'}`}>
-              {active ? <FolderOpen size={14}/> : <Folder size={14} className="text-slate-400"/>}
-              {g.name}
-              <span className={`text-[11px] px-1.5 py-0.5 rounded-full font-semibold ${active ? 'bg-brand-100 text-brand-600' : 'bg-slate-100 text-slate-400'}`}>{count}</span>
-            </button>
-          )
-        })}
-        <button onClick={() => setShowNewOrg(true)}
-          className="flex items-center gap-1 px-3.5 py-2 rounded-lg border border-dashed border-slate-300 bg-transparent text-slate-400 text-[13px] cursor-pointer hover:border-slate-400 transition-colors">
-          <Plus size={13}/> Yangi tashkilot
-        </button>
-      </div>
-
-      {/* Employee table */}
-      {currentGroup ? (
-        <div className="bg-white rounded-xl border border-slate-200 overflow-hidden">
-          {/* Toolbar */}
-          <div className="flex items-center gap-2.5 px-4 py-3.5 border-b border-slate-100 flex-wrap">
-            <div className="flex-1 relative min-w-[160px]">
-              <Search size={15} className="absolute left-3 top-1/2 -translate-y-1/2 text-slate-400"/>
-              <input placeholder="Qidirish..."
-                value={search} onChange={e => setSearch(e.target.value)}
-                className="w-full py-2 pl-9 pr-3 bg-slate-50 border border-slate-200 rounded-lg text-slate-800 text-[13px] outline-none focus:border-brand-400 transition-colors"/>
-            </div>
-            {selected.size > 0 && (
-              <button onClick={() => {
-                if (window.confirm(`${selected.size} ta xodimni o'chirasizmi?`)) { onDeleteEmployees([...selected]); setSelected(new Set()) }
-              }} className="flex items-center gap-1.5 px-3 py-2 bg-rose-50 border border-rose-200 rounded-lg text-rose-600 text-[13px] font-semibold cursor-pointer hover:bg-rose-100 transition-colors whitespace-nowrap">
-                <Trash2 size={14}/> {selected.size} ta o'chirish
-              </button>
-            )}
-            <button onClick={() => {
-              if (window.confirm(`"${currentGroup.name}" tashkilotini o'chirasizmi?\n\nBarcha xodimlar ham o'chib ketadi!`)) onDeleteGroup(currentGroup.id)
-            }} className="p-2 bg-rose-50 border border-rose-200 rounded-lg text-rose-500 cursor-pointer hover:bg-rose-100 transition-colors shrink-0" title="Tashkilotni o'chirish">
-              <Trash2 size={15}/>
-            </button>
-            <button onClick={() => { setNewId(''); setNewName(''); setAddError(''); setShowAddEmp(true) }}
-              className="flex items-center gap-1.5 px-4 py-2 bg-brand-600 border-none rounded-lg text-white text-[13px] font-semibold cursor-pointer hover:bg-brand-700 transition-colors whitespace-nowrap">
-              <UserPlus size={14}/> Xodim qo'shish
-            </button>
-            <span className="text-[12px] text-slate-400 shrink-0 w-full sm:w-auto">{filtered.length} ta xodim</span>
+      <div className="flex gap-5 items-start flex-col lg:flex-row">
+        {/* Org sidebar */}
+        <div className="w-full lg:w-[260px] shrink-0 bg-white rounded-xl border border-slate-200 overflow-hidden">
+          <div className="px-4 py-3 border-b border-slate-100 flex items-center justify-between">
+            <span className="text-[12px] font-bold text-slate-400 uppercase tracking-wide">Tashkilotlar</span>
+            <span className="text-[11px] px-1.5 py-0.5 rounded-full bg-slate-100 text-slate-400 font-semibold">{groups.length}</span>
           </div>
-
-          <div className="overflow-x-auto">
-          <table className="w-full border-collapse" style={{minWidth:520}}>
-            <thead>
-              <tr className="bg-slate-50">
-                <th className="px-4 py-2.5 w-10">
-                  <input type="checkbox" checked={filtered.length > 0 && selected.size === filtered.length} onChange={toggleAll} className="cursor-pointer accent-brand-600"/>
-                </th>
-                {['Ism Familiya', 'Lavozim', 'Face ID', ''].map((h, i) => (
-                  <th key={i} className="px-4 py-2.5 text-left text-[12px] text-slate-400 font-normal">{h}</th>
-                ))}
-              </tr>
-            </thead>
-            <tbody>
-              {filtered.map(emp => {
-                const isSel = selected.has(emp.id)
-                return (
-                  <tr key={emp.id} className={`border-t border-slate-50 transition-colors ${isSel ? 'bg-brand-50' : 'hover:bg-slate-50/50'}`}>
-                    <td className="px-4 py-2.5">
-                      <input type="checkbox" checked={isSel} onChange={() => toggleSelect(emp.id)} className="cursor-pointer accent-brand-600"/>
-                    </td>
-                    <td className="px-4 py-2.5">
-                      <div className="flex items-center gap-2.5">
-                        <div className={`w-8 h-8 rounded-full flex items-center justify-center text-[13px] font-bold shrink-0 ${isSel ? 'bg-brand-600 text-white' : 'bg-brand-50 text-brand-600'}`}>
-                          {emp.name[0]}
-                        </div>
-                        <span className="text-[14px] font-semibold text-slate-800">{emp.name}</span>
-                      </div>
-                    </td>
-                    <td className={`px-4 py-2.5 text-[13px] ${emp.lavozim ? 'text-slate-500' : 'text-slate-300 italic'}`}>{emp.lavozim || '—'}</td>
-                    <td className="px-4 py-2.5 text-[13px] text-slate-400 font-mono">#{emp.id}</td>
-                    <td className="px-4 py-2.5 text-right">
-                      <button onClick={() => openEditEmp(emp)}
-                        className="inline-flex items-center gap-1.5 px-3 py-1.5 bg-brand-600 rounded-lg text-white text-[12px] font-semibold cursor-pointer hover:bg-brand-700 transition-colors border-none">
-                        <Pencil size={12}/> Tahrirlash
-                      </button>
-                    </td>
-                  </tr>
-                )
-              })}
-              {filtered.length === 0 && (
-                <tr><td colSpan={5} className="py-10 text-center text-sm text-slate-400">Xodim topilmadi</td></tr>
-              )}
-            </tbody>
-          </table>
+          <div className="p-2 flex flex-col gap-0.5 max-h-[420px] overflow-y-auto">
+            {groups.map(g => {
+              const count  = employees.filter(e => e.group === g.id).length
+              const active = selectedGroup === g.id
+              return (
+                <button key={g.id} onClick={() => { setSelectedGroup(g.id); setSearch(''); setSelected(new Set()) }}
+                  className={`flex items-center gap-2.5 w-full text-left px-3 py-2.5 rounded-lg border-none cursor-pointer transition-colors ${active ? 'bg-brand-50 text-brand-700' : 'bg-transparent text-slate-600 hover:bg-slate-50'}`}>
+                  <div className={`w-8 h-8 rounded-lg flex items-center justify-center shrink-0 ${active ? 'bg-brand-600' : 'bg-slate-100'}`}>
+                    <Building2 size={15} className={active ? 'text-white' : 'text-slate-400'}/>
+                  </div>
+                  <div className="flex-1 min-w-0">
+                    <div className={`text-[13.5px] truncate ${active ? 'font-bold' : 'font-medium'}`}>{g.name}</div>
+                    <div className="text-[11.5px] text-slate-400 flex items-center gap-1"><Users size={10}/> {count} ta xodim</div>
+                  </div>
+                </button>
+              )
+            })}
+          </div>
+          <div className="p-2 border-t border-slate-100">
+            <button onClick={() => setShowNewOrg(true)}
+              className="flex items-center justify-center gap-1.5 w-full px-3.5 py-2.5 rounded-lg border border-dashed border-slate-300 bg-transparent text-slate-500 text-[13px] font-medium cursor-pointer hover:border-brand-300 hover:text-brand-600 hover:bg-brand-50/50 transition-colors">
+              <Plus size={14}/> Yangi tashkilot
+            </button>
           </div>
         </div>
-      ) : (
-        <div className="flex items-center justify-center h-48 bg-white rounded-2xl border border-slate-100 text-slate-400 text-[14px]">Yuqoridan tashkilot tanlang</div>
-      )}
+
+        {/* Employee panel */}
+        <div className="flex-1 min-w-0 w-full">
+          {currentGroup ? (
+            <div className="bg-white rounded-xl border border-slate-200 overflow-hidden">
+              {/* Toolbar */}
+              <div className="flex items-center gap-2.5 px-4 py-3.5 border-b border-slate-100 flex-wrap">
+                <div className="flex-1 relative min-w-[160px]">
+                  <Search size={15} className="absolute left-3 top-1/2 -translate-y-1/2 text-slate-400"/>
+                  <input placeholder="Ism yoki ID bo'yicha qidirish..."
+                    value={search} onChange={e => setSearch(e.target.value)}
+                    className="w-full py-2 pl-9 pr-3 bg-slate-50 border border-slate-200 rounded-lg text-slate-800 text-[13px] outline-none focus:border-brand-400 transition-colors"/>
+                </div>
+                {selected.size > 0 && (
+                  <button onClick={() => {
+                    if (window.confirm(`${selected.size} ta xodimni o'chirasizmi?`)) { onDeleteEmployees([...selected]); setSelected(new Set()) }
+                  }} className="flex items-center gap-1.5 px-3 py-2 bg-rose-50 border border-rose-200 rounded-lg text-rose-600 text-[13px] font-semibold cursor-pointer hover:bg-rose-100 transition-colors whitespace-nowrap">
+                    <Trash2 size={14}/> {selected.size} ta o'chirish
+                  </button>
+                )}
+                <button onClick={() => {
+                  if (window.confirm(`"${currentGroup.name}" tashkilotini o'chirasizmi?\n\nBarcha xodimlar ham o'chib ketadi!`)) onDeleteGroup(currentGroup.id)
+                }} className="p-2 bg-rose-50 border border-rose-200 rounded-lg text-rose-500 cursor-pointer hover:bg-rose-100 transition-colors shrink-0" title="Tashkilotni o'chirish">
+                  <Trash2 size={15}/>
+                </button>
+                <button onClick={() => { setNewId(''); setNewName(''); setAddError(''); setShowAddEmp(true) }}
+                  className="flex items-center gap-1.5 px-4 py-2 bg-brand-600 border-none rounded-lg text-white text-[13px] font-semibold cursor-pointer hover:bg-brand-700 transition-colors whitespace-nowrap">
+                  <UserPlus size={14}/> Xodim qo'shish
+                </button>
+              </div>
+
+              {/* Stat strip */}
+              <div className="flex items-center gap-5 px-4 py-2.5 bg-slate-50/70 border-b border-slate-100 text-[12px] text-slate-500">
+                <span><b className="text-slate-800">{groupEmps.length}</b> jami xodim</span>
+                <span className="w-px h-3 bg-slate-200"/>
+                <span><b className="text-slate-800">{filtered.length}</b> ko'rsatilmoqda</span>
+                {selected.size > 0 && <>
+                  <span className="w-px h-3 bg-slate-200"/>
+                  <span className="text-brand-600 font-semibold">{selected.size} tanlangan</span>
+                </>}
+              </div>
+
+              <div className="overflow-x-auto">
+              <table className="w-full border-collapse" style={{minWidth:520}}>
+                <thead>
+                  <tr className="bg-slate-50">
+                    <th className="px-4 py-2.5 w-10">
+                      <input type="checkbox" checked={filtered.length > 0 && selected.size === filtered.length} onChange={toggleAll} className="cursor-pointer accent-brand-600"/>
+                    </th>
+                    {['Ism Familiya', 'Lavozim', 'Face ID', ''].map((h, i) => (
+                      <th key={i} className="px-4 py-2.5 text-left text-[12px] text-slate-400 font-normal">{h}</th>
+                    ))}
+                  </tr>
+                </thead>
+                <tbody>
+                  {filtered.map(emp => {
+                    const isSel = selected.has(emp.id)
+                    return (
+                      <tr key={emp.id} className={`border-t border-slate-50 transition-colors ${isSel ? 'bg-brand-50' : 'hover:bg-slate-50/50'}`}>
+                        <td className="px-4 py-2.5">
+                          <input type="checkbox" checked={isSel} onChange={() => toggleSelect(emp.id)} className="cursor-pointer accent-brand-600"/>
+                        </td>
+                        <td className="px-4 py-2.5">
+                          <div className="flex items-center gap-2.5">
+                            <div className={`w-8 h-8 rounded-full flex items-center justify-center text-[13px] font-bold shrink-0 ${isSel ? 'bg-brand-600 text-white' : 'bg-brand-50 text-brand-600'}`}>
+                              {emp.name[0]}
+                            </div>
+                            <span className="text-[14px] font-semibold text-slate-800">{emp.name}</span>
+                          </div>
+                        </td>
+                        <td className={`px-4 py-2.5 text-[13px] ${emp.lavozim ? 'text-slate-500' : 'text-slate-300 italic'}`}>{emp.lavozim || '—'}</td>
+                        <td className="px-4 py-2.5 text-[13px] text-slate-400 font-mono">#{emp.id}</td>
+                        <td className="px-4 py-2.5 text-right">
+                          <button onClick={() => openEditEmp(emp)}
+                            className="inline-flex items-center gap-1.5 px-3 py-1.5 bg-brand-600 rounded-lg text-white text-[12px] font-semibold cursor-pointer hover:bg-brand-700 transition-colors border-none">
+                            <Pencil size={12}/> Tahrirlash
+                          </button>
+                        </td>
+                      </tr>
+                    )
+                  })}
+                  {filtered.length === 0 && (
+                    <tr><td colSpan={5} className="py-14 text-center">
+                      <div className="flex flex-col items-center gap-2">
+                        <div className="w-11 h-11 rounded-full bg-slate-50 flex items-center justify-center"><Inbox size={18} className="text-slate-300"/></div>
+                        <span className="text-[13.5px] text-slate-400">{search ? 'Hech narsa topilmadi' : "Bu tashkilotda hali xodim yo'q"}</span>
+                      </div>
+                    </td></tr>
+                  )}
+                </tbody>
+              </table>
+              </div>
+            </div>
+          ) : (
+            <div className="flex flex-col items-center justify-center gap-3 h-72 bg-white rounded-2xl border border-dashed border-slate-200 text-slate-400">
+              <div className="w-14 h-14 rounded-2xl bg-slate-50 flex items-center justify-center"><Building2 size={24} className="text-slate-300"/></div>
+              <div className="text-center">
+                <div className="text-[14px] font-semibold text-slate-500">Tashkilot tanlanmagan</div>
+                <div className="text-[12.5px] text-slate-400 mt-0.5">Chapdan tashkilot tanlang yoki yangisini yarating</div>
+              </div>
+              <button onClick={() => setShowNewOrg(true)}
+                className="flex items-center gap-1.5 px-4 py-2 bg-brand-600 border-none rounded-lg text-white text-[13px] font-semibold cursor-pointer hover:bg-brand-700 transition-colors">
+                <Plus size={14}/> Yangi tashkilot
+              </button>
+            </div>
+          )}
+        </div>
+      </div>
 
       {/* Edit emp modal */}
       {showEditEmp && (
