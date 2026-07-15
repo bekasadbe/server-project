@@ -237,7 +237,7 @@ export default function Login({ onLogin }) {
           <span style={{ fontSize:'13px', color:'rgba(255,255,255,0.9)', fontWeight:500 }}>Real vaqt davomat tizimi</span>
         </div>
 
-        <h1 className="hero-title" style={{ margin:'0 0 16px', fontWeight:800, color:'white', lineHeight:1.1, letterSpacing:'-1.5px', maxWidth:'700px' }}>
+        <h1 className="hero-title" style={{ margin:'0 0 16px', fontWeight:800, color:'white', lineHeight:1.15, letterSpacing:'-0.8px', maxWidth:'700px' }}>
           Xodimlar davomatini<br/>
           <span style={{ background:'linear-gradient(180deg, #ffffff 0%, #93c5fd 100%)', WebkitBackgroundClip:'text', WebkitTextFillColor:'transparent', backgroundClip:'text' }}>nazorat qiling</span>
         </h1>
@@ -611,7 +611,7 @@ export default function Login({ onLogin }) {
         @keyframes fadeSlide { from{ opacity:0; transform:translateX(10px) } to{ opacity:1; transform:translateX(0) } }
         input::placeholder { color: #cbd5e1 }
         .cards-grid { grid-template-columns: repeat(4, 1fr); }
-        .hero-title  { font-size: 58px; }
+        .hero-title  { font-size: 48px; }
         @media (max-width: 768px) {
           .cards-grid { grid-template-columns: repeat(2, 1fr) !important; }
           .hero-title  { font-size: 38px !important; letter-spacing: -1px !important; }
