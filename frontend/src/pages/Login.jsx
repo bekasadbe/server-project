@@ -327,8 +327,8 @@ export default function Login({ onLogin }) {
             {/* Tafsilot paneli */}
             <div style={{
               padding:'44px 48px', display:'flex', flexDirection:'column', justifyContent:'center',
-              backgroundImage:'linear-gradient(90deg, #fff 0%, #fff 42%, rgba(255,255,255,0.75) 62%, rgba(255,255,255,0.3) 85%), url(/jpg.jpg)',
-              backgroundSize:'cover', backgroundPosition:'right center', backgroundRepeat:'no-repeat',
+              backgroundImage:'linear-gradient(90deg, #fff 0%, #fff 38%, rgba(255,255,255,0.55) 55%, rgba(255,255,255,0.1) 78%), url(/jpg.jpg)',
+              backgroundSize:'cover', backgroundPosition:'75% center', backgroundRepeat:'no-repeat',
             }}>
               {(() => {
                 const details = [
