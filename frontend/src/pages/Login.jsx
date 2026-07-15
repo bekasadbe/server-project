@@ -326,7 +326,7 @@ export default function Login({ onLogin }) {
 
             {/* Tafsilot paneli */}
             <div style={{ position:'relative', padding:'44px 48px', display:'flex', flexDirection:'column', justifyContent:'center', background:'#fff', overflow:'hidden' }}>
-              <img src="/png.jpg" alt="" style={{ position:'absolute', bottom:0, right:0, maxHeight:'110%', width:'auto', pointerEvents:'none', userSelect:'none' }}/>
+              <img className="detail-img" src="/png.jpg" alt="" style={{ position:'absolute', bottom:0, right:0, maxHeight:'110%', width:'auto', pointerEvents:'none', userSelect:'none' }}/>
               {(() => {
                 const details = [
                   { badge:'01 · Kelish-ketish', title:'Kelish-ketish vaqti aniq qayd etiladi', color:'#dc2626', bg:'#fef2f2',
@@ -349,7 +349,7 @@ export default function Login({ onLogin }) {
                     points:['Filiallar aralashmaydi', "Har bir login o'ziga tegishlisini ko'radi", 'Markazlashgan boshqaruv'] },
                 ][activeFeature]
                 return (
-                  <div key={activeFeature} style={{ position:'relative', zIndex:1, animation:'fadeSlide 0.35s ease' }}>
+                  <div key={activeFeature} className="detail-content" style={{ position:'relative', zIndex:1, animation:'fadeSlide 0.35s ease' }}>
                     <div style={{ display:'inline-block', maxWidth:'340px', background:details.bg, borderRadius:'50px', padding:'5px 14px', fontSize:'12px', fontWeight:700, color:details.color, marginBottom:'18px' }}>
                       {details.badge}
                     </div>
@@ -618,6 +618,8 @@ export default function Login({ onLogin }) {
           html, body { overflow-y: auto !important; height: auto !important; }
           .landing-main { padding-top: 40px !important; padding-bottom: 40px !important; }
           .feature-showcase { grid-template-columns: 1fr !important; }
+          .detail-img { position: static !important; display: block !important; max-height: none !important; width: 220px !important; margin: 24px auto 0 !important; right: auto !important; bottom: auto !important; order: 2; }
+          .detail-content { order: 1; }
           .pricing-sub { white-space: normal !important; max-width: 400px !important; }
           .who-grid { grid-template-columns: repeat(2, 1fr) !important; }
         }
