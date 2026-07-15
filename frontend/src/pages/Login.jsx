@@ -326,7 +326,7 @@ export default function Login({ onLogin }) {
 
             {/* Tafsilot paneli */}
             <div style={{ position:'relative', padding:'44px 48px', display:'flex', flexDirection:'column', justifyContent:'center', background:'#fff', overflow:'hidden' }}>
-              <img src="/png.jpg" alt="" style={{ position:'absolute', bottom:0, right:'-20px', maxHeight:'85%', width:'auto', pointerEvents:'none', userSelect:'none' }}/>
+              <img src="/png.jpg" alt="" style={{ position:'absolute', bottom:0, right:0, maxHeight:'110%', width:'auto', pointerEvents:'none', userSelect:'none' }}/>
               {(() => {
                 const details = [
                   { badge:'01 · Kelish-ketish', title:'Kelish-ketish vaqti aniq qayd etiladi', color:'#dc2626', bg:'#fef2f2',
@@ -350,11 +350,11 @@ export default function Login({ onLogin }) {
                 ][activeFeature]
                 return (
                   <div key={activeFeature} style={{ position:'relative', zIndex:1, animation:'fadeSlide 0.35s ease' }}>
-                    <div style={{ display:'inline-block', background:details.bg, borderRadius:'50px', padding:'5px 14px', fontSize:'12px', fontWeight:700, color:details.color, marginBottom:'18px' }}>
+                    <div style={{ display:'inline-block', maxWidth:'340px', background:details.bg, borderRadius:'50px', padding:'5px 14px', fontSize:'12px', fontWeight:700, color:details.color, marginBottom:'18px' }}>
                       {details.badge}
                     </div>
                     <h3 style={{ margin:'0 0 14px', fontSize:'24px', fontWeight:800, color:'#0f172a', letterSpacing:'-0.4px', maxWidth:'340px' }}>{details.title}</h3>
-                    <p style={{ margin:'0 0 24px', fontSize:'14.5px', color:'#64748b', lineHeight:1.75, maxWidth:'340px' }}>{details.text}</p>
+                    <p style={{ margin:'0 0 24px', fontSize:'14.5px', color:'#64748b', lineHeight:1.75, maxWidth:'480px' }}>{details.text}</p>
                     <div style={{ display:'flex', flexDirection:'column', gap:'10px' }}>
                       {details.points.map(p => (
                         <div key={p} style={{ display:'flex', alignItems:'center', gap:'10px' }}>
