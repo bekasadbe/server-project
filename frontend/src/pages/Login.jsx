@@ -277,9 +277,9 @@ export default function Login({ onLogin }) {
       </main>
 
       {/* Platforma haqida — interaktiv */}
-      <section style={{ position:'relative', zIndex:10, background:'#fff', padding:'80px 40px 84px' }}>
+      <section style={{ position:'relative', zIndex:10, background:'#fff', padding:'64px 40px 84px' }}>
         <div style={{ maxWidth:'1200px', margin:'0 auto' }}>
-          <div style={{ textAlign:'center', maxWidth:'700px', margin:'0 auto 56px' }}>
+          <div style={{ textAlign:'center', maxWidth:'700px', margin:'0 auto 40px' }}>
             <div style={{ display:'inline-flex', alignItems:'center', gap:'8px', background:'#eff6ff', border:'1px solid #bfdbfe', borderRadius:'50px', padding:'6px 18px', marginBottom:'20px' }}>
               <span style={{ fontSize:'13px', color:'#2563eb', fontWeight:600 }}>Platforma haqida</span>
             </div>
