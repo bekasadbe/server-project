@@ -70,6 +70,24 @@ export default function App() {
 
   useEffect(() => { if (user) { loadData(); setPage('dashboard') } }, [user])
 
+  // Telegram orqali kirilganda har safar ID hali ham bog'langanligini tekshirish
+  useEffect(() => {
+    const tgId = new URLSearchParams(window.location.search).get('tg_id')
+      || window.Telegram?.WebApp?.initDataUnsafe?.user?.id
+    if (!tgId || !user) return
+    fetch(`/api/auth/telegram?tg_id=${tgId}`)
+      .then(r => r.json())
+      .then(data => {
+        if (data.ok && data.user) {
+          localStorage.setItem('user', JSON.stringify(data.user))
+          setUser(data.user)
+        } else {
+          logout(); setUser(null); setTgNotLinked(true)
+        }
+      })
+      .catch(() => {})
+  }, [])
+
   const loadData = async () => {
     try {
       const data = await apiFetch('/employees')
