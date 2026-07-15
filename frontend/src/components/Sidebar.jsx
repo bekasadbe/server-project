@@ -7,7 +7,7 @@ const menu = [
   { key: 'history',       label: 'Hisobot',           icon: Clock,           roles: ['kadrlar','kuzatuvchi'] },
   { key: 'reports',       label: 'Statistika',        icon: FileBarChart2,   roles: ['kadrlar','kuzatuvchi'] },
   { key: 'employees',     label: 'Xodimlar',          icon: Users,           roles: ['kadrlar'] },
-  { key: 'workSchedule',  label: 'Ish grafigi',       icon: Clock3,          roles: ['admin','kadrlar'] },
+  { key: 'workSchedule',  label: 'Ish grafigi',       icon: Clock3,          roles: ['kadrlar'] },
   { key: 'leaves',        label: "Kasallik & Ta'til", icon: Stethoscope,     roles: ['kadrlar'] },
   { key: 'settings',      label: 'Sozlamalar',        icon: Settings2,       roles: ['kadrlar'] },
   { key: 'admin',         label: 'Tashkilotlar',      icon: Building2,       roles: ['admin'] },

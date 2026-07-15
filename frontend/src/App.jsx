@@ -211,10 +211,8 @@ export default function App() {
     schedule:  <Jadvallar  groups={visibleGrps} employees={visibleEmps} />,
     employees: <Employees  employees={visibleEmps} groups={visibleGrps} onUpdateEmployee={isViewer ? null : updateEmployee} onDeleteEmployee={isViewer ? null : deleteEmployee} readonly={isViewer} />,
     reports:   <Reports    groups={visibleGrps} />,
-    ...(!isViewer ? {
-      workSchedule: <WorkSchedule employees={visibleEmps} groups={visibleGrps} onReload={loadData} />
-    } : {}),
     ...(!isViewer && user.role !== 'admin' ? {
+      workSchedule: <WorkSchedule employees={visibleEmps} groups={visibleGrps} onReload={loadData} />,
       settings: <Settings group={visibleGrps[0]} onUpdateGroup={updateGroup} onDirtyChange={setSettingsDirty} />,
       leaves: <Leaves employees={visibleEmps} groups={visibleGrps} />
     } : {}),
