@@ -46,7 +46,8 @@ export default function Accounts({ groups, accounts, onReload }) {
   const [editPassShow, setEditPassShow] = useState(false)
   const [editLinked, setEditLinked] = useState([])
   const [editRole, setEditRole]         = useState('kadrlar')
-  const [editTgId, setEditTgId]         = useState('')
+  const [editTgIds, setEditTgIds]       = useState([])
+  const [editTgInput, setEditTgInput]   = useState('')
   const [editError, setEditError]       = useState('')
   const [tgLinking, setTgLinking]       = useState(false)
 
@@ -71,14 +72,16 @@ export default function Accounts({ groups, accounts, onReload }) {
   const openEdit = (acc) => {
     setEditAcc(acc); setEditName(acc.name); setEditLogin(acc.login || ''); setEditPass('')
     setEditPassShow(false); setEditLinked((acc.linked_groups || '').split(',').filter(Boolean))
-    setEditRole(acc.role || 'kadrlar'); setEditTgId(acc.telegram_id || ''); setEditError('')
+    setEditRole(acc.role || 'kadrlar')
+    setEditTgIds((acc.telegram_id || '').split(',').map(x => x.trim()).filter(Boolean))
+    setEditTgInput(''); setEditError('')
     setTgLinking(!!acc.telegram_id); setShowEdit(true)
   }
 
   const handleSaveEdit = async () => {
     if (!editLogin.trim()) return setEditError('Login kiriting')
     try {
-      await apiFetch(`/accounts/${editAcc.id}`, { method: 'PUT', body: JSON.stringify({ name: editName.trim(), login: editLogin.trim(), password: editPass.trim() || '[[keep]]', linked_groups: editLinked, role: editRole, telegram_id: editTgId.trim() || null }) })
+      await apiFetch(`/accounts/${editAcc.id}`, { method: 'PUT', body: JSON.stringify({ name: editName.trim(), login: editLogin.trim(), password: editPass.trim() || '[[keep]]', linked_groups: editLinked, role: editRole, telegram_id: editTgIds.join(',') || null }) })
       setShowEdit(false); onReload()
     } catch (e) { setEditError('Saqlashda xato: ' + (e?.message || String(e))) }
   }
@@ -192,8 +195,12 @@ export default function Accounts({ groups, accounts, onReload }) {
                 <div className="bg-slate-50 rounded-xl p-4 mb-5">
                   <div className="text-[11px] text-slate-400 font-semibold uppercase tracking-wide mb-2 flex items-center gap-1.5"><Send size={11}/> Telegram bot</div>
                   {selectedAcc.telegram_id ? (
-                    <div className="flex items-center gap-2 text-[13.5px] text-emerald-700 font-medium">
-                      <CheckCircle2 size={15} className="text-emerald-500"/> Bog'langan — ID: <span className="font-mono">{selectedAcc.telegram_id}</span>
+                    <div className="flex flex-col gap-1.5">
+                      {selectedAcc.telegram_id.split(',').map(x => x.trim()).filter(Boolean).map(id => (
+                        <div key={id} className="flex items-center gap-2 text-[13.5px] text-emerald-700 font-medium">
+                          <CheckCircle2 size={15} className="text-emerald-500 shrink-0"/> <span className="font-mono">{id}</span>
+                        </div>
+                      ))}
                     </div>
                   ) : (
                     <div className="flex items-center gap-2 text-[13.5px] text-slate-400">
@@ -259,12 +266,31 @@ export default function Accounts({ groups, accounts, onReload }) {
                   <div className="bg-sky-50 border border-sky-200 rounded-xl p-3.5">
                     <div className="flex items-center justify-between mb-2.5">
                       <span className="flex items-center gap-1.5 text-[12.5px] font-semibold text-sky-700"><Send size={13}/> Telegram bilan bog'lash</span>
-                      <button type="button" onClick={() => { setTgLinking(false); setEditTgId('') }}
+                      <button type="button" onClick={() => { setTgLinking(false); setEditTgIds([]); setEditTgInput('') }}
                         className="bg-transparent border-none cursor-pointer text-sky-400 hover:text-sky-600 flex p-0.5"><X size={14}/></button>
                     </div>
-                    <input value={editTgId} onChange={e => setEditTgId(e.target.value)} placeholder="Telegram ID, masalan: 1889501628"
-                      className="w-full px-3 py-2 bg-white border border-sky-200 rounded-lg text-slate-800 text-[13.5px] outline-none focus:border-sky-400 transition-colors mb-1.5"/>
-                    <p className="text-[11px] text-sky-600/70 m-0">Kimga tegishli: <b>{editName || 'akkaunt'}</b>. Bot orqali ochilganda shu ID avtomatik login qiladi.</p>
+
+                    {editTgIds.length > 0 && (
+                      <div className="flex flex-col gap-1.5 mb-2.5">
+                        {editTgIds.map(id => (
+                          <div key={id} className="flex items-center justify-between px-3 py-1.5 bg-white border border-sky-200 rounded-lg">
+                            <span className="text-[13px] font-mono text-slate-700">{id}</span>
+                            <button type="button" onClick={() => setEditTgIds(prev => prev.filter(x => x !== id))}
+                              className="bg-transparent border-none cursor-pointer text-slate-400 hover:text-rose-500 flex p-0.5"><X size={13}/></button>
+                          </div>
+                        ))}
+                      </div>
+                    )}
+
+                    <div className="flex gap-1.5">
+                      <input value={editTgInput} onChange={e => setEditTgInput(e.target.value)}
+                        onKeyDown={e => { if (e.key === 'Enter') { e.preventDefault(); const v = editTgInput.trim(); if (v && !editTgIds.includes(v)) setEditTgIds(prev => [...prev, v]); setEditTgInput('') } }}
+                        placeholder="Telegram ID, masalan: 1889501628"
+                        className="flex-1 px-3 py-2 bg-white border border-sky-200 rounded-lg text-slate-800 text-[13.5px] outline-none focus:border-sky-400 transition-colors"/>
+                      <button type="button" onClick={() => { const v = editTgInput.trim(); if (v && !editTgIds.includes(v)) setEditTgIds(prev => [...prev, v]); setEditTgInput('') }}
+                        className="px-3.5 bg-sky-600 border-none rounded-lg text-white cursor-pointer hover:bg-sky-700 transition-colors"><Plus size={15}/></button>
+                    </div>
+                    <p className="text-[11px] text-sky-600/70 mt-1.5 mb-0">Kimga tegishli: <b>{editName || 'akkaunt'}</b>. Bir nechta ID qo'shsangiz, har biri shu akkauntdan avtomatik login qila oladi.</p>
                   </div>
                 )}
               </div>

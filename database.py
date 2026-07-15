@@ -276,11 +276,16 @@ def update_account(aid, name, login, password, linked_groups='', role='kadrlar',
 
 
 def get_account_by_telegram_id(tg_id):
+    tg_id = str(tg_id)
     with get_conn() as conn:
-        row = conn.execute(
-            'SELECT * FROM accounts WHERE telegram_id=?', (str(tg_id),)
-        ).fetchone()
-    return dict(row) if row else None
+        rows = conn.execute(
+            "SELECT * FROM accounts WHERE telegram_id IS NOT NULL AND telegram_id != ''"
+        ).fetchall()
+    for row in rows:
+        ids = [x.strip() for x in (row['telegram_id'] or '').split(',') if x.strip()]
+        if tg_id in ids:
+            return dict(row)
+    return None
 
 
 def delete_account(aid):
