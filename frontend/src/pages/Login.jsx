@@ -226,7 +226,7 @@ export default function Login({ onLogin }) {
             onMouseEnter={e => { e.currentTarget.style.background='rgba(255,255,255,0.1)'; e.currentTarget.style.color='#fff' }}
             onMouseLeave={e => { e.currentTarget.style.background='transparent'; e.currentTarget.style.color='rgba(255,255,255,0.85)' }}
           >
-            <Send size={14}/> <span className="tg-login-text">Telegram orqali kirish</span>
+            <Send size={14}/> <span className="tg-login-text-full">Telegram orqali kirish</span><span className="tg-login-text-short">Telegram bot</span>
           </a>
           <button onClick={openLogin} style={{
             display:'flex', alignItems:'center', gap:'6px',
@@ -627,6 +627,7 @@ export default function Login({ onLogin }) {
         input::placeholder { color: #cbd5e1 }
         .cards-grid { grid-template-columns: repeat(4, 1fr); }
         .hero-title  { font-size: 48px; }
+        .tg-login-text-short { display: none; }
         @media (max-width: 768px) {
           .cards-grid { grid-template-columns: repeat(2, 1fr) !important; }
           .hero-title  { font-size: 38px !important; letter-spacing: -1px !important; }
@@ -644,8 +645,9 @@ export default function Login({ onLogin }) {
           .cards-grid { grid-template-columns: repeat(2, 1fr) !important; }
           .hero-title  { font-size: 32px !important; }
           .who-grid { grid-template-columns: 1fr !important; }
-          .tg-login-text { display: none; }
-          .tg-login-btn { padding: 9px !important; }
+          .tg-login-text-full { display: none; }
+          .tg-login-text-short { display: inline; }
+          .tg-login-btn { padding: 9px 14px !important; font-size: 12.5px !important; }
         }
       `}</style>
     </div>
