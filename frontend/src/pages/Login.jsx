@@ -325,11 +325,8 @@ export default function Login({ onLogin }) {
             </div>
 
             {/* Tafsilot paneli */}
-            <div style={{
-              padding:'44px 48px', display:'flex', flexDirection:'column', justifyContent:'center',
-              backgroundImage:'linear-gradient(90deg, #fff 0%, #fff 38%, rgba(255,255,255,0.55) 55%, rgba(255,255,255,0.1) 78%), url(/jpg.jpg)',
-              backgroundSize:'cover', backgroundPosition:'left center', backgroundRepeat:'no-repeat',
-            }}>
+            <div style={{ position:'relative', padding:'44px 48px', display:'flex', flexDirection:'column', justifyContent:'center', background:'#fff', overflow:'hidden' }}>
+              <img src="/png.jpg" alt="" style={{ position:'absolute', bottom:0, right:0, maxHeight:'110%', width:'auto', pointerEvents:'none', userSelect:'none' }}/>
               {(() => {
                 const details = [
                   { badge:'01 · Kelish-ketish', title:'Kelish-ketish vaqti aniq qayd etiladi', color:'#dc2626', bg:'#fef2f2',
@@ -352,7 +349,7 @@ export default function Login({ onLogin }) {
                     points:['Filiallar aralashmaydi', "Har bir login o'ziga tegishlisini ko'radi", 'Markazlashgan boshqaruv'] },
                 ][activeFeature]
                 return (
-                  <div key={activeFeature} style={{ animation:'fadeSlide 0.35s ease' }}>
+                  <div key={activeFeature} style={{ position:'relative', zIndex:1, animation:'fadeSlide 0.35s ease' }}>
                     <div style={{ display:'inline-block', background:details.bg, borderRadius:'50px', padding:'5px 14px', fontSize:'12px', fontWeight:700, color:details.color, marginBottom:'18px' }}>
                       {details.badge}
                     </div>
