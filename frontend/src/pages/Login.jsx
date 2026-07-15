@@ -226,7 +226,7 @@ export default function Login({ onLogin }) {
             onMouseEnter={e => { e.currentTarget.style.background='rgba(255,255,255,0.1)'; e.currentTarget.style.color='#fff' }}
             onMouseLeave={e => { e.currentTarget.style.background='transparent'; e.currentTarget.style.color='rgba(255,255,255,0.85)' }}
           >
-            <Send size={14}/> <span className="tg-login-text-full">Telegram orqali kirish</span><span className="tg-login-text-short">Telegram bot</span>
+            <Send size={14}/> <span className="tg-login-text-full">Telegram orqali kirish</span><span className="tg-login-text-short">Bot</span>
           </a>
           <button onClick={openLogin} style={{
             display:'flex', alignItems:'center', gap:'6px',
