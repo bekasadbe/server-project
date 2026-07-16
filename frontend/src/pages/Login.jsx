@@ -256,7 +256,7 @@ export default function Login({ onLogin }) {
         </h1>
 
         <p style={{ margin:'0 0 36px', fontSize:'16px', color:'rgba(255,255,255,0.6)', lineHeight:1.7, maxWidth:'420px' }}>
-          Face ID qurilmalar bilan integratsiya, real vaqt hisobotlar va tashkilotlar bo'yicha boshqaruv tizimi.
+          O'zbekistonda xodimlar va o'quvchilar davomatini nazorat qiluvchi va avtomatik hisoblovchi raqamli platforma
         </p>
 
         <div className="cards-grid" style={{ display:'grid', gap:'16px', width:'100%', maxWidth:'1200px' }}>
