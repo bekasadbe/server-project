@@ -169,13 +169,25 @@ export default function App() {
   }
 
   const deleteEmployee = async (id) => {
-    await apiFetch(`/employees/${id}`, { method: 'DELETE' })
-    loadData()
+    try {
+      await apiFetch(`/employees/${id}`, { method: 'DELETE' })
+      await loadData()
+      return true
+    } catch (e) {
+      alert("Xodimni o'chirishda xato yuz berdi: " + (e?.message || String(e)))
+      return false
+    }
   }
 
   const deleteEmployees = async (ids) => {
-    await Promise.all(ids.map(id => apiFetch(`/employees/${id}`, { method: 'DELETE' })))
-    loadData()
+    try {
+      await Promise.all(ids.map(id => apiFetch(`/employees/${id}`, { method: 'DELETE' })))
+      await loadData()
+      return true
+    } catch (e) {
+      alert("Xodimlarni o'chirishda xato yuz berdi: " + (e?.message || String(e)))
+      return false
+    }
   }
 
   const updateEmployee = async (id, changes) => {

@@ -133,8 +133,10 @@ export default function AdminPanel({ employees, groups, onAddEmployee, onDeleteE
                     className="w-full py-2 pl-9 pr-3 bg-slate-50 border border-slate-200 rounded-lg text-slate-800 text-[13px] outline-none focus:border-brand-400 transition-colors"/>
                 </div>
                 {selected.size > 0 && (
-                  <button onClick={() => {
-                    if (window.confirm(`${selected.size} ta xodimni o'chirasizmi?`)) { onDeleteEmployees([...selected]); setSelected(new Set()) }
+                  <button onClick={async () => {
+                    if (!window.confirm(`${selected.size} ta xodimni o'chirasizmi?`)) return
+                    const ok = await onDeleteEmployees([...selected])
+                    if (ok) setSelected(new Set())
                   }} className="flex items-center gap-1.5 px-3 py-2 bg-rose-50 border border-rose-200 rounded-lg text-rose-600 text-[13px] font-semibold cursor-pointer hover:bg-rose-100 transition-colors whitespace-nowrap">
                     <Trash2 size={14}/> {selected.size} ta o'chirish
                   </button>
@@ -237,7 +239,11 @@ export default function AdminPanel({ employees, groups, onAddEmployee, onDeleteE
             <div><label className={labelCls}>Lavozim</label><input value={editEmpLavozim} onChange={e => setEditEmpLavozim(e.target.value)} placeholder="Masalan: Dasturchi..." className={inputCls}/></div>
             {editEmpError && <div className="px-3 py-2 bg-rose-50 border border-rose-200 rounded-xl text-rose-600 text-[13px]">⚠️ {editEmpError}</div>}
             <div className="flex gap-2 mt-1">
-              <button onClick={() => { if (window.confirm(`${editEmpName} ni o'chirasizmi?`)) { onDeleteEmployee(editEmpId); setShowEditEmp(false) } }}
+              <button onClick={async () => {
+                if (!window.confirm(`${editEmpName} ni o'chirasizmi?`)) return
+                const ok = await onDeleteEmployee(editEmpId)
+                if (ok) setShowEditEmp(false)
+              }}
                 className="flex items-center gap-1.5 px-3.5 py-2.5 bg-rose-50 border border-rose-200 rounded-xl text-rose-600 text-[14px] cursor-pointer hover:bg-rose-100 transition-colors">
                 <Trash2 size={14}/> O'chirish
               </button>

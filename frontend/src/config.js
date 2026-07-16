@@ -10,5 +10,7 @@ export async function apiFetch(path, opts = {}) {
       ...opts.headers,
     },
   })
-  return res.json()
+  const data = await res.json().catch(() => ({}))
+  if (!res.ok) throw new Error(data.error || `So'rov xato qaytardi (${res.status})`)
+  return data
 }

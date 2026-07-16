@@ -145,8 +145,10 @@ export default function Employees({ employees = [], groups = [], onUpdateEmploye
               {saved    && <div className="px-3 py-2 bg-green-50 border border-green-200 rounded-xl text-green-700 text-[13px] font-semibold">✅ Saqlandi!</div>}
               <div className="flex gap-2 mt-1">
                 {onDeleteEmployee && (
-                  <button onClick={() => {
-                    if (window.confirm(`"${editName}" xodimini o'chirasizmi?\n\nBu amalni qaytarib bo'lmaydi!`)) { onDeleteEmployee(editEmp.id); setShowEdit(false) }
+                  <button onClick={async () => {
+                    if (!window.confirm(`"${editName}" xodimini o'chirasizmi?\n\nBu amalni qaytarib bo'lmaydi!`)) return
+                    const ok = await onDeleteEmployee(editEmp.id)
+                    if (ok) setShowEdit(false)
                   }} className="flex items-center gap-1.5 px-3.5 py-2.5 bg-rose-50 border border-rose-200 rounded-xl text-rose-600 text-[14px] cursor-pointer hover:bg-rose-100 transition-colors">
                     <Trash2 size={14}/> O'chirish
                   </button>
